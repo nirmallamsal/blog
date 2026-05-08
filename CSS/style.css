@@ -1,24 +1,31 @@
-/* Base Styles & Variables (Modern Sleek Theme) */
 :root {
-    --primary: #4FBCCB; /* Your Signature Teal */
-    --primary-hover: #3da4b2;
-    --primary-light: rgba(79, 188, 203, 0.1);
+    /* Brand Colors - Athletic Glass Precision */
+    --primary: #006973; 
+    --primary-hover: #004f57;
+    --primary-container: #4fbccb;
+    --primary-light: rgba(0, 105, 115, 0.08);
     
-    --bg-main: #ffffff;
-    --bg-card: #fdfdfe; /* Almost white for clarity */
-    --bg-glass: rgba(255, 255, 255, 0.7);
+    --bg-main: #f6fafb;
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --bg-glass: rgba(255, 255, 255, 0.85);
     
-    --text-main: #0f172a; /* Deep Slate */
-    --text-muted: #64748b;
-    --border-color: rgba(226, 232, 240, 0.8);
+    --text-main: #171c1d; 
+    --text-muted: #3d494b;
+    --border-color: rgba(0, 105, 115, 0.12);
     
     --font-heading: 'Outfit', sans-serif;
     --font-body: 'Inter', sans-serif;
     --font-accent: 'Dancing Script', cursive;
     
-    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.03);
-    --shadow-elevated: 0 20px 40px rgba(79, 188, 203, 0.08);
-    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --radius-sm: 0.5rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
+    --radius-full: 9999px;
+
+    --shadow-soft: 0 8px 32px 0 rgba(0, 105, 115, 0.04);
+    --shadow-elevated: 0 20px 40px rgba(0, 105, 115, 0.08);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -33,7 +40,10 @@ html {
 
 body {
     font-family: var(--font-body);
-    background: radial-gradient(circle at top left, rgba(79,188,203,0.16), transparent 18%), #f8fbff;
+    background-color: var(--bg-main);
+    background-image: 
+        radial-gradient(at 0% 0%, hsla(187, 57%, 55%, 0.1) 0, transparent 50%), 
+        radial-gradient(at 50% 0%, hsla(187, 57%, 85%, 0.05) 0, transparent 50%);
     color: var(--text-main);
     line-height: 1.6;
     overflow-x: hidden;
@@ -124,22 +134,23 @@ ul {
 
 .section-title {
     font-family: var(--font-heading);
-    font-size: 3rem;
-    font-weight: 700;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
     margin-bottom: 1.5rem;
     text-align: center;
     color: var(--text-main);
-    letter-spacing: -0.5px;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
 }
 
 .section-title::after {
     content: '';
     display: block;
-    width: 40px;
-    height: 4px;
-    background: var(--primary);
-    margin: 1rem auto 0;
-    border-radius: 10px;
+    width: 80px;
+    height: 8px;
+    background: var(--primary-container);
+    margin: 1.5rem auto 0;
+    border-radius: var(--radius-full);
 }
 
 .section-desc {
@@ -190,12 +201,12 @@ ul {
 
 /* Glassmorphism utility modified for light theme */
 .glass {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: var(--bg-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
 }
 
 /* 1. Header */
