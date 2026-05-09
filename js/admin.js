@@ -1052,8 +1052,8 @@ async function submitRaceNameForm(e) {
         Location: document.getElementById('new-race-location').value.trim(),
         Country: document.getElementById('new-race-country').value.trim(),
         Intro: document.getElementById('new-race-intro').value.trim(),
-        logoBase64: raceEntityLogoBase64, // GitHub upload handled by GAS
-        Logo: existingRace ? existingRace.Logo : '' // Keep existing logo if no new one uploaded
+        logoBase64: raceEntityLogoBase64 ? 'data:image/jpeg;base64,' + raceEntityLogoBase64 : null, 
+        Logo: existingRace ? existingRace.Logo : '' 
     };
 
     const submitBtn = e.target.querySelector('button[type="submit"]');
