@@ -230,7 +230,7 @@
     </footer>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxE7Mvk2bFUaL_BCvwhjTsB2FMyxLl-sQGn59cw4c4GRURlD3O6mtQccyEz7hIAGCxTTQ/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx83zXlV1s7xDwoUqzmXKg-xaipfahc8vaDH3BimCYX0C9ICHL3yemKDzb8Q2NKvp7P/exec';
 
         function slugify(v) {
             return String(v||'').trim().toLowerCase()
@@ -255,8 +255,8 @@
 
             try {
                 const [racesRes, namesRes] = await Promise.all([
-                    fetch(SCRIPT_URL),
-                    fetch(`${SCRIPT_URL}?action=names`)
+                    fetch(`${SCRIPT_URL}?_=${Date.now()}`),
+                    fetch(`${SCRIPT_URL}?action=names&_=${Date.now()}`)
                 ]);
                 const racesData = await racesRes.json();
                 const namesData = await namesRes.json();
