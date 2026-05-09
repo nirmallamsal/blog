@@ -1390,3 +1390,41 @@ async function loadSystemSettings() {
 
 async function saveSystemSettings() {
     const btn = document.getElementById('save-settings-btn');
+    const status = document.getElementById('settings-status');
+    const toggles = document.querySelectorAll('.setting-toggle');
+    
+    const settingsUpdate = {};
+    toggles.forEach(t => {
+        settingsUpdate[t.value] = t.checked ? 'Show' : 'Hide';
+    });
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Saving Settings...';
+    status.textContent = '';
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'updateSettings',
+                data: settingsUpdate
+            })
+        });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            status.textContent = 'Settings applied successfully! Refresh the home page to see changes.';
+            status.className = 'text-xs text-center text-green-600 mt-3';
+            loadSystemSettings(); // Refresh UI
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (error) {
+        status.textContent = 'Error: ' + error.message;
+        status.className = 'text-xs text-center text-error mt-3';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined">save</span> Apply Visibility Settings';
+    }
+}
+
