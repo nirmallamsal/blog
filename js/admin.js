@@ -3,6 +3,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx83zXlV1s7xDwoUqzmX
 let allRaces = [];
 let filteredRaces = [];
 let currentPage = 1;
+let galleryCurrentPage = 1;
 const itemsPerPage = 10;
 
 let allBlogs = [];
@@ -145,7 +146,7 @@ async function refreshAllData() {
 async function loadStats() {
     if (!SCRIPT_URL) return;
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=stats`);
+        const response = await fetch(`${SCRIPT_URL}?action=stats&_=${Date.now()}`);
         const data = await response.json();
         
         if (data.status === 'success') {
@@ -178,7 +179,7 @@ async function loadRaces() {
     tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-on-surface-variant">Loading races...</td></tr>';
     
     try {
-        const response = await fetch(SCRIPT_URL);
+        const response = await fetch(`${SCRIPT_URL}?_=${Date.now()}`);
         const data = await response.json();
         
         if (data && data.status === 'success') {
@@ -689,59 +690,96 @@ async function loadGallery() {
     const tbody = document.getElementById('gallery-table-body');
     
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=gallery`);
+        const response = await fetch(`${SCRIPT_URL}?action=gallery&_=${Date.now()}`);
         const data = await response.json();
         
         if (data.status === 'success') {
             allGallery = data.data || [];
-            tbody.innerHTML = '';
-            
-            if (allGallery.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-on-surface-variant font-medium">No images in library. <button onclick="openGalleryModal()" class="text-primary underline">Upload one</button></td></tr>';
-                return;
-            }
-
-            allGallery.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = "group hover:bg-primary/5 transition-athletic";
-                tr.innerHTML = `
-                    <td class="py-4 pr-4">
-                        <div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center overflow-hidden border border-outline-variant">
-                            <img src="${item.GitHub_URL}" class="w-full h-full object-cover">
-                        </div>
-                    </td>
-                    <td class="py-4 pr-4">
-                        <span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-lg">${item.Display_Order || 'None'}</span>
-                    </td>
-                    <td class="py-4 pr-4">
-                        <span class="text-[10px] font-bold text-on-surface-variant uppercase">${item.Tagged_Race || 'Untagged'}</span>
-                    </td>
-                    <td class="py-4 pr-4">
-                        <p class="font-bold text-sm">${item.Filename}</p>
-                        <p class="text-[10px] text-on-surface-variant uppercase font-bold">${item.Description || 'No description'}</p>
-                    </td>
-                    <td class="py-4 pr-4">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" ${item.Display_Status === 'TRUE' ? 'checked' : ''} onchange="updateGalleryDisplayStatus('${item.id}', this)" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-0">
-                            <span class="text-[10px] font-bold uppercase ${item.Display_Status === 'TRUE' ? 'text-primary' : 'text-on-surface-variant'}">Visible</span>
-                        </label>
-                    </td>
-                    <td class="py-4 text-right">
-                        <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-athletic">
-                            <button onclick="editGallery('${item.id}')" class="p-2 hover:bg-primary/20 text-primary rounded-lg transition-athletic">
-                                <span class="material-symbols-outlined text-lg">edit</span>
-                            </button>
-                            <button onclick="deleteGallery('${item.id}')" class="p-2 hover:bg-error/20 text-error rounded-lg transition-athletic">
-                                <span class="material-symbols-outlined text-lg">delete</span>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+            renderGalleryTable();
         }
     } catch (error) {
         console.error("Error fetching gallery:", error);
+    }
+}
+
+function renderGalleryTable() {
+    const tbody = document.getElementById('gallery-table-body');
+    const info = document.getElementById('gallery-pagination-info');
+    const controls = document.getElementById('gallery-pagination-controls');
+    
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (allGallery.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-on-surface-variant font-medium">No images in library. <button onclick="openGalleryModal()" class="text-primary underline">Upload one</button></td></tr>';
+        if (info) info.textContent = '0 images';
+        return;
+    }
+
+    const start = (galleryCurrentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const paginatedItems = allGallery.slice(start, end);
+
+    paginatedItems.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "group hover:bg-primary/5 transition-athletic";
+        tr.innerHTML = `
+            <td class="py-4 pr-4">
+                <div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center overflow-hidden border border-outline-variant">
+                    <img src="${item.GitHub_URL}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=No+Image'">
+                </div>
+            </td>
+            <td class="py-4 pr-4">
+                <span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-lg">${item.Display_Order || 'None'}</span>
+            </td>
+            <td class="py-4 pr-4">
+                <span class="text-[10px] font-bold text-on-surface-variant uppercase">${item.Tagged_Race || 'Untagged'}</span>
+            </td>
+            <td class="py-4 pr-4">
+                <p class="font-bold text-sm truncate max-w-[150px]">${item.Filename}</p>
+                <p class="text-[10px] text-on-surface-variant uppercase font-bold truncate max-w-[150px]">${item.Description || 'No description'}</p>
+            </td>
+            <td class="py-4 pr-4">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" ${item.Display_Status === 'TRUE' ? 'checked' : ''} onchange="updateGalleryDisplayStatus('${item.id}', this)" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-0">
+                    <span class="text-[10px] font-bold uppercase ${item.Display_Status === 'TRUE' ? 'text-primary' : 'text-on-surface-variant'}">Visible</span>
+                </label>
+            </td>
+            <td class="py-4 text-right">
+                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-athletic">
+                    <button onclick="editGallery('${item.id}')" class="p-2 hover:bg-primary/20 text-primary rounded-lg transition-athletic">
+                        <span class="material-symbols-outlined text-lg">edit</span>
+                    </button>
+                    <button onclick="deleteGallery('${item.id}')" class="p-2 hover:bg-error/20 text-error rounded-lg transition-athletic">
+                        <span class="material-symbols-outlined text-lg">delete</span>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Pagination Info
+    if (info) {
+        info.textContent = `Showing ${start + 1}-${Math.min(end, allGallery.length)} of ${allGallery.length} images`;
+    }
+
+    // Pagination Controls
+    if (controls) {
+        controls.innerHTML = '';
+        const totalPages = Math.ceil(allGallery.length / itemsPerPage);
+        
+        const prevBtn = document.createElement('button');
+        prevBtn.className = `p-2 rounded-lg border border-outline-variant hover:bg-primary/10 transition-athletic ${galleryCurrentPage === 1 ? 'opacity-30 cursor-not-allowed' : ''}`;
+        prevBtn.innerHTML = '<span class="material-symbols-outlined">chevron_left</span>';
+        prevBtn.onclick = () => { if (galleryCurrentPage > 1) { galleryCurrentPage--; renderGalleryTable(); } };
+        controls.appendChild(prevBtn);
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = `p-2 rounded-lg border border-outline-variant hover:bg-primary/10 transition-athletic ${galleryCurrentPage === totalPages ? 'opacity-30 cursor-not-allowed' : ''}`;
+        nextBtn.innerHTML = '<span class="material-symbols-outlined">chevron_right</span>';
+        nextBtn.onclick = () => { if (galleryCurrentPage < totalPages) { galleryCurrentPage++; renderGalleryTable(); } };
+        controls.appendChild(nextBtn);
     }
 }
 
@@ -951,7 +989,7 @@ async function updateGalleryDisplayStatus(id, checkbox) {
 async function loadRaceNames() {
     if (!SCRIPT_URL) return;
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=names`);
+        const response = await fetch(`${SCRIPT_URL}?action=names&_=${Date.now()}`);
         const data = await response.json();
         if (data.status === 'success') {
             allRaceNamesData = data.data || [];
@@ -1352,41 +1390,3 @@ async function loadSystemSettings() {
 
 async function saveSystemSettings() {
     const btn = document.getElementById('save-settings-btn');
-    const status = document.getElementById('settings-status');
-    const toggles = document.querySelectorAll('.setting-toggle');
-    
-    const settingsUpdate = {};
-    toggles.forEach(t => {
-        settingsUpdate[t.value] = t.checked ? 'Show' : 'Hide';
-    });
-
-    btn.disabled = true;
-    btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Saving Settings...';
-    status.textContent = '';
-
-    try {
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({
-                action: 'updateSettings',
-                data: settingsUpdate
-            })
-        });
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            status.textContent = 'Settings applied successfully! Refresh the home page to see changes.';
-            status.className = 'text-xs text-center text-green-600 mt-3';
-            loadSystemSettings(); // Refresh UI
-        } else {
-            throw new Error(result.message);
-        }
-    } catch (error) {
-        status.textContent = 'Error: ' + error.message;
-        status.className = 'text-xs text-center text-error mt-3';
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<span class="material-symbols-outlined">save</span> Apply Visibility Settings';
-    }
-}
-
