@@ -637,7 +637,10 @@
             <form id="race-name-form" class="space-y-6">
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-on-surface-variant">Official Race Name</label>
-                    <input type="text" id="new-race-name" required class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g. Berlin Marathon">
+                    <input type="text" id="new-race-name" list="existing-races-list" oninput="handleRaceNameInput(this.value)" required class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g. Berlin Marathon">
+                    <datalist id="existing-races-list">
+                        <!-- Populated via JS -->
+                    </datalist>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
@@ -687,12 +690,12 @@
 
     <script>
         const firebaseConfig = {
-          apiKey: "AIzaSyAT2eVXMCaJTAtfVrhMbjZ6xYdlXdTyc0s",
-          authDomain: "blog-cc010.firebaseapp.com",
-          projectId: "blog-cc010",
-          storageBucket: "blog-cc010.firebasestorage.app",
-          messagingSenderId: "861794852945",
-          appId: "1:861794852945:web:f3271ae23c9250b9eed870"
+            apiKey: "AIzaSyAT2eVXMCaJTAtfVrhMbjZ6xYdlXdTyc0s",
+            authDomain: "blog-cc010.firebaseapp.com",
+            projectId: "blog-cc010",
+            storageBucket: "blog-cc010.firebasestorage.app",
+            messagingSenderId: "861794852945",
+            appId: "1:861794852945:web:f3271ae23c9250b9eed870"
         };
 
         firebase.initializeApp(firebaseConfig);
