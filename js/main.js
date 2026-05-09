@@ -358,7 +358,7 @@ async function loadBlogs() {
     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=blogs`, { signal: controller.signal });
+        const response = await fetch(`${SCRIPT_URL}?action=blogs&_=${Date.now()}`, { signal: controller.signal });
         clearTimeout(timeoutId);
         
         if (!response.ok) throw new Error('Network response was not ok');
@@ -409,7 +409,7 @@ async function loadGallery() {
     if (!galleryGrid || !SCRIPT_URL) return;
 
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=gallery`);
+        const response = await fetch(`${SCRIPT_URL}?action=gallery&_=${Date.now()}`);
         const data = await response.json();
 
         if (data.status === 'success') {
