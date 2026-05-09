@@ -517,6 +517,7 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                 </div>
 
                 <!-- 4. System Settings Section -->
@@ -745,6 +746,14 @@
             
             document.getElementById(tabName + '-section').classList.add('active');
             document.getElementById('tab-' + tabName).classList.add('sidebar-item-active');
+            
+            // Load fresh data for specific tabs
+            if (tabName === 'settings' && typeof loadSystemSettings === 'function') {
+                loadSystemSettings();
+            }
+            if (tabName === 'gallery' && typeof loadGallery === 'function') {
+                loadGallery(); // Refresh gallery with fresh data
+            }
             
             // Update breadcrumb
             const names = {
