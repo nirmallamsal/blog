@@ -103,9 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const raceList = document.getElementById('race-list');
         
         if (!SCRIPT_URL) {
+            const placeholderSvg = `data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70"><rect width="70" height="70" fill="#f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui" font-weight="bold" font-size="12" fill="#94a3b8">LOGO</text></svg>')}`;
+
             raceList.innerHTML = `
                 <div class="race-card">
-                    <img src="https://excelsheet101.github.io/nirmal-lamsal/Images/logo-pangong-frozenlake-2025.jpg" alt="Logo" class="race-logo" onerror="this.src='https://via.placeholder.com/70?text=Logo'">
+                    <img src="https://excelsheet101.github.io/nirmal-lamsal/Images/logo-pangong-frozenlake-2025.jpg" alt="Logo" class="race-logo" onerror="this.src='${placeholderSvg}'">
                     <div class="race-info">
                         <h3>Pangong Frozen Lake Marathon</h3>
                         <div class="race-meta">
@@ -115,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="race-card">
-                    <img src="https://via.placeholder.com/70?text=Logo" alt="Logo" class="race-logo">
+                    <img src="${placeholderSvg}" alt="Logo" class="race-logo">
                     <div class="race-info">
                         <h3>Pokhara Marathon</h3>
                         <div class="race-meta">
@@ -125,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="race-card">
-                    <img src="https://via.placeholder.com/70?text=Logo" alt="Logo" class="race-logo">
+                    <img src="${placeholderSvg}" alt="Logo" class="race-logo">
                     <div class="race-info">
                         <h3>Kathmandu International Marathon</h3>
                         <div class="race-meta">
@@ -135,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="race-card">
-                    <img src="https://via.placeholder.com/70?text=Logo" alt="Logo" class="race-logo">
+                    <img src="${placeholderSvg}" alt="Logo" class="race-logo">
                     <div class="race-info">
                         <h3>London Marathon</h3>
                         <div class="race-meta">
@@ -144,14 +146,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 </div>
-                <!-- Additional placeholder text hidden -->
             `;
             return;
         }
 
         try {
-            const response = await fetch(SCRIPT_URL);
-            const data = await response.json();
+        const response = await fetch(`${SCRIPT_URL}?_=${Date.now()}`);
+        const data = await response.json();
 
                 if (data.status === 'success' && data.data.length > 0) {
                 raceList.innerHTML = ''; // clear loading
@@ -185,7 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         card.className = 'race-card';
                         
                         // Default placeholder if no logo URL
-                        const logoSrc = race.Logo || 'https://via.placeholder.com/70?text=Logo';
+                        const placeholderSvg = `data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70"><rect width="70" height="70" fill="#f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui" font-weight="bold" font-size="12" fill="#94a3b8">LOGO</text></svg>')}`;
+                        const logoSrc = race.Logo || placeholderSvg;
                         
                         // Aggregate participation years from all matching races in the sheet
                         const allInstances = data.data.filter(r => r.RaceName && race.RaceName && r.RaceName.toLowerCase() === race.RaceName.toLowerCase());
@@ -220,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         card.style.cursor = 'pointer';
 
                         card.innerHTML = `
-                            <img src="${logoSrc}" alt="${race.RaceName} Logo" class="race-logo" onerror="this.src='https://via.placeholder.com/70?text=Logo'">
+                            <img src="${logoSrc}" alt="${race.RaceName} Logo" class="race-logo" onerror="this.src='${placeholderSvg}'">
                             <div class="race-info">
                                 <h3>${race.RaceName}</h3>
                                 <div class="race-meta">
@@ -255,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function applyVisibilitySettings() {
     if (!SCRIPT_URL) return;
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=getSettings`);
+        const response = await fetch(`${SCRIPT_URL}?action=getSettings&_=${Date.now()}`);
         const result = await response.json();
         
         if (result.status === 'success') {
@@ -294,7 +296,7 @@ async function loadStravaData() {
     if (!container || !SCRIPT_URL) return;
 
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=stravaData`);
+        const response = await fetch(`${SCRIPT_URL}?action=stravaData&_=${Date.now()}`);
         const data = await response.json();
 
         if (data.status === 'success' && data.data && data.data.length > 0) {
