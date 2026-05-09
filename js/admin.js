@@ -966,6 +966,17 @@ async function loadRaceNames() {
             const gallerySelect = document.getElementById('edit-gallery-race');
             gallerySelect.innerHTML = '<option value="">No Tag</option>';
 
+            // Populate Datalist for new race entity form
+            const datalist = document.getElementById('existing-races-list');
+            if (datalist) {
+                datalist.innerHTML = '';
+                names.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    datalist.appendChild(option);
+                });
+            }
+
             names.forEach(name => {
                 const option = document.createElement('option');
                 option.value = name;
@@ -998,39 +1009,81 @@ function closeRaceNameModal() {
     clearRaceEntityLogo();
 }
 
+async function handleRaceNameInput(value) {
+    const race = allRaceNamesData.find(r => r.RaceName.toLowerCase() === value.toLowerCase());
+    const submitBtn = document.querySelector('#race-name-form button[type="submit"]');
+    
+    if (race) {
+        // Autofill existing data
+        document.getElementById('new-race-location').value = race.Location || '';
+        document.getElementById('new-race-country').value = race.Country || '';
+        document.getElementById('new-race-intro').value = race.Intro || '';
+        
+        if (race.Logo) {
+            document.getElementById('race-entity-logo-preview-container').classList.remove('hidden');
+            document.getElementById('race-entity-logo-preview').src = race.Logo;
+            const statusEl = document.getElementById('race-entity-logo-status');
+            if (statusEl) {
+                statusEl.textContent = 'Existing logo loaded';
+                statusEl.classList.remove('hidden');
+            }
+        }
+        if (submitBtn) submitBtn.textContent = 'Update Entity';
+    } else {
+        // Clear if no match (optional, or just leave it)
+        if (submitBtn) submitBtn.textContent = 'Create Entity';
+    }
+}
+
 async function submitRaceNameForm(e) {
     e.preventDefault();
     
-    // Validate logo is uploaded (mandatory)
-    if (!raceEntityLogoBase64) {
-        alert('Please upload a race logo (required).');
+    const raceName = document.getElementById('new-race-name').value.trim();
+    const existingRace = allRaceNamesData.find(r => r.RaceName.toLowerCase() === raceName.toLowerCase());
+
+    // Validate logo (mandatory only for new races)
+    if (!raceEntityLogoBase64 && (!existingRace || !existingRace.Logo)) {
+        alert('Please upload a race logo.');
         return;
     }
 
     const data = {
-        RaceName: document.getElementById('new-race-name').value.trim(),
+        RaceName: raceName,
         Location: document.getElementById('new-race-location').value.trim(),
         Country: document.getElementById('new-race-country').value.trim(),
         Intro: document.getElementById('new-race-intro').value.trim(),
-        Logo: raceEntityLogoBase64
+        logoBase64: raceEntityLogoBase64, // GitHub upload handled by GAS
+        Logo: existingRace ? existingRace.Logo : '' // Keep existing logo if no new one uploaded
     };
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
 
     try {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ action: 'createRaceName', data: data })
+            body: JSON.stringify({ 
+                action: existingRace ? 'updateRaceName' : 'createRaceName', 
+                data: data 
+            })
         });
         const result = await response.json();
         if (result.status !== 'success') throw new Error(result.message || 'Server error');
-        alert('Race entity created.');
+        
+        alert(existingRace ? 'Race entity updated.' : 'Race entity created.');
         closeRaceNameModal();
         document.getElementById('race-name-form').reset();
         clearRaceEntityLogo();
         loadRaceNames();
     } catch (error) {
-        console.error('Error creating race entity:', error);
-        alert('Failed to create race entity: ' + error.message);
+        console.error('Error handling race entity:', error);
+        alert('Action failed: ' + error.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
     }
 }
 
