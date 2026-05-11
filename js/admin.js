@@ -53,6 +53,14 @@ function setupEventListeners() {
     // Gallery Edit/Upload Form
     const galleryEditForm = document.getElementById('gallery-edit-form');
     if (galleryEditForm) galleryEditForm.addEventListener('submit', handleGallerySubmit);
+
+    // New Race Photo Upload
+    const racePhotoInput = document.getElementById('race-photo-files');
+    if (racePhotoInput) racePhotoInput.addEventListener('change', handleRacePhotos);
+
+    // Race Entity Logo Upload
+    const entityLogoInput = document.getElementById('race-entity-logo-file');
+    if (entityLogoInput) entityLogoInput.addEventListener('change', handleRaceEntityLogoUpload);
 }
 
 async function refreshAllData() {
@@ -61,6 +69,7 @@ async function refreshAllData() {
     loadRaces();
     loadBlogs();
     loadGallery();
+    loadSystemSettings(); // New
 }
 
 // --- STATISTICS ---
@@ -115,9 +124,9 @@ function updateDashboardStats() {
     // Update DOM
     const totalRacesEl = document.getElementById('stat-total-races');
     const pbEl = document.getElementById('stat-pb');
-    const distEl = document.getElementById('stat-total-distance');
-    const progressEl = document.getElementById('stat-distance-progress');
-    const labelEl = document.getElementById('stat-distance-label');
+    const distEl = document.getElementById('stat-distance');
+    const progressEl = document.getElementById('distance-progress-bar');
+    const labelEl = document.getElementById('distance-progress-percent');
 
     if (totalRacesEl) totalRacesEl.textContent = totalRaces;
     if (pbEl) pbEl.textContent = formatDisplayTime(bestTime);
@@ -266,12 +275,12 @@ async function handleRaceSubmit(e) {
         Position: document.getElementById('race-position').value,
         PB: document.getElementById('race-pb').value,
         Notes: document.getElementById('race-notes').value,
-        Gallery_Links: document.getElementById('race-gallery-links').value,
         Display_RaceTable: document.getElementById('race-display').value,
         Logo: document.getElementById('race-logo').value, 
         logoBase64: currentLogoBase64,
         logoMimeType: currentLogoMime,
-        logoFileName: currentLogoName
+        logoFileName: currentLogoName,
+        racePhotos: racePhotosBase64 // Added multi-photo support
     };
 
     try {
@@ -287,6 +296,11 @@ async function handleRaceSubmit(e) {
         resetForm();
         loadRaces();
         loadStats();
+        // Clear photo previews
+        document.getElementById('race-photo-previews').innerHTML = '';
+        document.getElementById('race-photo-previews').classList.add('hidden');
+        document.getElementById('race-photo-status').classList.add('hidden');
+        racePhotosBase64 = [];
     } catch (error) {
         console.error('Error saving race:', error);
         alert('Error saving data. Please check console.');
@@ -531,6 +545,9 @@ async function loadGallery() {
                         <span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-lg">${item.Display_Order || 'None'}</span>
                     </td>
                     <td class="py-4 pr-4">
+                        <span class="text-[10px] font-bold text-on-surface-variant bg-surface-container-highest px-2 py-1 rounded-lg border border-outline-variant">${item.Tagged_Race || 'Untagged'}</span>
+                    </td>
+                    <td class="py-4 pr-4">
                         <p class="font-bold text-sm">${item.Filename}</p>
                         <p class="text-[10px] text-on-surface-variant uppercase font-bold">${item.Description || 'No description'}</p>
                     </td>
@@ -595,6 +612,7 @@ function editGallery(id) {
     document.getElementById('edit-gallery-filename').value = item.Filename || '';
     document.getElementById('edit-gallery-description').value = item.Description || '';
     document.getElementById('edit-gallery-order').value = item.Display_Order || '';
+    document.getElementById('edit-gallery-race').value = item.Tagged_Race || '';
     
     const preview = document.getElementById('gallery-preview-container');
     const previewImg = document.getElementById('gallery-preview-img');
@@ -619,7 +637,8 @@ async function handleGallerySubmit(e) {
         id: id,
         fileName: document.getElementById('edit-gallery-filename').value.trim(),
         description: document.getElementById('edit-gallery-description').value.trim(),
-        displayOrder: document.getElementById('edit-gallery-order').value
+        displayOrder: document.getElementById('edit-gallery-order').value,
+        taggedRace: document.getElementById('edit-gallery-race').value
     };
 
     if (!id) {
@@ -728,13 +747,37 @@ async function loadRaceNames() {
         if (data.status === 'success') {
             const names = (data.data || []).map(item => item.RaceName).filter(Boolean);
             const select = document.getElementById('race-name');
-            select.innerHTML = '<option value="">Select a race</option>';
-            names.forEach(name => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                select.appendChild(option);
-            });
+            const dataList = document.getElementById('existing-races-list');
+            const galleryRaceSelect = document.getElementById('edit-gallery-race');
+
+            if (select) {
+                select.innerHTML = '<option value="">Select a race</option>';
+                names.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    select.appendChild(option);
+                });
+            }
+
+            if (dataList) {
+                dataList.innerHTML = '';
+                names.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    dataList.appendChild(option);
+                });
+            }
+
+            if (galleryRaceSelect) {
+                galleryRaceSelect.innerHTML = '<option value="">No Tag</option>';
+                names.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    galleryRaceSelect.appendChild(option);
+                });
+            }
         }
     } catch (error) {}
 }
@@ -753,7 +796,8 @@ async function submitRaceNameForm(e) {
         RaceName: document.getElementById('new-race-name').value.trim(),
         Location: document.getElementById('new-race-location').value.trim(),
         Country: document.getElementById('new-race-country').value.trim(),
-        Intro: document.getElementById('new-race-intro').value.trim()
+        Intro: document.getElementById('new-race-intro').value.trim(),
+        logoBase64: currentEntityLogoBase64 // Added logo for race entity
     };
 
     try {
@@ -835,4 +879,159 @@ function formatDisplayTime(timeStr) {
         return `${timeStr.substring(0, 2)}:${timeStr.substring(2, 4)}:${timeStr.substring(4, 6)}`;
     }
     return timeStr;
+}
+// --- SYSTEM SETTINGS ---
+async function loadSystemSettings() {
+    const container = document.getElementById('settings-container');
+    if (!container || !SCRIPT_URL) return;
+
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getSettings`);
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            const settings = data.data || [];
+            container.innerHTML = '';
+            
+            if (settings.length === 0) {
+                container.innerHTML = '<p class="text-on-surface-variant py-4 text-center">No settings found in database.</p>';
+                return;
+            }
+
+            settings.forEach(setting => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant";
+                div.innerHTML = `
+                    <div>
+                        <p class="font-bold text-sm">${setting.Name}</p>
+                        <p class="text-xs text-on-surface-variant">${setting.Description || 'Control section visibility'}</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" data-setting-id="${setting.id}" ${setting.Value === 'TRUE' ? 'checked' : ''} class="sr-only peer">
+                        <div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                `;
+                container.appendChild(div);
+            });
+        }
+    } catch (error) {
+        console.error("Error loading settings:", error);
+        container.innerHTML = '<p class="text-error font-bold py-4">Failed to load settings.</p>';
+    }
+}
+
+async function saveSystemSettings() {
+    const btn = document.getElementById('save-settings-btn');
+    const status = document.getElementById('settings-status');
+    const checkboxes = document.querySelectorAll('#settings-container input[type="checkbox"]');
+    
+    btn.disabled = true;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Saving...';
+    status.textContent = 'Updating visibility rules...';
+
+    const settingsData = Array.from(checkboxes).map(cb => ({
+        id: cb.getAttribute('data-setting-id'),
+        Value: cb.checked ? 'TRUE' : 'FALSE'
+    }));
+
+    try {
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'updateSettings', data: settingsData })
+        });
+        
+        status.textContent = 'Settings updated successfully!';
+        setTimeout(() => status.textContent = '', 3000);
+    } catch (error) {
+        status.textContent = 'Error saving settings.';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+// --- PHOTO UPLOAD HELPERS ---
+let racePhotosBase64 = [];
+
+function handleRacePhotos(e) {
+    const files = e.target.files;
+    const previewContainer = document.getElementById('race-photo-previews');
+    const status = document.getElementById('race-photo-status');
+    
+    if (!files.length) return;
+    
+    previewContainer.innerHTML = '';
+    previewContainer.classList.remove('hidden');
+    status.classList.remove('hidden');
+    status.textContent = `Processing ${files.length} images...`;
+    racePhotosBase64 = [];
+
+    Array.from(files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800;
+                let width = img.width;
+                let height = img.height;
+                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                const b64 = canvas.toDataURL('image/jpeg', 0.7);
+                racePhotosBase64.push({ b64: b64.split(',')[1], name: file.name, type: file.type });
+
+                // Create preview
+                const div = document.createElement('div');
+                div.className = "relative group aspect-square rounded-lg overflow-hidden border border-outline-variant";
+                div.innerHTML = `<img src="${b64}" class="w-full h-full object-cover">`;
+                previewContainer.appendChild(div);
+
+                if (racePhotosBase64.length === files.length) {
+                    status.textContent = `${files.length} images ready to upload.`;
+                }
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// Race Entity Logo Logic
+let currentEntityLogoBase64 = null;
+function handleRaceEntityLogoUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 150; canvas.height = 150;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 150, 150);
+            ctx.drawImage(img, 0, 0, 150, 150);
+            currentEntityLogoBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            document.getElementById('race-entity-logo-preview-container').classList.remove('hidden');
+            document.getElementById('race-entity-logo-preview').src = currentEntityLogoBase64;
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function clearRaceEntityLogo() {
+    document.getElementById('race-entity-logo-file').value = '';
+    document.getElementById('race-entity-logo-preview-container').classList.add('hidden');
+    currentEntityLogoBase64 = null;
+}
+
+function handleRaceNameInput(value) {
+    // Optional: Filter datalist or highlight existing
 }
