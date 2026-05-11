@@ -4,7 +4,6 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Admin Console | Nirmal Lamsal Portfolio</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
@@ -77,40 +76,6 @@
             justify-content: center;
             backdrop-filter: blur(20px);
         }
-
-        /* Mobile Responsive Sidebar Styles */
-        @media (max-width: 1024px) {
-            aside#sidebar {
-                position: fixed;
-                left: -100%;
-                top: 0;
-                bottom: 0;
-                width: 280px;
-                transition: left 0.3s ease;
-                z-index: 1000; /* Sidebar must be topmost layer */
-                filter: none !important;
-                backdrop-filter: none !important;
-            }
-            aside#sidebar.active {
-                left: 0;
-            }
-            #menu-overlay {
-                display: none;
-                position: fixed;
-                inset: 0;
-                background: rgba(0,0,0,0.5);
-                backdrop-filter: blur(4px);
-                z-index: 999;
-            }
-            #menu-overlay.active {
-                display: block;
-            }
-            .content-blur {
-                filter: blur(5px);
-                pointer-events: none;
-                user-select: none;
-            }
-        }
     </style>
 </head>
 <body class="bg-background text-on-background min-h-screen font-body">
@@ -140,11 +105,8 @@
     </div>
 
     <div id="admin-main" class="flex h-screen overflow-hidden hidden">
-        <!-- Sidebar Overlay (Mobile) -->
-        <div id="menu-overlay" onclick="toggleSidebar()"></div>
-
         <!-- Sidebar Navigation -->
-        <aside id="sidebar" class="w-72 glass-panel border-r border-outline-variant flex flex-col">
+        <aside class="w-72 glass-panel border-r border-outline-variant flex flex-col z-50">
             <div class="p-8">
                 <div class="flex items-center gap-3 mb-10">
                     <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
@@ -162,11 +124,11 @@
                         <span class="font-semibold">Experience Log</span>
                     </button>
                     <button onclick="switchTab('gallery')" id="tab-gallery" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-surface-container-high transition-athletic text-on-surface-variant hover:text-on-background">
-                        <span class="material-symbols-outlined">imagesmode</span>
-                        <span class="font-semibold">Gallery Manager</span>
+                        <span class="material-symbols-outlined">image</span>
+                        <span class="font-semibold">Gallery Library</span>
                     </button>
                     <button onclick="switchTab('settings')" id="tab-settings" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-surface-container-high transition-athletic text-on-surface-variant hover:text-on-background">
-                        <span class="material-symbols-outlined">settings_suggest</span>
+                        <span class="material-symbols-outlined">settings</span>
                         <span class="font-semibold">System Settings</span>
                     </button>
                 </nav>
@@ -189,18 +151,13 @@
         </aside>
 
         <!-- Main Content Area -->
-        <main id="main-wrapper" class="flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top_right,_rgba(79,188,203,0.1),_transparent)] transition-all duration-300">
+        <main class="flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top_right,_rgba(79,188,203,0.1),_transparent)]">
             <!-- Header / Breadcrumbs -->
-            <header class="sticky top-0 z-40 flex items-center justify-between px-6 lg:px-10 py-6 glass-panel border-b border-outline-variant">
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="lg:hidden p-2 hover:bg-primary/10 rounded-lg text-on-surface-variant">
-                        <span class="material-symbols-outlined">menu</span>
-                    </button>
-                    <div class="flex items-center gap-4 text-on-surface-variant text-sm font-semibold">
-                        <span class="hidden sm:inline">Admin</span>
-                        <span class="hidden sm:inline material-symbols-outlined text-xs">chevron_right</span>
-                        <span class="text-primary" id="breadcrumb-active">Race Management</span>
-                    </div>
+            <header class="sticky top-0 z-40 flex items-center justify-between px-10 py-6 glass-panel border-b border-outline-variant">
+                <div class="flex items-center gap-4 text-on-surface-variant text-sm font-semibold">
+                    <span>Admin</span>
+                    <span class="material-symbols-outlined text-xs">chevron_right</span>
+                    <span class="text-primary" id="breadcrumb-active">Race Management</span>
                 </div>
                 <div class="flex items-center gap-6">
                     <button class="flex items-center gap-2 text-on-surface hover:text-primary transition-athletic">
@@ -251,18 +208,11 @@
                                 <p class="text-on-surface-variant font-semibold">Total Official Distance</p>
                                 <span class="material-symbols-outlined text-primary">route</span>
                             </div>
-                            <div class="flex items-baseline gap-2 mb-2">
-                                <h3 class="text-4xl font-display font-bold" id="stat-distance">--</h3>
-                                <span class="text-on-surface-variant font-bold">KM</span>
+                            <h3 class="text-4xl font-display font-bold mb-2"><span id="stat-total-distance">--</span> KM</h3>
+                            <div class="w-full bg-surface-container-highest h-2 rounded-full mt-4 overflow-hidden">
+                                <div id="stat-distance-progress" class="bg-primary h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
                             </div>
-                            <div class="space-y-2">
-                                <div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
-                                    <div id="distance-progress-bar" class="bg-primary h-full transition-all duration-1000" style="width: 0%"></div>
-                                </div>
-                                <p class="text-xs text-on-surface-variant flex justify-between">
-                                    <span id="distance-progress-percent">0% of 100,000 KM Goal</span>
-                                </p>
-                            </div>
+                            <p id="stat-distance-label" class="text-xs text-on-surface-variant mt-2 font-semibold">0% of 100,000 KM Goal</p>
                         </div>
                     </div>
 
@@ -348,24 +298,21 @@
                                             </select>
                                         </div>
                                     </div>
-<div class="space-y-2">
+                                    <div class="space-y-2">
                                         <label class="block text-sm font-semibold text-on-surface-variant">Notes</label>
                                         <textarea id="race-notes" rows="2" class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Race highlights..."></textarea>
                                     </div>
                                     <div class="space-y-2">
-                                        <label class="block text-sm font-semibold text-on-surface-variant">Add Images (Race Photos)</label>
-                                        <div id="race-photo-upload-area"
-                                             class="border-2 border-dashed border-outline-variant rounded-xl p-5 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-athletic"
-                                             onclick="document.getElementById('race-photo-files').click()">
-                                            <span class="material-symbols-outlined text-3xl text-on-surface-variant/50 mb-1">add_photo_alternate</span>
-                                            <p class="text-sm text-on-surface-variant font-semibold">Click to select images</p>
-                                            <p class="text-xs text-on-surface-variant/60 mt-1">Multiple files allowed · JPG, PNG, WEBP</p>
-                                        </div>
-                                        <input type="file" id="race-photo-files" accept="image/*" multiple class="hidden">
-                                        <div id="race-photo-previews" class="grid grid-cols-3 gap-2 mt-3 hidden"></div>
-                                        <p id="race-photo-status" class="text-xs text-on-surface-variant mt-1 hidden"></p>
-                                        <div id="race-photo-progress-container" class="w-full bg-surface-container-highest h-1.5 rounded-full mt-2 hidden overflow-hidden">
-                                            <div id="race-photo-progress-bar" class="bg-primary h-full transition-all duration-300" style="width: 0%"></div>
+                                        <label class="block text-sm font-semibold text-on-surface-variant">Gallery Links (comma separated)</label>
+                                        <textarea id="race-gallery-links" rows="2" class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="URL1, URL2..."></textarea>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-on-surface-variant">Logo</label>
+                                        <input type="file" id="race-logo-file" accept="image/*" class="w-full text-sm">
+                                        <input type="hidden" id="race-logo">
+                                        <div id="logo-preview-container" class="mt-4 hidden flex items-center gap-4">
+                                            <img id="logo-preview" class="h-16 w-16 object-contain rounded-lg border border-outline-variant">
+                                            <button type="button" onclick="clearLogo()" class="text-error text-sm font-bold">Remove</button>
                                         </div>
                                     </div>
                                     <div class="flex gap-4">
@@ -504,7 +451,6 @@
                                         <tr class="border-b border-outline-variant text-on-surface-variant text-xs uppercase tracking-wider font-bold">
                                             <th class="pb-4 pr-4">Preview</th>
                                             <th class="pb-4 pr-4">Order</th>
-                                            <th class="pb-4 pr-4">Race Tag</th>
                                             <th class="pb-4 pr-4">Filename</th>
                                             <th class="pb-4 pr-4">Visibility</th>
                                             <th class="pb-4 text-right">Actions</th>
@@ -517,34 +463,23 @@
                             </div>
                         </div>
                     </div>
-                    </div>
                 </div>
 
-                <!-- 4. System Settings Section -->
+                <!-- 4. System Settings -->
                 <div id="settings-section" class="admin-section space-y-10">
                     <section>
                         <h2 class="text-3xl font-display font-bold text-on-background mb-2">System Settings</h2>
                         <div class="w-12 h-2 bg-primary rounded-full"></div>
-                        <p class="text-on-surface-variant mt-4">Manage visibility of sections on the public home page.</p>
                     </section>
-
-                    <div class="glass-panel p-8 rounded-xl border border-outline-variant max-w-2xl">
-                        <div class="space-y-6" id="settings-container">
-                            <!-- Settings will be loaded here -->
-                            <div class="flex items-center justify-center py-10">
-                                <p class="text-on-surface-variant">Loading system settings...</p>
-                            </div>
+                    <div class="glass-panel p-10 rounded-xl border border-outline-variant text-center">
+                        <div class="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                            <span class="material-symbols-outlined text-4xl">construction</span>
                         </div>
-                        
-                        <div class="mt-10 pt-8 border-t border-outline-variant">
-                            <button onclick="saveSystemSettings()" id="save-settings-btn" class="w-full bg-primary text-white font-bold py-4 rounded-xl btn-lift transition-athletic shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined">save</span>
-                                Apply Visibility Settings
-                            </button>
-                            <p id="settings-status" class="text-xs text-center text-on-surface-variant mt-3"></p>
-                        </div>
+                        <h3 class="text-2xl font-display font-bold mb-4">Under Development</h3>
+                        <p class="text-on-surface-variant max-w-md mx-auto">This section will contain global site configurations, SEO settings, and security parameters. Coming in Phase 2.</p>
                     </div>
                 </div>
+
             </div>
 
             <!-- Footer Note -->
@@ -552,7 +487,7 @@
                 <div class="glass-panel p-6 rounded-xl border border-primary/20 bg-primary/5 flex items-center gap-4">
                     <span class="material-symbols-outlined text-primary">info</span>
                     <p class="text-sm">
-                        <strong>Sync Active:</strong> All changes are pushed to database in real-time. Please ensure stable internet before bulk updates.
+                        <strong>Sync Active:</strong> All changes are pushed to Google Sheets & Firebase in real-time. Please ensure stable internet before bulk updates.
                     </p>
                 </div>
             </footer>
@@ -606,12 +541,6 @@
                             <option value="8">8 (Bottom-Right)</option>
                         </select>
                     </div>
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-on-surface-variant">Tag Race</label>
-                        <select id="edit-gallery-race" class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary">
-                            <option value="">No Tag</option>
-                        </select>
-                    </div>
                 </div>
                 
                 <div class="flex gap-4 pt-4">
@@ -638,10 +567,7 @@
             <form id="race-name-form" class="space-y-6">
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-on-surface-variant">Official Race Name</label>
-                    <input type="text" id="new-race-name" list="existing-races-list" oninput="handleRaceNameInput(this.value)" required class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g. Berlin Marathon">
-                    <datalist id="existing-races-list">
-                        <!-- Populated via JS -->
-                    </datalist>
+                    <input type="text" id="new-race-name" required class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g. Berlin Marathon">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
@@ -656,22 +582,6 @@
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-on-surface-variant">Brief Description</label>
                     <textarea id="new-race-intro" rows="3" required class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Describe the course..."></textarea>
-                </div>
-                <div class="space-y-2">
-                    <label class="block text-sm font-semibold text-on-surface-variant">Race Logo <span class="text-error">*</span></label>
-                    <div id="race-entity-logo-upload-area"
-                         class="border-2 border-dashed border-outline-variant rounded-xl p-4 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-athletic"
-                         onclick="document.getElementById('race-entity-logo-file').click()">
-                        <span class="material-symbols-outlined text-2xl text-on-surface-variant/50 mb-1">add_photo_alternate</span>
-                        <p class="text-sm text-on-surface-variant font-semibold">Click to upload logo</p>
-                        <p class="text-xs text-on-surface-variant/60 mt-1">JPG, PNG, WEBP · Max 5MB</p>
-                    </div>
-                    <input type="file" id="race-entity-logo-file" accept="image/*" class="hidden">
-                    <div id="race-entity-logo-preview-container" class="hidden mt-4 flex items-center gap-4">
-                        <img id="race-entity-logo-preview" class="h-16 w-16 object-contain rounded-lg border border-outline-variant">
-                        <button type="button" onclick="clearRaceEntityLogo()" class="text-error text-sm font-bold">Remove</button>
-                    </div>
-                    <p id="race-entity-logo-status" class="text-xs text-on-surface-variant mt-1 hidden"></p>
                 </div>
                 <div class="flex gap-4 pt-4">
                     <button type="button" onclick="closeRaceNameModal()" class="flex-1 bg-surface-container-highest font-bold py-4 rounded-xl border border-outline-variant transition-athletic">
@@ -730,16 +640,6 @@
             auth.signOut();
         }
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('menu-overlay');
-            const wrapper = document.getElementById('main-wrapper');
-            
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-            wrapper.classList.toggle('content-blur');
-        }
-
         function switchTab(tabName) {
             document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('aside nav button').forEach(b => b.classList.remove('sidebar-item-active'));
@@ -747,27 +647,14 @@
             document.getElementById(tabName + '-section').classList.add('active');
             document.getElementById('tab-' + tabName).classList.add('sidebar-item-active');
             
-            // Load fresh data for specific tabs
-            if (tabName === 'settings' && typeof loadSystemSettings === 'function') {
-                loadSystemSettings();
-            }
-            if (tabName === 'gallery' && typeof loadGallery === 'function') {
-                loadGallery(); // Refresh gallery with fresh data
-            }
-            
             // Update breadcrumb
             const names = {
                 'race': 'Race Management',
                 'blog': 'Experience Log',
-                'gallery': 'Gallery Manager',
+                'gallery': 'Gallery Library',
                 'settings': 'System Settings'
             };
             document.getElementById('breadcrumb-active').textContent = names[tabName];
-
-            // Close sidebar on mobile after selection
-            if (window.innerWidth <= 1024) {
-                toggleSidebar();
-            }
         }
     </script>
     <script src="js/admin.js"></script>
