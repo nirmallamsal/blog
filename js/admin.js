@@ -3,84 +3,14 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx83zXlV1s7xDwoUqzmX
 let allRaces = [];
 let filteredRaces = [];
 let currentPage = 1;
-let galleryCurrentPage = 1;
 const itemsPerPage = 10;
 
 let allBlogs = [];
 let allGallery = [];
 
-// Race names data with logo (fetched from NameofRace sheet)
-let allRaceNamesData = [];
-
 let currentLogoBase64 = null;
 let currentLogoMime = null;
 let currentLogoName = null;
-
-// Race entity logo (for NameofRace sheet)
-let raceEntityLogoBase64 = null;
-let raceEntityLogoName = null;
-
-// Race photo upload queue: array of { file, base64, name }
-let racePhotoQueue = [];
-
-// Compression constants
-const MAX_WIDTH = 1920;
-const COMPRESSION_QUALITY = 0.7;
-const SIZE_THRESHOLD = 1048576; // 1MB in bytes
-
-// Image compression function
-async function compressImageIfNeeded(file, statusElement = null, statusText = '') {
-    // Always process images to ensure they are downscaled/optimized
-    // (Size check removed per request)
-
-    // Show compression status
-    if (statusElement) {
-        statusElement.textContent = 'Compressing...';
-        statusElement.classList.remove('hidden');
-    }
-
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = new Image();
-            img.onload = () => {
-                let width = img.width;
-                let height = img.height;
-
-                // Downscale if wider than 1920px
-                if (width > MAX_WIDTH) {
-                    height = Math.round(height * MAX_WIDTH / width);
-                    width = MAX_WIDTH;
-                }
-
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-
-                // Convert to JPEG at 70% quality
-                const base64 = canvas.toDataURL('image/jpeg', COMPRESSION_QUALITY).split(',')[1];
-
-                // Clear compression status
-                if (statusElement) {
-                    statusElement.textContent = '';
-                    statusElement.classList.add('hidden');
-                }
-
-                resolve({
-                    base64: base64,
-                    originalSize: file.size,
-                    compressedSize: Math.round((base64.length * 3) / 4) // Approximate decoded size
-                });
-            };
-            img.onerror = reject;
-            img.src = event.target.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initial Load
@@ -108,10 +38,6 @@ function setupEventListeners() {
     const fileInput = document.getElementById('race-logo-file');
     if (fileInput) fileInput.addEventListener('change', handleLogoUpload);
 
-    // Race Entity Logo Upload
-    const raceEntityLogoInput = document.getElementById('race-entity-logo-file');
-    if (raceEntityLogoInput) raceEntityLogoInput.addEventListener('change', handleRaceEntityLogoUpload);
-
     // Time Formatter
     const timeInput = document.getElementById('race-time');
     if (timeInput) timeInput.addEventListener('input', formatTimeInput);
@@ -127,10 +53,6 @@ function setupEventListeners() {
     // Gallery Edit/Upload Form
     const galleryEditForm = document.getElementById('gallery-edit-form');
     if (galleryEditForm) galleryEditForm.addEventListener('submit', handleGallerySubmit);
-
-    // Race Photo Multi-Upload
-    const racePhotoInput = document.getElementById('race-photo-files');
-    if (racePhotoInput) racePhotoInput.addEventListener('change', handleRacePhotoSelect);
 }
 
 async function refreshAllData() {
@@ -139,35 +61,80 @@ async function refreshAllData() {
     loadRaces();
     loadBlogs();
     loadGallery();
-    loadSystemSettings();
 }
 
 // --- STATISTICS ---
 async function loadStats() {
     if (!SCRIPT_URL) return;
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=stats&_=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=stats`);
         const data = await response.json();
         
         if (data.status === 'success') {
-            document.getElementById('stat-total-races').textContent = data.stats.totalRaces || '0';
-            document.getElementById('stat-pb').textContent = formatDisplayTime(data.stats.personalBest) || '--:--:--';
-            
-            // Handle Distance
-            const distance = data.stats.totalDistance || 0;
-            const goal = data.stats.distanceGoal || 100000;
-            const percent = Math.min(100, (distance / goal) * 100).toFixed(2);
-            
-            document.getElementById('stat-distance').textContent = distance.toLocaleString();
-            const progressBar = document.getElementById('distance-progress-bar');
-            const progressPercent = document.getElementById('distance-progress-percent');
-            
-            if (progressBar) progressBar.style.width = `${percent}%`;
-            if (progressPercent) progressPercent.textContent = `${percent}% of ${goal.toLocaleString()} KM Goal`;
+            // Server stats can be a fallback or supplemental
+            if (data.stats) {
+                if (data.stats.totalRaces) document.getElementById('stat-total-races').textContent = data.stats.totalRaces;
+                if (data.stats.personalBest) document.getElementById('stat-pb').textContent = formatDisplayTime(data.stats.personalBest);
+            }
         }
     } catch (error) {
         console.error("Error fetching stats:", error);
     }
+    // Always recalculate from local data for consistency
+    updateDashboardStats();
+}
+
+function updateDashboardStats() {
+    if (!allRaces || allRaces.length === 0) return;
+
+    let totalDistance = 0;
+    let bestTime = null;
+    const totalRaces = allRaces.length;
+
+    allRaces.forEach(race => {
+        // Parse distance
+        let distStr = String(race.Distance || '');
+        let distValue = parseFloat(distStr.replace(/[^\d.]/g, ''));
+        if (!isNaN(distValue)) {
+            if (distStr.toLowerCase().includes('mile')) {
+                totalDistance += distValue * 1.60934;
+            } else {
+                totalDistance += distValue;
+            }
+        }
+
+        // Best Time Logic
+        const currentTime = race.Time;
+        if (currentTime && currentTime !== '-' && currentTime !== '--:--:--') {
+            if (!bestTime || compareTimes(currentTime, bestTime) < 0) {
+                bestTime = currentTime;
+            }
+        }
+    });
+
+    // Update DOM
+    const totalRacesEl = document.getElementById('stat-total-races');
+    const pbEl = document.getElementById('stat-pb');
+    const distEl = document.getElementById('stat-total-distance');
+    const progressEl = document.getElementById('stat-distance-progress');
+    const labelEl = document.getElementById('stat-distance-label');
+
+    if (totalRacesEl) totalRacesEl.textContent = totalRaces;
+    if (pbEl) pbEl.textContent = formatDisplayTime(bestTime);
+    if (distEl) distEl.textContent = totalDistance.toLocaleString(undefined, {maximumFractionDigits: 1});
+
+    const goal = 100000;
+    const percentage = Math.min((totalDistance / goal) * 100, 100);
+    if (progressEl) progressEl.style.width = percentage + '%';
+    if (labelEl) labelEl.textContent = `${percentage.toFixed(1)}% of ${goal.toLocaleString()} KM Goal`;
+}
+
+function compareTimes(t1, t2) {
+    const normalize = (t) => {
+        t = String(t).replace(/\D/g, '');
+        return t.padStart(6, '0');
+    };
+    return normalize(t1).localeCompare(normalize(t2));
 }
 
 // --- RACE MANAGEMENT ---
@@ -175,31 +142,18 @@ async function loadRaces() {
     if (!SCRIPT_URL) return;
     const tbody = document.getElementById('admin-race-table-body');
     
-    // Show loading state
-    tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-on-surface-variant">Loading races...</td></tr>';
-    
     try {
-        const response = await fetch(`${SCRIPT_URL}?_=${Date.now()}`);
+        const response = await fetch(SCRIPT_URL);
         const data = await response.json();
         
-        if (data && data.status === 'success') {
+        if (data.status === 'success') {
             allRaces = data.data || [];
-            if (allRaces.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-on-surface-variant">No races recorded yet. Add your first race!</td></tr>';
-            } else {
-                filterRaces(''); // Initial render
-            }
-        } else if (data && data.error) {
-            console.error("Server error:", data.error);
-            tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-on-surface-variant">No races found. Add your first race!</td></tr>';
-        } else {
-            // No data or empty response
-            allRaces = [];
-            tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-on-surface-variant">No races recorded yet. Add your first race!</td></tr>';
+            filterRaces(''); // Initial render
+            updateDashboardStats(); // Update stats whenever races are loaded
         }
     } catch (error) {
         console.error("Error fetching races:", error);
-        tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-error font-medium">Unable to load races. Please try again later..</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-error font-bold">Error loading races.</td></tr>';
     }
 }
 
@@ -237,12 +191,11 @@ function renderRaceTable() {
     paginatedItems.forEach(race => {
         const tr = document.createElement('tr');
         tr.className = "group hover:bg-primary/5 transition-athletic";
-        const raceLogo = getRaceLogo(race.RaceName);
         tr.innerHTML = `
             <td class="py-4 pr-4">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center overflow-hidden">
-                        ${raceLogo ? `<img src="${raceLogo}" class="w-full h-full object-contain">` : `<span class="material-symbols-outlined text-xs text-on-surface-variant">sprint</span>`}
+                        ${race.Logo ? `<img src="${race.Logo}" class="w-full h-full object-contain">` : `<span class="material-symbols-outlined text-xs text-on-surface-variant">sprint</span>`}
                     </div>
                     <div>
                         <p class="font-bold text-sm">${race.RaceName}</p>
@@ -303,185 +256,45 @@ async function handleRaceSubmit(e) {
     const raceId = document.getElementById('race-id').value;
     const action = raceId ? 'update' : 'create';
 
+    const raceData = {
+        id: raceId,
+        RaceName: document.getElementById('race-name').value,
+        Type: document.getElementById('race-type').value,
+        Participation: document.getElementById('race-participation').value,
+        Distance: document.getElementById('race-distance').value + ' ' + document.getElementById('race-distance-unit').value,
+        Time: document.getElementById('race-time').value,
+        Position: document.getElementById('race-position').value,
+        PB: document.getElementById('race-pb').value,
+        Notes: document.getElementById('race-notes').value,
+        Gallery_Links: document.getElementById('race-gallery-links').value,
+        Display_RaceTable: document.getElementById('race-display').value,
+        Logo: document.getElementById('race-logo').value, 
+        logoBase64: currentLogoBase64,
+        logoMimeType: currentLogoMime,
+        logoFileName: currentLogoName
+    };
+
     try {
-        const raceData = {
-            id: raceId,
-            RaceName: document.getElementById('race-name').value,
-            Type: document.getElementById('race-type').value,
-            Participation: document.getElementById('race-participation').value,
-            Distance: document.getElementById('race-distance').value + ' ' + document.getElementById('race-distance-unit').value,
-            Time: document.getElementById('race-time').value,
-            Position: document.getElementById('race-position').value,
-            PB: document.getElementById('race-pb').value,
-            Notes: document.getElementById('race-notes').value,
-            Display_RaceTable: document.getElementById('race-display').value
-        };
-
-        // Update button to show active work
-        submitBtn.textContent = 'Saving Race Data...';
-
-        const response = await fetch(SCRIPT_URL, {
+        await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
+            mode: 'no-cors',
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: action, data: raceData })
         });
         
-        // Google Apps Script might return a redirect or a simple text response
-        const result = await response.json();
-        if (result.status !== 'success') throw new Error(result.message || 'Server returned an error.');
-        
-        // Upload queued race photos to Gallery (tagged to this race)
-        if (racePhotoQueue.length > 0) {
-            await uploadRacePhotosToGallery(raceData.RaceName);
-        }
-
         alert(raceId ? 'Race updated successfully!' : 'Race added successfully!');
         resetForm();
         loadRaces();
         loadStats();
     } catch (error) {
         console.error('Error saving race:', error);
-        alert('Error saving data: ' + error.message);
+        alert('Error saving data. Please check console.');
     } finally {
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
     }
 }
-
-// ── Race Photo Queue ──────────────────────────────────────────────────────
-
-async function handleRacePhotoSelect(e) {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
-    
-    const statusEl = document.getElementById('race-photo-status');
-    const total = files.length;
-    let processed = 0;
-    
-    for (const file of files) {
-        racePhotoQueue.push({ 
-            file: file, 
-            name: file.name.replace(/\.[^.]+$/, '.jpg') 
-        });
-    }
-    
-    renderRacePhotoPreviews();
-    if (statusEl) {
-        statusEl.textContent = `${racePhotoQueue.length} photo(s) queued`;
-        statusEl.classList.remove('hidden');
-    }
-    e.target.value = '';
-}
-
-function renderRacePhotoPreviews() {
-    const grid   = document.getElementById('race-photo-previews');
-    const status = document.getElementById('race-photo-status');
-    if (!grid) return;
-    grid.innerHTML = '';
-    racePhotoQueue.forEach((item, idx) => {
-        const wrap = document.createElement('div');
-        wrap.className = 'relative group';
-        const objectUrl = URL.createObjectURL(item.file);
-        wrap.innerHTML = `
-            <img src="${objectUrl}"
-                 class="w-full aspect-square object-cover rounded-lg border border-outline-variant">
-            <button type="button" onclick="removeRacePhoto(${idx})"
-                    class="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full
-                           flex items-center justify-center opacity-0 group-hover:opacity-100
-                           transition-opacity text-xs">&times;</button>`;
-        grid.appendChild(wrap);
-    });
-    grid.classList.toggle('hidden', racePhotoQueue.length === 0);
-    if (status) {
-        status.textContent = racePhotoQueue.length ? `${racePhotoQueue.length} photo(s) queued` : '';
-        status.classList.toggle('hidden', racePhotoQueue.length === 0);
-    }
-}
-
-function removeRacePhoto(idx) {
-    racePhotoQueue.splice(idx, 1);
-    renderRacePhotoPreviews();
-}
-
-async function uploadRacePhotosToGallery(raceName) {
-    const statusEl = document.getElementById('race-photo-status');
-    const total = racePhotoQueue.length;
-    let done = 0;
-    const progressBarContainer = document.getElementById('race-photo-progress-container');
-    const progressBar = document.getElementById('race-photo-progress-bar');
-    
-    if (progressBarContainer) progressBarContainer.classList.remove('hidden');
-    if (progressBar) progressBar.style.width = '0%';
-
-    for (const item of racePhotoQueue) {
-        done++;
-        const progress = Math.round(((done - 1) / total) * 100);
-        
-        if (statusEl) statusEl.textContent = `Compressing ${done}/${total}: ${item.name}…`;
-        if (progressBar) progressBar.style.width = `${progress}%`;
-
-        try {
-            const compressionResult = await compressImageIfNeeded(item.file, statusEl);
-            const base64Data = compressionResult ? compressionResult.base64 : null;
-            
-            if (!base64Data) throw new Error('Compression failed');
-
-            const uploadProgress = Math.round((done / total) * 100);
-            const statusMsg = `Uploading ${done}/${total}… (${uploadProgress}%)`;
-            if (statusEl) statusEl.textContent = statusMsg + `: ${item.name}`;
-            const submitBtn = document.getElementById('submit-btn');
-            if (submitBtn) submitBtn.textContent = statusMsg;
-            if (progressBar) progressBar.style.width = `${uploadProgress}%`;
-
-            await sendGalleryRequest('galleryUpload', {
-                base64Data:    base64Data,
-                fileName:      item.name,
-                description:   raceName + ' – race moment',
-                displayStatus: 'TRUE',
-                displayOrder:  '',
-                taggedRace:    raceName
-            });
-        } catch (err) {
-            console.error('Photo processing/upload failed:', item.name, err);
-            if (statusEl) { 
-                statusEl.textContent = `⚠️ Failed: ${item.name} — ${err.message}`; 
-                statusEl.style.color='#dc2626'; 
-            }
-            await new Promise(r => setTimeout(r, 2000));
-        }
-    }
-    
-    if (statusEl) { 
-        statusEl.textContent = `✅ ${done}/${total} photos uploaded.`; 
-        statusEl.style.color=''; 
-    }
-    
-    // Briefly show completion before hiding progress bar
-    setTimeout(() => {
-        if (progressBarContainer) progressBarContainer.classList.add('hidden');
-    }, 2000);
-    racePhotoQueue = [];
-    renderRacePhotoPreviews();
-    loadGallery();
-}
-
-/**
- * Sends a request to the Google Apps Script backend specifically for gallery operations.
- * Uses text/plain to avoid CORS preflight issues with application/json.
- */
-async function sendGalleryRequest(action, data) {
-    const response = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ action: action, data: data })
-    });
-    
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    
-    // We expect a JSON response from the backend
-    return await response.json();
-}
-
 
 function editRace(id) {
     const race = allRaces.find(r => r.id === id);
@@ -512,7 +325,16 @@ function editRace(id) {
     document.getElementById('race-position').value = race.Position || '';
     document.getElementById('race-pb').value = race.PB || 'No';
     document.getElementById('race-notes').value = race.Notes || '';
+    document.getElementById('race-gallery-links').value = race.Gallery_Links || '';
     document.getElementById('race-display').value = race.Display_RaceTable || 'None';
+    document.getElementById('race-logo').value = race.Logo || '';
+    
+    clearLogoPreview();
+    
+    if (race.Logo) {
+        document.getElementById('logo-preview-container').classList.remove('hidden');
+        document.getElementById('logo-preview').src = race.Logo;
+    }
     
     document.getElementById('add-race-form').scrollIntoView({ behavior: 'smooth' });
 }
@@ -544,11 +366,7 @@ function resetForm() {
     document.getElementById('form-title').textContent = 'Add New Race';
     document.getElementById('submit-btn').textContent = 'Save Race Data';
     document.getElementById('cancel-btn').classList.add('hidden');
-    // Clear photo queue
-    racePhotoQueue = [];
-    renderRacePhotoPreviews();
-    const statusEl = document.getElementById('race-photo-status');
-    if (statusEl) { statusEl.textContent = ''; statusEl.classList.add('hidden'); }
+    clearLogoPreview();
 }
 
 // --- BLOG MANAGEMENT ---
@@ -611,29 +429,28 @@ async function handleBlogSubmit(e) {
     const blogId = document.getElementById('blog-id').value;
     const action = blogId ? 'updateBlog' : 'createBlog';
 
-    try {
-        const blogData = {
-            id: blogId,
-            Title: document.getElementById('blog-title').value,
-            ShortText: document.getElementById('blog-text').value,
-            URL: document.getElementById('blog-url').value,
-            Display: document.getElementById('blog-display').value
-        };
+    const blogData = {
+        id: blogId,
+        Title: document.getElementById('blog-title').value,
+        ShortText: document.getElementById('blog-text').value,
+        URL: document.getElementById('blog-url').value,
+        Display: document.getElementById('blog-display').value
+    };
 
-        const response = await fetch(SCRIPT_URL, {
+    try {
+        await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
+            mode: 'no-cors',
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: action, data: blogData })
         });
-        const result = await response.json();
-        if (result.status !== 'success') throw new Error(result.message || 'Server returned an error.');
         
         alert(blogId ? 'Blog updated!' : 'Blog added!');
         resetBlogForm();
         loadBlogs();
     } catch (error) {
         console.error('Error saving blog:', error);
-        alert('Error saving blog: ' + error.message);
     } finally {
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
@@ -660,18 +477,17 @@ function editBlog(id) {
 async function deleteBlog(id) {
     if (!confirm('Permanently delete this blog post?')) return;
     try {
-        const response = await fetch(SCRIPT_URL, {
+        await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
+            mode: 'no-cors',
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'deleteBlog', data: { id: id } })
         });
-        const result = await response.json();
-        if (result.status !== 'success') throw new Error(result.message);
         alert('Blog deleted.');
         loadBlogs();
     } catch (error) {
         console.error('Error deleting blog:', error);
-        alert('Delete failed: ' + error.message);
     }
 }
 
@@ -690,96 +506,56 @@ async function loadGallery() {
     const tbody = document.getElementById('gallery-table-body');
     
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=gallery&_=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=gallery`);
         const data = await response.json();
         
         if (data.status === 'success') {
             allGallery = data.data || [];
-            renderGalleryTable();
+            tbody.innerHTML = '';
+            
+            if (allGallery.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-on-surface-variant font-medium">No images in library. <button onclick="openGalleryModal()" class="text-primary underline">Upload one</button></td></tr>';
+                return;
+            }
+
+            allGallery.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "group hover:bg-primary/5 transition-athletic";
+                tr.innerHTML = `
+                    <td class="py-4 pr-4">
+                        <div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center overflow-hidden border border-outline-variant">
+                            <img src="${item.GitHub_URL}" class="w-full h-full object-cover">
+                        </div>
+                    </td>
+                    <td class="py-4 pr-4">
+                        <span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-lg">${item.Display_Order || 'None'}</span>
+                    </td>
+                    <td class="py-4 pr-4">
+                        <p class="font-bold text-sm">${item.Filename}</p>
+                        <p class="text-[10px] text-on-surface-variant uppercase font-bold">${item.Description || 'No description'}</p>
+                    </td>
+                    <td class="py-4 pr-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" ${item.Display_Status === 'TRUE' ? 'checked' : ''} onchange="updateGalleryDisplayStatus('${item.id}', this)" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-0">
+                            <span class="text-[10px] font-bold uppercase ${item.Display_Status === 'TRUE' ? 'text-primary' : 'text-on-surface-variant'}">Visible</span>
+                        </label>
+                    </td>
+                    <td class="py-4 text-right">
+                        <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-athletic">
+                            <button onclick="editGallery('${item.id}')" class="p-2 hover:bg-primary/20 text-primary rounded-lg transition-athletic">
+                                <span class="material-symbols-outlined text-lg">edit</span>
+                            </button>
+                            <button onclick="deleteGallery('${item.id}')" class="p-2 hover:bg-error/20 text-error rounded-lg transition-athletic">
+                                <span class="material-symbols-outlined text-lg">delete</span>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
     } catch (error) {
         console.error("Error fetching gallery:", error);
-    }
-}
-
-function renderGalleryTable() {
-    const tbody = document.getElementById('gallery-table-body');
-    const info = document.getElementById('gallery-pagination-info');
-    const controls = document.getElementById('gallery-pagination-controls');
-    
-    if (!tbody) return;
-    tbody.innerHTML = '';
-
-    if (allGallery.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-on-surface-variant font-medium">No images in library. <button onclick="openGalleryModal()" class="text-primary underline">Upload one</button></td></tr>';
-        if (info) info.textContent = '0 images';
-        return;
-    }
-
-    const start = (galleryCurrentPage - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    const paginatedItems = allGallery.slice(start, end);
-
-    paginatedItems.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.className = "group hover:bg-primary/5 transition-athletic";
-        tr.innerHTML = `
-            <td class="py-4 pr-4">
-                <div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center overflow-hidden border border-outline-variant">
-                    <img src="${item.GitHub_URL}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=No+Image'">
-                </div>
-            </td>
-            <td class="py-4 pr-4">
-                <span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-lg">${item.Display_Order || 'None'}</span>
-            </td>
-            <td class="py-4 pr-4">
-                <span class="text-[10px] font-bold text-on-surface-variant uppercase">${item.Tagged_Race || 'Untagged'}</span>
-            </td>
-            <td class="py-4 pr-4">
-                <p class="font-bold text-sm truncate max-w-[150px]">${item.Filename}</p>
-                <p class="text-[10px] text-on-surface-variant uppercase font-bold truncate max-w-[150px]">${item.Description || 'No description'}</p>
-            </td>
-            <td class="py-4 pr-4">
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" ${item.Display_Status === 'TRUE' ? 'checked' : ''} onchange="updateGalleryDisplayStatus('${item.id}', this)" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-0">
-                    <span class="text-[10px] font-bold uppercase ${item.Display_Status === 'TRUE' ? 'text-primary' : 'text-on-surface-variant'}">Visible</span>
-                </label>
-            </td>
-            <td class="py-4 text-right">
-                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-athletic">
-                    <button onclick="editGallery('${item.id}')" class="p-2 hover:bg-primary/20 text-primary rounded-lg transition-athletic">
-                        <span class="material-symbols-outlined text-lg">edit</span>
-                    </button>
-                    <button onclick="deleteGallery('${item.id}')" class="p-2 hover:bg-error/20 text-error rounded-lg transition-athletic">
-                        <span class="material-symbols-outlined text-lg">delete</span>
-                    </button>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-
-    // Pagination Info
-    if (info) {
-        info.textContent = `Showing ${start + 1}-${Math.min(end, allGallery.length)} of ${allGallery.length} images`;
-    }
-
-    // Pagination Controls
-    if (controls) {
-        controls.innerHTML = '';
-        const totalPages = Math.ceil(allGallery.length / itemsPerPage);
-        
-        const prevBtn = document.createElement('button');
-        prevBtn.className = `p-2 rounded-lg border border-outline-variant hover:bg-primary/10 transition-athletic ${galleryCurrentPage === 1 ? 'opacity-30 cursor-not-allowed' : ''}`;
-        prevBtn.innerHTML = '<span class="material-symbols-outlined">chevron_left</span>';
-        prevBtn.onclick = () => { if (galleryCurrentPage > 1) { galleryCurrentPage--; renderGalleryTable(); } };
-        controls.appendChild(prevBtn);
-
-        const nextBtn = document.createElement('button');
-        nextBtn.className = `p-2 rounded-lg border border-outline-variant hover:bg-primary/10 transition-athletic ${galleryCurrentPage === totalPages ? 'opacity-30 cursor-not-allowed' : ''}`;
-        nextBtn.innerHTML = '<span class="material-symbols-outlined">chevron_right</span>';
-        nextBtn.onclick = () => { if (galleryCurrentPage < totalPages) { galleryCurrentPage++; renderGalleryTable(); } };
-        controls.appendChild(nextBtn);
     }
 }
 
@@ -819,7 +595,6 @@ function editGallery(id) {
     document.getElementById('edit-gallery-filename').value = item.Filename || '';
     document.getElementById('edit-gallery-description').value = item.Description || '';
     document.getElementById('edit-gallery-order').value = item.Display_Order || '';
-    document.getElementById('edit-gallery-race').value = item.Tagged_Race || '';
     
     const preview = document.getElementById('gallery-preview-container');
     const previewImg = document.getElementById('gallery-preview-img');
@@ -844,8 +619,7 @@ async function handleGallerySubmit(e) {
         id: id,
         fileName: document.getElementById('edit-gallery-filename').value.trim(),
         description: document.getElementById('edit-gallery-description').value.trim(),
-        displayOrder: document.getElementById('edit-gallery-order').value,
-        taggedRace: document.getElementById('edit-gallery-race').value
+        displayOrder: document.getElementById('edit-gallery-order').value
     };
 
     if (!id) {
@@ -859,47 +633,12 @@ async function handleGallerySubmit(e) {
         }
         
         const file = fileInput.files[0];
-        
-        // Check if compression is needed (file > 1MB)
-        if (file.size > SIZE_THRESHOLD) {
-            saveBtn.textContent = 'Compressing...';
-            status.textContent = 'Compressing image (large file detected)...';
-            
-            const compressionResult = await compressImageIfNeeded(file, status, 'Gallery');
-            
-            if (compressionResult) {
-                data.base64Data = compressionResult.base64;
-                data.displayStatus = 'TRUE';
-                data.fileName = data.fileName.replace(/\.[^.]+$/, '.jpg'); // Flatten to .jpg
-                
-                saveBtn.textContent = 'Uploading...';
-                status.textContent = 'Uploading...';
-                
-                try {
-                    await sendGalleryRequest(action, data);
-                    status.textContent = 'Success!';
-                    setTimeout(() => {
-                        closeGalleryModal();
-                        loadGallery();
-                    }, 1000);
-                } catch (err) {
-                    console.error('Gallery upload error:', err);
-                    status.textContent = '❌ ' + (err.message || 'Upload failed. Check console.');
-                    status.style.color = '#dc2626';
-                } finally {
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = originalText;
-                }
-                return;
-            }
-        }
-        
-        // No compression needed - use original with standard resize
         const reader = new FileReader();
         reader.onload = function(event) {
             const img = new Image();
             img.onload = async function() {
-                // Image Resizing Logic (max 1920px, JPEG 70%)
+                // Image Resizing Logic
+                const MAX_WIDTH = 1200;
                 let width = img.width;
                 let height = img.height;
                 if (width > MAX_WIDTH) {
@@ -912,7 +651,7 @@ async function handleGallerySubmit(e) {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
                 
-                data.base64Data = canvas.toDataURL('image/jpeg', COMPRESSION_QUALITY).split(',')[1];
+                data.base64Data = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
                 data.displayStatus = 'TRUE';
                 
                 try {
@@ -923,9 +662,7 @@ async function handleGallerySubmit(e) {
                         loadGallery();
                     }, 1000);
                 } catch (err) {
-                    console.error('Gallery upload error:', err);
-                    status.textContent = '❌ ' + (err.message || 'Upload failed. Check console.');
-                    status.style.color = '#dc2626';
+                    status.textContent = 'Upload failed.';
                 } finally {
                     saveBtn.disabled = false;
                     saveBtn.textContent = originalText;
@@ -944,9 +681,7 @@ async function handleGallerySubmit(e) {
                 loadGallery();
             }, 1000);
         } catch (err) {
-            console.error('Gallery update error:', err);
-            status.textContent = '❌ ' + (err.message || 'Update failed. Check console.');
-            status.style.color = '#dc2626';
+            status.textContent = 'Update failed.';
         } finally {
             saveBtn.disabled = false;
             saveBtn.textContent = originalText;
@@ -955,14 +690,13 @@ async function handleGallerySubmit(e) {
 }
 
 async function sendGalleryRequest(action, data) {
-    const response = await fetch(SCRIPT_URL, {
+    return fetch(SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
+        mode: 'no-cors',
+        cache: 'no-cache',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: action, data: data })
     });
-    const result = await response.json();
-    if (result.status !== 'success') throw new Error(result.message || 'Server error');
-    return result;
 }
 
 async function deleteGallery(id) {
@@ -989,53 +723,20 @@ async function updateGalleryDisplayStatus(id, checkbox) {
 async function loadRaceNames() {
     if (!SCRIPT_URL) return;
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=names&_=${Date.now()}`);
+        const response = await fetch(`${SCRIPT_URL}?action=names`);
         const data = await response.json();
         if (data.status === 'success') {
-            allRaceNamesData = data.data || [];
-            
-            const names = allRaceNamesData.map(item => item.RaceName).filter(Boolean);
-            
-            // Populate Race Management dropdown
+            const names = (data.data || []).map(item => item.RaceName).filter(Boolean);
             const select = document.getElementById('race-name');
             select.innerHTML = '<option value="">Select a race</option>';
-            
-            // Populate Gallery Tagging dropdown
-            const gallerySelect = document.getElementById('edit-gallery-race');
-            gallerySelect.innerHTML = '<option value="">No Tag</option>';
-
-            // Populate Datalist for new race entity form
-            const datalist = document.getElementById('existing-races-list');
-            if (datalist) {
-                datalist.innerHTML = '';
-                names.forEach(name => {
-                    const option = document.createElement('option');
-                    option.value = name;
-                    datalist.appendChild(option);
-                });
-            }
-
             names.forEach(name => {
                 const option = document.createElement('option');
                 option.value = name;
                 option.textContent = name;
                 select.appendChild(option);
-
-                const gOption = document.createElement('option');
-                gOption.value = name;
-                gOption.textContent = name;
-                gallerySelect.appendChild(gOption);
             });
         }
-    } catch (error) {
-        console.error("Error loading race names:", error);
-    }
-}
-
-// Get logo for a race by name (from NameofRace sheet data)
-function getRaceLogo(raceName) {
-    const raceData = allRaceNamesData.find(r => r.RaceName === raceName);
-    return raceData ? raceData.Logo : null;
+    } catch (error) {}
 }
 
 function openRaceNameModal() {
@@ -1044,137 +745,36 @@ function openRaceNameModal() {
 
 function closeRaceNameModal() {
     document.getElementById('race-name-modal').classList.add('hidden');
-    clearRaceEntityLogo();
-}
-
-async function handleRaceNameInput(value) {
-    const race = allRaceNamesData.find(r => r.RaceName.toLowerCase() === value.toLowerCase());
-    const submitBtn = document.querySelector('#race-name-form button[type="submit"]');
-    
-    if (race) {
-        // Autofill existing data
-        document.getElementById('new-race-location').value = race.Location || '';
-        document.getElementById('new-race-country').value = race.Country || '';
-        document.getElementById('new-race-intro').value = race.Intro || '';
-        
-        if (race.Logo) {
-            document.getElementById('race-entity-logo-preview-container').classList.remove('hidden');
-            document.getElementById('race-entity-logo-preview').src = race.Logo;
-            const statusEl = document.getElementById('race-entity-logo-status');
-            if (statusEl) {
-                statusEl.textContent = 'Existing logo loaded';
-                statusEl.classList.remove('hidden');
-            }
-        }
-        if (submitBtn) submitBtn.textContent = 'Update Entity';
-    } else {
-        // Clear if no match (optional, or just leave it)
-        if (submitBtn) submitBtn.textContent = 'Create Entity';
-    }
 }
 
 async function submitRaceNameForm(e) {
     e.preventDefault();
-    
-    const raceName = document.getElementById('new-race-name').value.trim();
-    const existingRace = allRaceNamesData.find(r => r.RaceName.toLowerCase() === raceName.toLowerCase());
-
-    // Validate logo (mandatory only for new races)
-    if (!raceEntityLogoBase64 && (!existingRace || !existingRace.Logo)) {
-        alert('Please upload a race logo.');
-        return;
-    }
-
     const data = {
-        RaceName: raceName,
+        RaceName: document.getElementById('new-race-name').value.trim(),
         Location: document.getElementById('new-race-location').value.trim(),
         Country: document.getElementById('new-race-country').value.trim(),
-        Intro: document.getElementById('new-race-intro').value.trim(),
-        logoBase64: raceEntityLogoBase64 ? 'data:image/jpeg;base64,' + raceEntityLogoBase64 : null, 
-        Logo: existingRace ? existingRace.Logo : '' 
+        Intro: document.getElementById('new-race-intro').value.trim()
     };
 
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Processing...';
-
     try {
-        const response = await fetch(SCRIPT_URL, {
+        await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ 
-                action: existingRace ? 'updateRaceName' : 'createRaceName', 
-                data: data 
-            })
+            mode: 'no-cors',
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'createRaceName', data: data })
         });
-        const result = await response.json();
-        if (result.status !== 'success') throw new Error(result.message || 'Server error');
-        
-        alert(existingRace ? 'Race entity updated.' : 'Race entity created.');
+        alert('Race entity created.');
         closeRaceNameModal();
         document.getElementById('race-name-form').reset();
-        clearRaceEntityLogo();
         loadRaceNames();
-    } catch (error) {
-        console.error('Error handling race entity:', error);
-        alert('Action failed: ' + error.message);
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-    }
+    } catch (error) {}
 }
 
-async function handleLogoUpload(e) {
+function handleLogoUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    // If file > 1MB, compress it first (downscale to 1920px, JPEG 70%)
-    if (file.size > SIZE_THRESHOLD) {
-        const statusEl = document.getElementById('race-photo-status');
-        if (statusEl) {
-            statusEl.textContent = 'Compressing logo...';
-            statusEl.classList.remove('hidden');
-        }
-        
-        const compressionResult = await compressImageIfNeeded(file, statusEl);
-        
-        if (compressionResult) {
-            // Now resize compressed image to logo size (150px max)
-            const img = new Image();
-            img.src = 'data:image/jpeg;base64,' + compressionResult.base64;
-            await new Promise(resolve => { img.onload = resolve; });
-            
-            const MAX_SIZE = 150;
-            let width = img.width;
-            let height = img.height;
-            if (width > height) {
-                if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
-            } else {
-                if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
-            }
-            const canvas = document.createElement('canvas');
-            canvas.width = width; canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, width, height);
-            ctx.drawImage(img, 0, 0, width, height);
-            
-            currentLogoBase64 = canvas.toDataURL('image/jpeg', 0.6);
-            currentLogoMime = 'image/jpeg';
-            currentLogoName = file.name.replace(/\.[^.]+$/, '.jpg');
-            
-            if (statusEl) {
-                statusEl.textContent = '';
-                statusEl.classList.add('hidden');
-            }
-
-            document.getElementById('logo-preview-container').classList.remove('hidden');
-            document.getElementById('logo-preview').src = currentLogoBase64;
-            return;
-        }
-    }
-
-    // Standard processing for smaller files
     const reader = new FileReader();
     reader.onload = (event) => {
         const img = new Image();
@@ -1195,7 +795,7 @@ async function handleLogoUpload(e) {
             
             currentLogoBase64 = canvas.toDataURL('image/jpeg', 0.6);
             currentLogoMime = file.type;
-            currentLogoName = file.name.replace(/\.[^.]+$/, '.jpg');
+            currentLogoName = file.name;
 
             document.getElementById('logo-preview-container').classList.remove('hidden');
             document.getElementById('logo-preview').src = currentLogoBase64;
@@ -1210,84 +810,6 @@ function clearLogoPreview() {
     document.getElementById('logo-preview-container').classList.add('hidden');
     document.getElementById('logo-preview').src = '';
     currentLogoBase64 = null;
-}
-
-async function handleRaceEntityLogoUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const statusEl = document.getElementById('race-entity-logo-status');
-
-    // If file > 1MB, compress it first
-    if (file.size > SIZE_THRESHOLD) {
-        if (statusEl) {
-            statusEl.textContent = 'Compressing...';
-            statusEl.classList.remove('hidden');
-        }
-        
-        const compressionResult = await compressImageIfNeeded(file, statusEl);
-        
-        if (compressionResult) {
-            raceEntityLogoBase64 = compressionResult.base64;
-            raceEntityLogoName = file.name.replace(/\.[^.]+$/, '.jpg');
-            
-            if (statusEl) {
-                statusEl.textContent = 'Logo uploaded';
-                statusEl.classList.remove('hidden');
-            }
-
-            document.getElementById('race-entity-logo-preview-container').classList.remove('hidden');
-            document.getElementById('race-entity-logo-preview').src = 'data:image/jpeg;base64,' + raceEntityLogoBase64;
-            return;
-        }
-    }
-
-    // Standard processing for smaller files - resize to 150px
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-            const MAX_SIZE = 150;
-            let width = img.width;
-            let height = img.height;
-            if (width > height) {
-                if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
-            } else {
-                if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
-            }
-            const canvas = document.createElement('canvas');
-            canvas.width = width; canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, width, height);
-            ctx.drawImage(img, 0, 0, width, height);
-            
-            raceEntityLogoBase64 = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
-            raceEntityLogoName = file.name.replace(/\.[^.]+$/, '.jpg');
-
-            if (statusEl) {
-                statusEl.textContent = 'Logo uploaded';
-                statusEl.classList.remove('hidden');
-            }
-
-            document.getElementById('race-entity-logo-preview-container').classList.remove('hidden');
-            document.getElementById('race-entity-logo-preview').src = 'data:image/jpeg;base64,' + raceEntityLogoBase64;
-        };
-        img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-}
-
-function clearRaceEntityLogo() {
-    document.getElementById('race-entity-logo-file').value = '';
-    document.getElementById('race-entity-logo-preview-container').classList.add('hidden');
-    document.getElementById('race-entity-logo-preview').src = '';
-    const statusEl = document.getElementById('race-entity-logo-status');
-    if (statusEl) {
-        statusEl.textContent = '';
-        statusEl.classList.add('hidden');
-    }
-    raceEntityLogoBase64 = null;
-    raceEntityLogoName = null;
 }
 
 function formatTimeInput(e) {
@@ -1314,117 +836,3 @@ function formatDisplayTime(timeStr) {
     }
     return timeStr;
 }
-
-// --- SYSTEM SETTINGS ---
-
-async function loadSystemSettings() {
-    const container = document.getElementById('settings-container');
-    if (!container) return;
-
-    // Define the display names locally as source of truth
-    const sectionNames = {
-        'hero': 'Hero Section (Top)',
-        'about': 'About / Introduction',
-        'marathons': 'Recent Marathons List',
-        'gallery': 'Photo Gallery Grid',
-        'blog': 'Experience Log / Blog',
-        'sponsorship': 'Sponsorship Quest Section',
-        'contact': 'Contact Form',
-        'training': 'Training Update (Strava)'
-    };
-
-    // Pre-populate with loading state or default UI
-    container.innerHTML = Object.entries(sectionNames).map(([id, name]) => `
-        <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-outline-variant hover:border-primary/30 transition-athletic opacity-50" id="setting-row-${id}">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center text-on-surface-variant">
-                    <span class="material-symbols-outlined">${id === 'training' ? 'monitoring' : 'visibility'}</span>
-                </div>
-                <div>
-                    <p class="font-bold text-on-background">${name}</p>
-                    <p class="text-xs text-on-surface-variant">Syncing...</p>
-                </div>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" value="${id}" class="sr-only peer setting-toggle" disabled>
-                <div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-            </label>
-        </div>
-    `).join('');
-
-    try {
-        const response = await fetch(`${SCRIPT_URL}?action=getSettings`);
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            const settings = result.data;
-            
-            Object.entries(sectionNames).forEach(([id, name]) => {
-                const isVisible = settings[id] === 'Show';
-                const row = document.getElementById(`setting-row-${id}`);
-                if (row) {
-                    row.classList.remove('opacity-50');
-                    const statusText = row.querySelector('.text-xs');
-                    if (statusText) statusText.textContent = isVisible ? 'Currently visible' : 'Hidden from public';
-                    
-                    const toggle = row.querySelector('.setting-toggle');
-                    if (toggle) {
-                        toggle.disabled = false;
-                        toggle.checked = isVisible;
-                    }
-                }
-            });
-        }
-    } catch (error) {
-        console.error('Error loading settings:', error);
-        // Fallback: Enable toggles but show error message
-        const status = document.getElementById('settings-status');
-        if (status) status.textContent = 'Note: Could not sync with database. Showing local defaults.';
-        document.querySelectorAll('.setting-toggle').forEach(t => {
-            t.disabled = false;
-            t.parentElement.parentElement.classList.remove('opacity-50');
-        });
-    }
-}
-
-
-async function saveSystemSettings() {
-    const btn = document.getElementById('save-settings-btn');
-    const status = document.getElementById('settings-status');
-    const toggles = document.querySelectorAll('.setting-toggle');
-    
-    const settingsUpdate = {};
-    toggles.forEach(t => {
-        settingsUpdate[t.value] = t.checked ? 'Show' : 'Hide';
-    });
-
-    btn.disabled = true;
-    btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Saving Settings...';
-    status.textContent = '';
-
-    try {
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({
-                action: 'updateSettings',
-                data: settingsUpdate
-            })
-        });
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            status.textContent = 'Settings applied successfully! Refresh the home page to see changes.';
-            status.className = 'text-xs text-center text-green-600 mt-3';
-            loadSystemSettings(); // Refresh UI
-        } else {
-            throw new Error(result.message);
-        }
-    } catch (error) {
-        status.textContent = 'Error: ' + error.message;
-        status.className = 'text-xs text-center text-error mt-3';
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<span class="material-symbols-outlined">save</span> Apply Visibility Settings';
-    }
-}
-
