@@ -4,6 +4,7 @@ let allRaces = [];
 let filteredRaces = [];
 let currentPage = 1;
 let galleryCurrentPage = 1;
+let blogCurrentPage = 1;
 const itemsPerPage = 10;
 
 let allBlogs = [];
@@ -644,47 +645,89 @@ async function loadBlogs() {
     const tbody = document.getElementById('admin-blog-table-body');
 
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=blogs`);
+        const response = await fetch(`${SCRIPT_URL}?action=blogs&_=${Date.now()}`);
         const data = await response.json();
 
         if (data.status === 'success') {
             allBlogs = data.data || [];
-            tbody.innerHTML = '';
-
-            if (allBlogs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="py-10 text-center text-on-surface-variant">No experiences logged yet.</td></tr>';
-                return;
-            }
-
-            allBlogs.forEach(blog => {
-                const tr = document.createElement('tr');
-                tr.className = "group hover:bg-primary/5 transition-athletic";
-                tr.innerHTML = `
-                    <td class="py-4 pr-4">
-                        <p class="font-bold text-sm">${blog.Title || 'Untitled'}</p>
-                        <p class="text-xs text-on-surface-variant">${(blog.ShortText || '').substring(0, 50)}...</p>
-                    </td>
-                    <td class="py-4 pr-4">
-                        <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase ${blog.Display === 'Yes' ? 'bg-primary/10 text-primary' : 'bg-surface-container-highest text-on-surface-variant'}">
-                            ${blog.Display === 'Yes' ? 'Visible' : 'Hidden'}
-                        </span>
-                    </td>
-                    <td class="py-4 text-right">
-                        <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-athletic">
-                            <button onclick="editBlog('${blog.id}')" class="p-2 hover:bg-primary/20 text-primary rounded-lg transition-athletic">
-                                <span class="material-symbols-outlined text-lg">edit</span>
-                            </button>
-                            <button onclick="deleteBlog('${blog.id}')" class="p-2 hover:bg-error/20 text-error rounded-lg transition-athletic">
-                                <span class="material-symbols-outlined text-lg">delete</span>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+            blogCurrentPage = 1;
+            renderBlogTable();
         }
     } catch (error) {
         console.error("Error fetching blogs:", error);
+        tbody.innerHTML = '<tr><td colspan="3" class="py-10 text-center text-error font-medium">Unable to load experiences.</td></tr>';
+    }
+}
+
+function renderBlogTable() {
+    const tbody = document.getElementById('admin-blog-table-body');
+    const info = document.getElementById('blog-pagination-info');
+    const controls = document.getElementById('blog-pagination-controls');
+
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (allBlogs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="py-10 text-center text-on-surface-variant">No experiences logged yet.</td></tr>';
+        if (info) info.textContent = 'Showing 0 of 0 posts';
+        if (controls) controls.innerHTML = '';
+        return;
+    }
+
+    const start = (blogCurrentPage - 1) * itemsPerPage;
+    const end = Math.min(start + itemsPerPage, allBlogs.length);
+    const paginatedItems = allBlogs.slice(start, end);
+
+    paginatedItems.forEach(blog => {
+        const tr = document.createElement('tr');
+        tr.className = "group hover:bg-primary/5 transition-athletic";
+        tr.innerHTML = `
+            <td class="py-4 pr-4">
+                <p class="font-bold text-sm">${blog.Title || 'Untitled'}</p>
+                <p class="text-xs text-on-surface-variant">${(blog.ShortText || '').substring(0, 50)}...</p>
+            </td>
+            <td class="py-4 pr-4">
+                <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase ${blog.Display === 'Yes' ? 'bg-primary/10 text-primary' : 'bg-surface-container-highest text-on-surface-variant'}">
+                    ${blog.Display === 'Yes' ? 'Visible' : 'Hidden'}
+                </span>
+            </td>
+            <td class="py-4 text-right">
+                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-athletic">
+                    <button onclick="editBlog('${blog.id}')" class="p-2 hover:bg-primary/20 text-primary rounded-lg transition-athletic">
+                        <span class="material-symbols-outlined text-lg">edit</span>
+                    </button>
+                    <button onclick="deleteBlog('${blog.id}')" class="p-2 hover:bg-error/20 text-error rounded-lg transition-athletic">
+                        <span class="material-symbols-outlined text-lg">delete</span>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Update info
+    if (info) {
+        info.textContent = `Showing ${start + 1}-${end} of ${allBlogs.length} posts`;
+    }
+
+    // Render controls
+    if (controls) {
+        controls.innerHTML = '';
+        const totalPages = Math.ceil(allBlogs.length / itemsPerPage);
+
+        if (totalPages > 1) {
+            const prev = document.createElement('button');
+            prev.className = `p-2 rounded-lg border border-outline-variant hover:bg-surface-container-high transition-athletic ${blogCurrentPage === 1 ? 'opacity-30 cursor-not-allowed' : ''}`;
+            prev.innerHTML = '<span class="material-symbols-outlined text-sm">chevron_left</span>';
+            prev.onclick = () => { if (blogCurrentPage > 1) { blogCurrentPage--; renderBlogTable(); } };
+            controls.appendChild(prev);
+
+            const next = document.createElement('button');
+            next.className = `p-2 rounded-lg border border-outline-variant hover:bg-surface-container-high transition-athletic ${blogCurrentPage === totalPages ? 'opacity-30 cursor-not-allowed' : ''}`;
+            next.innerHTML = '<span class="material-symbols-outlined text-sm">chevron_right</span>';
+            next.onclick = () => { if (blogCurrentPage < totalPages) { blogCurrentPage++; renderBlogTable(); } };
+            controls.appendChild(next);
+        }
     }
 }
 
