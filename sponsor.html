@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+    <title>Join the Quest | Sponsorship — Nirmal Lamsal</title>
+    <meta name="description" content="Partner with Nirmal Lamsal on his quest for the Abbott World Marathon Majors Six Star Medal. Sponsorship tiers and inquiry form.">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary":               "#006973",
+                        "on-primary":            "#ffffff",
+                        "primary-container":     "#4fbccb",
+                        "on-primary-container":  "#004850",
+                        "surface":               "#f6fafb",
+                        "on-surface":            "#171c1d",
+                        "on-surface-variant":    "#3d494b",
+                        "outline":               "#6d797b",
+                        "outline-variant":       "#bdc9cb",
+                        "background":            "#f6fafb",
+                        "surface-container-low": "#f0f4f5",
+                        "surface-container":     "#eaefef",
+                    },
+                    fontFamily: {
+                        body:    ["Inter",   "sans-serif"],
+                        heading: ["Outfit",  "sans-serif"],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #f6fafb; color: #171c1d; }
+
+        /* Glass utilities */
+        .glass-header {
+            background: rgba(246,250,251,0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0,105,115,0.08);
+        }
+        .glass-card {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: 0 4px 24px rgba(0,105,115,0.06);
+        }
+        .hero-gradient {
+            background:
+                radial-gradient(circle at top right,   rgba(79,188,203,0.14) 0, transparent 50%),
+                radial-gradient(circle at bottom left, rgba(0,105,115,0.08)  0, transparent 50%);
+        }
+
+        /* Stars */
+        .star-pending { color: #bdc9cb; opacity: 0.45; }
+        .star-active  { color: #006973; filter: drop-shadow(0 0 6px rgba(0,105,115,0.35)); }
+
+        /* Form inputs */
+        .form-input {
+            background: rgba(255,255,255,0.85);
+            border: 1px solid rgba(109,121,123,0.18);
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            border-radius: 0.875rem;
+            font-size: 1rem;
+            color: #171c1d;
+        }
+        .form-input:focus {
+            border-color: #006973;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(0,105,115,0.12);
+            outline: none;
+        }
+
+        /* Mobile nav drawer */
+        #mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 0;
+            background: rgba(246,250,251,0.97);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0,105,115,0.08);
+        }
+        #mobile-menu.open { display: flex; }
+        #mobile-menu a {
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            color: #3d494b;
+            border-bottom: 1px solid rgba(189,201,203,0.2);
+            transition: background 0.15s;
+        }
+        #mobile-menu a:active { background: rgba(0,105,115,0.06); }
+
+        /* Tier cards scroll on mobile */
+        .tiers-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+        .tiers-scroll::-webkit-scrollbar { display: none; }
+        .tier-card {
+            scroll-snap-align: start;
+            flex: 0 0 280px;
+        }
+        /* On md+ show grid */
+        @media (min-width: 768px) {
+            .tiers-scroll {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                overflow: visible;
+            }
+            .tier-card { flex: unset; }
+        }
+        @media (min-width: 1024px) {
+            .tiers-scroll { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(14px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.5s ease both; }
+        /* Race Card Styles for Upcoming Section */
+        .race-list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+        .race-card {
+            background: #fff;
+            border: 1px solid rgba(0, 105, 115, 0.12);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px 0 rgba(0, 105, 115, 0.04);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            cursor: pointer;
+        }
+        .race-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 105, 115, 0.08);
+            border-color: rgba(0, 105, 115, 0.08);
+        }
+        .race-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 0.75rem;
+            background: #fff;
+            border: 1px solid rgba(0, 105, 115, 0.12);
+            flex-shrink: 0;
+        }
+        .race-info h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.125rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+            color: #171c1d;
+        }
+        .race-meta {
+            font-size: 0.875rem;
+            color: #3d494b;
+        }
+        .year-chip {
+            display: inline-block;
+            background: rgba(79, 188, 203, 0.1);
+            color: #006973;
+            border: 1px solid rgba(0, 105, 115, 0.12);
+            border-radius: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- ── Header ──────────────────────────────────────────── -->
+    <header class="glass-header fixed top-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16 sm:h-20">
+            <a class="text-xl sm:text-2xl font-heading font-extrabold text-primary tracking-tight" href="index.html">
+                Nirmal Lamsal
+            </a>
+
+            <!-- Desktop nav -->
+            <nav class="hidden md:flex items-center gap-8">
+                <a class="text-sm font-heading font-bold uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors" href="index.html">Home</a>
+                <a class="text-sm font-heading font-bold uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors" href="races.html">History</a>
+                <a class="text-sm font-heading font-bold uppercase tracking-wider text-primary" href="sponsor.html">Sponsorship</a>
+                <a class="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-heading font-bold hover:bg-on-primary-container transition-all shadow-lg shadow-primary/25"
+                   href="#join-quest">Join the Quest</a>
+            </nav>
+
+            <!-- Mobile hamburger -->
+            <button id="hamburger-btn"
+                    class="md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-primary/10 transition-colors"
+                    aria-label="Toggle menu" aria-expanded="false">
+                <span class="w-6 h-0.5 bg-on-surface rounded transition-all duration-200" id="hb-1"></span>
+                <span class="w-6 h-0.5 bg-on-surface rounded transition-all duration-200" id="hb-2"></span>
+                <span class="w-4 h-0.5 bg-on-surface rounded transition-all duration-200" id="hb-3"></span>
+            </button>
+        </div>
+
+        <!-- Mobile nav drawer -->
+        <nav id="mobile-menu" aria-label="Mobile navigation">
+            <a href="index.html">Home</a>
+            <a href="races.html">History</a>
+            <a href="sponsor.html" class="text-primary">Sponsorship</a>
+            <a href="#join-quest"
+               class="!text-primary !border-b-0 m-3 mt-2 text-center bg-primary/10 rounded-xl">
+                Join the Quest →
+            </a>
+        </nav>
+    </header>
+
+    <main class="flex-grow pt-16 sm:pt-20">
+
+        <!-- ── Hero ──────────────────────────────────────────── -->
+        <section class="hero-gradient pt-14 sm:pt-24 pb-14 sm:pb-24 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center fade-up">
+                <span class="inline-block bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[11px] font-heading font-bold uppercase tracking-[0.2em] mb-6 border border-primary/10">
+                    Partner Opportunity
+                </span>
+                <h1 class="text-4xl sm:text-6xl md:text-8xl font-heading font-extrabold text-on-surface leading-[1.08] mb-5 tracking-tighter">
+                    6 Cities.<br class="sm:hidden"/> 3 Continents.<br/>
+                    <span class="text-primary-container">1 Flag.</span>
+                </h1>
+                <p class="max-w-2xl mx-auto text-base sm:text-lg text-on-surface-variant leading-relaxed mb-12 font-body px-2">
+                    Help bring the Abbott World Marathon Majors "Six Star Medal" home to Nepal.
+                    Join a legacy of Himalayan grit on the world's greatest stages.
+                </p>
+
+                <!-- Six Star Tracker ─ scrollable on mobile -->
+                <div class="glass-card max-w-5xl mx-auto p-6 sm:p-10 rounded-2xl sm:rounded-[2.5rem]">
+                    <h3 class="text-sm sm:text-base font-heading font-bold mb-6 text-on-surface tracking-tight">
+                        Abbott World Marathon Majors Progress
+                    </h3>
+                    <!-- Horizontal scroll on mobile, grid on md+ -->
+                    <div class="flex gap-4 overflow-x-auto -mx-2 px-2 pb-1 sm:grid sm:grid-cols-6 sm:overflow-visible sm:gap-0"
+                         style="scrollbar-width:none">
+                        <div class="flex flex-col items-center shrink-0 sm:shrink min-w-[70px]">
+                            <span class="material-symbols-outlined text-4xl sm:text-5xl mb-2 sm:mb-4 star-pending">star</span>
+                            <span class="text-sm font-heading font-bold text-on-surface">London</span>
+                            <span class="text-[9px] font-heading font-bold uppercase tracking-[0.18em] text-outline-variant mt-1">Pending</span>
+                        </div>
+                        <div class="flex flex-col items-center shrink-0 sm:shrink min-w-[70px]">
+                            <span class="material-symbols-outlined text-4xl sm:text-5xl mb-2 sm:mb-4 star-pending">star</span>
+                            <span class="text-sm font-heading font-bold text-on-surface">Tokyo</span>
+                            <span class="text-[9px] font-heading font-bold uppercase tracking-[0.18em] text-outline-variant mt-1">Pending</span>
+                        </div>
+                        <div class="flex flex-col items-center shrink-0 sm:shrink min-w-[70px]">
+                            <span class="material-symbols-outlined text-4xl sm:text-5xl mb-2 sm:mb-4 star-pending">star</span>
+                            <span class="text-sm font-heading font-bold text-on-surface">Boston</span>
+                            <span class="text-[9px] font-heading font-bold uppercase tracking-[0.18em] text-outline-variant mt-1">Pending</span>
+                        </div>
+                        <div class="flex flex-col items-center shrink-0 sm:shrink min-w-[70px]">
+                            <span class="material-symbols-outlined text-4xl sm:text-5xl mb-2 sm:mb-4 star-pending">star</span>
+                            <span class="text-sm font-heading font-bold text-on-surface">Berlin</span>
+                            <span class="text-[9px] font-heading font-bold uppercase tracking-[0.18em] text-outline-variant mt-1">Pending</span>
+                        </div>
+                        <div class="flex flex-col items-center shrink-0 sm:shrink min-w-[70px]">
+                            <span class="material-symbols-outlined text-4xl sm:text-5xl mb-2 sm:mb-4 star-pending">star</span>
+                            <span class="text-sm font-heading font-bold text-on-surface">Chicago</span>
+                            <span class="text-[9px] font-heading font-bold uppercase tracking-[0.18em] text-outline-variant mt-1">Pending</span>
+                        </div>
+                        <div class="flex flex-col items-center shrink-0 sm:shrink min-w-[70px]">
+                            <span class="material-symbols-outlined text-4xl sm:text-5xl mb-2 sm:mb-4 star-pending">star</span>
+                            <span class="text-sm font-heading font-bold text-on-surface">NYC</span>
+                            <span class="text-[9px] font-heading font-bold uppercase tracking-[0.18em] text-outline-variant mt-1">Pending</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile CTA below tracker -->
+                <a href="#join-quest"
+                   class="inline-flex items-center gap-2 mt-8 bg-primary text-white px-8 py-3.5 rounded-full font-heading font-bold text-sm shadow-lg shadow-primary/25 active:scale-95 transition-all">
+                    Partner with Me
+                    <span class="material-symbols-outlined text-base">arrow_downward</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- ── Upcoming Races ─────────────────────────────── -->
+        <section class="py-16 sm:py-28 bg-surface-container-low" id="upcoming-races">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-10 sm:mb-16">
+                    <h2 class="text-2xl sm:text-4xl md:text-5xl font-heading font-bold text-on-surface mb-4 tracking-tight">
+                        Upcoming Races
+                    </h2>
+                    <p class="text-on-surface-variant text-sm sm:text-lg leading-relaxed font-body max-w-2xl mx-auto">
+                        Preparation is where the race is truly won. Here is a look at the upcoming challenges I am currently training for.
+                    </p>
+                    <div class="w-16 h-1.5 bg-primary-container mx-auto rounded-full mt-6"></div>
+                </div>
+
+                <div class="race-list-grid" id="upcoming-races-container">
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-on-surface-variant animate-pulse">Loading upcoming race data...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Partnership Tiers ─────────────────────────────── -->
+        <section class="py-16 sm:py-28 bg-white/40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-10 sm:mb-16">
+                    <h2 class="text-2xl sm:text-4xl md:text-5xl font-heading font-bold text-on-surface mb-4 tracking-tight">
+                        Partnership Opportunities
+                    </h2>
+                    <div class="w-16 h-1.5 bg-primary-container mx-auto rounded-full"></div>
+                </div>
+
+                <!-- Scrollable on mobile, grid on md+ -->
+                <div class="tiers-scroll -mx-4 px-4 sm:mx-0 sm:px-0">
+
+                    <!-- Tier 1: The Pacer -->
+                    <div class="tier-card glass-card p-7 rounded-2xl flex flex-col group hover:-translate-y-1 transition-transform duration-300">
+                        <div class="w-12 h-12 bg-primary/8 rounded-xl flex items-center justify-center mb-5">
+                            <span class="material-symbols-outlined text-primary text-2xl">sprint</span>
+                        </div>
+                        <h4 class="text-xl font-heading font-bold mb-3 text-on-surface">The Pacer</h4>
+                        <p class="text-on-surface-variant text-sm leading-relaxed mb-6 grow font-body">
+                            Fuel a single week of high-altitude training, specialized nutrition, and recovery sessions.
+                        </p>
+                        <a href="#join-quest"
+                           class="text-center py-3.5 rounded-xl border-2 border-primary text-primary font-heading font-bold text-sm hover:bg-primary hover:text-white active:scale-95 transition-all">
+                            Support Now
+                        </a>
+                    </div>
+
+                    <!-- Tier 2: The Gear Master (Featured) -->
+                    <div class="tier-card glass-card p-7 rounded-2xl flex flex-col relative border-primary/30 bg-primary/[0.03] shadow-xl shadow-primary/10 hover:-translate-y-1 transition-transform duration-300">
+                        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-heading font-bold uppercase tracking-[0.18em] py-1 px-5 rounded-full shadow-md whitespace-nowrap">
+                            Recommended
+                        </div>
+                        <div class="w-12 h-12 bg-primary-container rounded-xl flex items-center justify-center mb-5">
+                            <span class="material-symbols-outlined text-white text-2xl">footprint</span>
+                        </div>
+                        <h4 class="text-xl font-heading font-bold mb-3 text-on-surface">The Gear Master</h4>
+                        <p class="text-on-surface-variant text-sm leading-relaxed mb-6 grow font-body">
+                            Provide elite-level carbon-plated shoes and race-day performance gear needed for a Major finish.
+                        </p>
+                        <a href="#join-quest"
+                           class="text-center py-3.5 rounded-xl bg-primary text-white font-heading font-bold text-sm hover:bg-on-primary-container active:scale-95 transition-all shadow-lg shadow-primary/20">
+                            Select Tier
+                        </a>
+                    </div>
+
+                    <!-- Tier 3: The Voyager -->
+                    <div class="tier-card glass-card p-7 rounded-2xl flex flex-col group hover:-translate-y-1 transition-transform duration-300">
+                        <div class="w-12 h-12 bg-primary/8 rounded-xl flex items-center justify-center mb-5">
+                            <span class="material-symbols-outlined text-primary text-2xl">public</span>
+                        </div>
+                        <h4 class="text-xl font-heading font-bold mb-3 text-on-surface">The Voyager</h4>
+                        <p class="text-on-surface-variant text-sm leading-relaxed mb-6 grow font-body">
+                            Cover flights, logistics, and race entries for Tokyo, London, or Boston starting lines.
+                        </p>
+                        <a href="#join-quest"
+                           class="text-center py-3.5 rounded-xl border-2 border-primary text-primary font-heading font-bold text-sm hover:bg-primary hover:text-white active:scale-95 transition-all">
+                            Support Now
+                        </a>
+                    </div>
+
+                    <!-- Tier 4: The Star Partner -->
+                    <div class="tier-card glass-card p-7 rounded-2xl flex flex-col group hover:-translate-y-1 transition-transform duration-300 border-amber-200/40 bg-amber-50/30">
+                        <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-5">
+                            <span class="material-symbols-outlined text-amber-600 text-2xl">military_tech</span>
+                        </div>
+                        <h4 class="text-xl font-heading font-bold mb-3 text-on-surface">The Star Partner</h4>
+                        <p class="text-on-surface-variant text-sm leading-relaxed mb-6 grow font-body">
+                            A long-term legacy partnership placing your brand on the global stage as the primary sponsor.
+                        </p>
+                        <a href="#join-quest"
+                           class="text-center py-3.5 rounded-xl bg-amber-500 text-white font-heading font-bold text-sm hover:bg-amber-600 active:scale-95 transition-all shadow-lg shadow-amber-500/25">
+                            Become Partner
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- Swipe hint on mobile only -->
+                <p class="md:hidden text-center text-[11px] text-outline mt-4 flex items-center justify-center gap-1">
+                    <span class="material-symbols-outlined text-sm">swipe</span>
+                    Swipe to see all tiers
+                </p>
+            </div>
+        </section>
+
+        <!-- ── Inquiry Form & Direct Support ───────────────────────────────────── -->
+        <section class="py-16 sm:py-28 bg-surface-container-low" id="join-quest">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    <!-- Left: Inquiry Form -->
+                    <div id="form-container" class="glass-card p-6 sm:p-10 md:p-16 rounded-2xl sm:rounded-[2.5rem] shadow-2xl relative overflow-hidden h-full">
+                        <div class="relative z-10">
+                        <div class="mb-8 sm:mb-12 text-center sm:text-left">
+                            <h2 class="text-2xl sm:text-4xl font-heading font-extrabold text-on-surface mb-3 tracking-tight">
+                                Start a Conversation
+                            </h2>
+                            <p class="text-on-surface-variant text-sm sm:text-lg leading-relaxed font-body">
+                                Fill out the form below and my team will reach out with a formal proposal tailored to your goals.
+                            </p>
+                        </div>
+
+                        <form id="quest-contact-form" class="space-y-5 sm:space-y-6">
+                            <!-- Row 1 -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+                                <div class="space-y-2">
+                                    <label class="block text-xs font-heading font-bold text-on-surface-variant uppercase tracking-widest">
+                                        Full Name
+                                    </label>
+                                    <input id="q-name" class="form-input" placeholder="John Doe" required type="text"
+                                           autocomplete="name" inputmode="text"/>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="block text-xs font-heading font-bold text-on-surface-variant uppercase tracking-widest">
+                                        Organization
+                                    </label>
+                                    <input id="q-company" class="form-input" placeholder="Company Name" type="text"
+                                           autocomplete="organization"/>
+                                </div>
+                            </div>
+                            <!-- Row 2 -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+                                <div class="space-y-2">
+                                    <label class="block text-xs font-heading font-bold text-on-surface-variant uppercase tracking-widest">
+                                        Business Email
+                                    </label>
+                                    <input id="q-email" class="form-input" placeholder="john@company.com" required type="email"
+                                           autocomplete="email" inputmode="email"/>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="block text-xs font-heading font-bold text-on-surface-variant uppercase tracking-widest">
+                                        Interested Tier
+                                    </label>
+                                    <div class="relative">
+                                        <select id="q-interest" class="form-input appearance-none pr-10">
+                                            <option value="pacer">The Pacer</option>
+                                            <option value="gear">The Gear Master</option>
+                                            <option value="voyager">The Global Voyager</option>
+                                            <option value="star">The Star Partner</option>
+                                            <option value="other">Other / Customized</option>
+                                        </select>
+                                        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-xl">expand_more</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Message -->
+                            <div class="space-y-2">
+                                <label class="block text-xs font-heading font-bold text-on-surface-variant uppercase tracking-widest">
+                                    Message
+                                </label>
+                                <textarea id="q-message" class="form-input min-h-[130px] sm:min-h-[160px] resize-y"
+                                          placeholder="How would you like to partner?"></textarea>
+                            </div>
+                            <!-- Submit -->
+                            <button id="q-submit-btn"
+                                    class="w-full bg-primary text-white py-4 sm:py-5 rounded-xl sm:rounded-2xl font-heading font-bold text-base sm:text-lg hover:bg-on-primary-container active:scale-95 transition-all shadow-xl shadow-primary/25 flex items-center justify-center gap-2 group"
+                                    type="submit" style="min-height:52px">
+                                Send Proposal Request
+                                <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">send</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right: Support the Athlete QR Code & Payment Options -->
+                <div class="glass-card p-6 sm:p-10 rounded-2xl sm:rounded-[2.5rem] shadow-2xl relative overflow-hidden h-full flex flex-col items-center border-primary/20 bg-primary/[0.02]">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-primary text-3xl">volunteer_activism</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-heading font-extrabold text-on-surface mb-2 tracking-tight text-center">
+                        Support the Athlete
+                    </h2>
+                    <p class="text-on-surface-variant text-sm leading-relaxed font-body mb-8 max-w-sm mx-auto text-center">
+                        Direct contributions help fund training and logistics for the Six Star Medal quest.
+                    </p>
+                    
+                    <!-- Primary Display Area -->
+                    <div id="support-display-area" class="w-full flex flex-col items-center mb-10 hidden">
+                        <div class="bg-white p-5 rounded-2xl shadow-xl border border-outline-variant relative group transition-all duration-300 hover:border-primary/30">
+                            <!-- Platform Logo Badge -->
+                            <div id="support-active-platform-logo-container" class="absolute -top-3 -right-3 w-10 h-10 rounded-full bg-white flex items-center justify-center border border-outline-variant shadow-md z-10">
+                                <img id="support-active-platform-logo" src="" alt="" class="w-7 h-7 rounded-full object-cover">
+                            </div>
+                            
+                            <div class="w-48 h-48 sm:w-56 sm:h-56 relative overflow-hidden rounded-xl bg-surface-container-low flex items-center justify-center">
+                                <img id="support-active-qr" src="" alt="Scan to Support" class="w-full h-full object-contain">
+                                <div id="support-qr-overlay" class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hidden">
+                                    <span class="material-symbols-outlined text-white text-3xl mb-2">open_in_new</span>
+                                    <span class="text-white text-xs font-bold uppercase tracking-widest">Go to Payout</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 text-center">
+                            <h4 id="support-active-name" class="text-xl font-heading font-bold text-on-surface"></h4>
+                            <div class="flex items-center justify-center gap-2 mt-1">
+                                <p id="support-active-account" class="text-primary font-mono font-bold text-base tracking-wider"></p>
+                                <button onclick="copyToClipboard(document.getElementById('support-active-account').textContent)" class="p-1.5 text-on-surface-variant hover:text-primary bg-surface-container-low hover:bg-primary/10 rounded-md transition-colors" title="Copy">
+                                    <span class="material-symbols-outlined text-sm">content_copy</span>
+                                </button>
+                            </div>
+                            <p id="support-active-platform" class="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] mt-2 opacity-60"></p>
+                        </div>
+                        
+                        <!-- Payout Button -->
+                        <div id="payout-button-container" class="mt-6 hidden w-full max-w-[200px]">
+                            <a id="payout-link" href="#" target="_blank" class="flex items-center justify-center gap-2 w-full py-3 bg-primary text-white rounded-xl font-heading font-bold text-sm shadow-lg shadow-primary/20 hover:bg-on-primary-container transition-all">
+                                <span class="material-symbols-outlined text-base">payments</span>
+                                Pay via <span id="payout-platform-name"></span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Payment Options Grid -->
+                    <div class="w-full">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+                            <span class="text-[10px] font-bold text-outline-variant uppercase tracking-[0.3em] whitespace-nowrap">Payment Options</span>
+                            <div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+                        </div>
+                        <div id="payment-logos-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                            <!-- Dynamic Logos -->
+                        </div>
+                    </div>
+
+                    <div id="support-loading-container" class="w-full text-center py-12">
+                        <div class="inline-block w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                        <p class="text-sm text-on-surface-variant mt-4">Loading options...</p>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ── Footer ──────────────────────────────────────────── -->
+    <footer class="bg-surface-container py-12 sm:py-16 border-t border-outline-variant/20 text-center px-4">
+        <h3 class="text-xl sm:text-2xl font-heading font-extrabold text-primary mb-1 tracking-tight">Nirmal Lamsal</h3>
+        <p class="text-on-surface-variant text-sm font-body">Pushing limits across continents.</p>
+        <div class="flex flex-wrap justify-center gap-x-8 gap-y-4 mt-6">
+            <a href="index.html" class="text-sm font-heading font-bold text-on-surface-variant hover:text-primary transition-colors">Home</a>
+            <a href="races.html" class="text-sm font-heading font-bold text-on-surface-variant hover:text-primary transition-colors">History</a>
+            <a href="#join-quest" class="text-sm font-heading font-bold text-primary">Partner</a>
+            <span class="hidden sm:inline text-outline-variant">|</span>
+            <a href="https://www.linkedin.com/in/nirmallamsal/" target="_blank" class="text-sm font-heading font-bold text-on-surface-variant hover:text-primary transition-colors">LinkedIn</a>
+            <a href="https://www.strava.com/athletes/nirmallamsal" target="_blank" class="text-sm font-heading font-bold text-on-surface-variant hover:text-primary transition-colors">Strava</a>
+            <a href="https://www.instagram.com/lamsalnirmal/" target="_blank" class="text-sm font-heading font-bold text-on-surface-variant hover:text-primary transition-colors">Instagram</a>
+            <a href="https://www.facebook.com/nirmal.lamsal.87548" target="_blank" class="text-sm font-heading font-bold text-on-surface-variant hover:text-primary transition-colors">Facebook</a>
+        </div>
+        <p class="text-[10px] text-outline font-heading font-bold uppercase tracking-[0.2em] mt-8">
+            © 2026 Nirmal Lamsal. All rights reserved.
+        </p>
+    </footer>
+
+    <script src="js/sponsor.js"></script>
+    <script>
+        // Hamburger toggle
+        const btn  = document.getElementById('hamburger-btn');
+        const menu = document.getElementById('mobile-menu');
+        const hb1  = document.getElementById('hb-1');
+        const hb2  = document.getElementById('hb-2');
+        const hb3  = document.getElementById('hb-3');
+
+        btn.addEventListener('click', () => {
+            const open = menu.classList.toggle('open');
+            btn.setAttribute('aria-expanded', open);
+            // Animate hamburger → X
+            if (open) {
+                hb1.style.transform = 'translateY(8px) rotate(45deg)';
+                hb2.style.opacity   = '0';
+                hb3.style.transform = 'translateY(-8px) rotate(-45deg)';
+                hb3.style.width     = '24px';
+            } else {
+                hb1.style.transform = '';
+                hb2.style.opacity   = '';
+                hb3.style.transform = '';
+                hb3.style.width     = '';
+            }
+        });
+
+        // Close menu on nav link click
+        menu.querySelectorAll('a').forEach(a => {
+            a.addEventListener('click', () => {
+                menu.classList.remove('open');
+                btn.setAttribute('aria-expanded', 'false');
+                hb1.style.transform = hb2.style.opacity = hb3.style.transform = '';
+                hb3.style.width = '';
+            });
+        });
+    </script>
+</body>
+</html>
