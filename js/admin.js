@@ -150,24 +150,83 @@ async function loadStats() {
         const data = await response.json();
         
         if (data.status === 'success') {
-            document.getElementById('stat-total-races').textContent = data.stats.totalRaces || '0';
-            document.getElementById('stat-pb').textContent = formatDisplayTime(data.stats.personalBest) || '--:--:--';
-            
-            // Handle Distance
-            const distance = data.stats.totalDistance || 0;
-            const goal = data.stats.distanceGoal || 100000;
-            const percent = Math.min(100, (distance / goal) * 100).toFixed(2);
-            
-            document.getElementById('stat-distance').textContent = distance.toLocaleString();
-            const progressBar = document.getElementById('distance-progress-bar');
-            const progressPercent = document.getElementById('distance-progress-percent');
-            
-            if (progressBar) progressBar.style.width = `${percent}%`;
-            if (progressPercent) progressPercent.textContent = `${percent}% of ${goal.toLocaleString()} KM Goal`;
+            if (data.stats) {
+                if (data.stats.totalRaces !== undefined) document.getElementById('stat-total-races').textContent = data.stats.totalRaces || '0';
+                if (data.stats.personalBest) document.getElementById('stat-pb').textContent = formatDisplayTime(data.stats.personalBest) || '--:--:--';
+                
+                if (data.stats.totalDistance !== undefined) {
+                    // Handle Distance
+                    const distance = data.stats.totalDistance || 0;
+                    const goal = data.stats.distanceGoal || 100000;
+                    const percent = Math.min(100, (distance / goal) * 100).toFixed(2);
+                    
+                    document.getElementById('stat-distance').textContent = distance.toLocaleString();
+                    const progressBar = document.getElementById('distance-progress-bar');
+                    const progressPercent = document.getElementById('distance-progress-percent');
+                    
+                    if (progressBar) progressBar.style.width = `${percent}%`;
+                    if (progressPercent) progressPercent.textContent = `${percent}% of ${goal.toLocaleString()} KM Goal`;
+                }
+            }
         }
     } catch (error) {
         console.error("Error fetching stats:", error);
     }
+    // Always recalculate from local data for consistency
+    updateDashboardStats();
+}
+
+function updateDashboardStats() {
+    let totalDistance = 0;
+    let bestTime = null;
+    const totalRaces = allRaces ? allRaces.length : 0;
+
+    if (allRaces) {
+        allRaces.forEach(race => {
+            // Parse distance
+            let distStr = String(race.Distance || '');
+            let distValue = parseFloat(distStr.replace(/[^\d.]/g, ''));
+            if (!isNaN(distValue)) {
+                if (distStr.toLowerCase().includes('mile')) {
+                    totalDistance += distValue * 1.60934;
+                } else {
+                    totalDistance += distValue;
+                }
+            }
+
+            // Best Time Logic
+            const currentTime = race.Time;
+            if (currentTime && currentTime !== '-' && currentTime !== '--:--:--') {
+                if (!bestTime || compareTimes(currentTime, bestTime) < 0) {
+                    bestTime = currentTime;
+                }
+            }
+        });
+    }
+
+    // Update DOM
+    const totalRacesEl = document.getElementById('stat-total-races');
+    const pbEl = document.getElementById('stat-pb');
+    const distEl = document.getElementById('stat-distance');
+    const progressEl = document.getElementById('distance-progress-bar');
+    const labelEl = document.getElementById('distance-progress-percent');
+
+    if (totalRacesEl) totalRacesEl.textContent = totalRaces;
+    if (pbEl) pbEl.textContent = formatDisplayTime(bestTime);
+    if (distEl) distEl.textContent = totalDistance.toLocaleString(undefined, {maximumFractionDigits: 1});
+
+    const goal = 100000;
+    const percentage = Math.min((totalDistance / goal) * 100, 100);
+    if (progressEl) progressEl.style.width = percentage + '%';
+    if (labelEl) labelEl.textContent = `${percentage.toFixed(1)}% of ${goal.toLocaleString()} KM Goal`;
+}
+
+function compareTimes(t1, t2) {
+    const normalize = (t) => {
+        t = String(t).replace(/\D/g, '');
+        return t.padStart(6, '0');
+    };
+    return normalize(t1).localeCompare(normalize(t2));
 }
 
 // --- RACE MANAGEMENT ---
@@ -189,6 +248,7 @@ async function loadRaces() {
             } else {
                 filterRaces(''); // Initial render
             }
+            updateDashboardStats(); // Update stats whenever races are loaded
         } else if (data && data.error) {
             console.error("Server error:", data.error);
             tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-on-surface-variant">No races found. Add your first race!</td></tr>';
