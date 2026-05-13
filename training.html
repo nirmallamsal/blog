@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Dashboard | Nirmal Lamsal</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .training-page { padding: 8rem 0 4rem; }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        .training-table-container {
+            background: white;
+            border-radius: 2rem;
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-soft);
+            overflow-x: auto;
+        }
+        .training-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .training-table th {
+            padding: 1rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .training-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0, 105, 115, 0.05);
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+        .training-table tr:hover { background: var(--primary-light); }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            align-items: center;
+        }
+        .page-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .page-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-info { font-weight: 700; font-size: 0.9rem; }
+
+        .type-chip {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: #eee;
+        }
+        .type-run { background: #E7F6F7; color: #006973; }
+        .type-ride { background: #FFF4E5; color: #FC4C02; }
+    </style>
+</head>
+<body>
+    <header class="header glass">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">NIRMAL <span class="highlight">LAMSAL</span></a>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="index.html#marathons">Races</a>
+                    <a href="training.html" class="active">Training</a>
+                    <a href="sponsor.html">Sponsor</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="training-page">
+        <div class="container">
+            <h1 class="section-title">Training Dashboard</h1>
+            <p class="section-desc">Real-time data synced from Strava, documenting every kilometer of the journey.</p>
+
+            <div id="training-summary" class="dashboard-grid">
+                <!-- Summary cards will be injected here -->
+                <div class="loading-mini">Calculating stats...</div>
+            </div>
+
+            <div class="training-table-container">
+                <h3 class="activity-name" style="margin-bottom: 1.5rem;">Recent Training History</h3>
+                <table class="training-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Activity</th>
+                            <th>Type</th>
+                            <th>Distance</th>
+                            <th>Duration</th>
+                            <th>Elevation</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activities-body">
+                        <!-- Rows injected here -->
+                    </tbody>
+                </table>
+
+                <div class="pagination">
+                    <button id="prev-page" class="page-btn" disabled>Previous</button>
+                    <span class="page-info">Page <span id="current-page">1</span></span>
+                    <button id="next-page" class="page-btn">Next</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2024 Nirmal Lamsal. All training data verified by Strava API.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/training.js"></script>
+</body>
+</html>
