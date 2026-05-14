@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Dashboard | Nirmal Lamsal</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .training-page { padding: 8rem 0 4rem; }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        .training-table-container {
+            background: white;
+            border-radius: 2rem;
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-soft);
+            overflow-x: auto;
+        }
+        .training-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .training-table th {
+            padding: 1rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .training-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0, 105, 115, 0.05);
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+        .training-table tr:hover { background: var(--primary-light); }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            align-items: center;
+        }
+        .page-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .page-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-info { font-weight: 700; font-size: 0.9rem; }
+
+        .type-chip {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: #eee;
+        }
+        .type-run { background: #E7F6F7; color: #006973; }
+        .type-ride { background: #FFF4E5; color: #FC4C02; }
+    </style>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#006973",
+                        "primary-container": "#4fbccb",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#004850",
+                        "surface": "#f6fafb",
+                        "on-surface": "#171c1d",
+                        "on-surface-variant": "#3d494b",
+                        "outline-variant": "#bdc9cb",
+                        "background": "#f6fafb",
+                        "on-background": "#171c1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 105, 115, 0.08);
+        }
+        /* Prevent original style.css from hiding the menu between 768px and 1024px */
+        @media (min-width: 768px) {
+            .nav-links { display: flex !important; }
+        }
+        @media (max-width: 767px) {
+            .nav-links { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-background">
+    <header class="header glass-header fixed top-0 left-0 w-full z-[1000] px-4 sm:px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="index.html" class="logo text-2xl font-display font-extrabold tracking-tight text-on-surface uppercase hover:text-primary transition-colors">
+                NIRMAL <span class="text-primary">LAMSAL</span>
+            </a>
+            <!-- Desktop Nav -->
+            <nav class="nav-links hidden md:flex items-center gap-1 bg-white/60 backdrop-blur-md border border-outline-variant/40 rounded-full px-5 py-2 shadow-sm">
+                <a href="index.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Home</a>
+                <a href="races.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Races</a>
+                <a href="training.html" class="px-4 py-1.5 text-sm font-display font-bold nav-active rounded-full transition-colors">Training</a>
+                <a href="sponsor.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Sponsor</a>
+            </nav>
+            <!-- Mobile Hamburger -->
+            <button id="mobile-menu-btn" class="menu-toggle md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-primary/10 transition-colors" aria-label="Toggle menu">
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-4 h-0.5 bg-on-surface rounded-full"></span>
+            </button>
+        </div>
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden mt-3 border-t border-outline-variant/30 pt-3 pb-2 flex flex-col gap-1">
+            <a href="index.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Home</a>
+            <a href="races.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Races</a>
+            <a href="training.html" class="px-4 py-2.5 text-sm font-display font-bold nav-active rounded-xl transition-colors">Training</a>
+            <a href="sponsor.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Sponsor</a>
+        </div>
+    </header>
+    <script>
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+    </script>
+
+    <main class="training-page">
+        <div class="container">
+            <h1 class="section-title">Training Dashboard</h1>
+            <p class="section-desc">Real-time data synced from Strava, documenting every kilometer of the journey.</p>
+
+            <div id="training-summary" class="dashboard-grid">
+                <!-- Summary cards will be injected here -->
+                <div class="loading-mini">Calculating stats...</div>
+            </div>
+
+            <div class="training-table-container">
+                <h3 class="activity-name" style="margin-bottom: 1.5rem;">Recent Training History</h3>
+                <table class="training-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Activity</th>
+                            <th>Type</th>
+                            <th>Distance</th>
+                            <th>Duration</th>
+                            <th>Elevation</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activities-body">
+                        <!-- Rows injected here -->
+                    </tbody>
+                </table>
+
+                <div class="pagination">
+                    <button id="prev-page" class="page-btn" disabled>Previous</button>
+                    <span class="page-info">Page <span id="current-page">1</span></span>
+                    <button id="next-page" class="page-btn">Next</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2024 Nirmal Lamsal. All training data verified by Strava API.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/training.js"></script>
+</body>
+</html>

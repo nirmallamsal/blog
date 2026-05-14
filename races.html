@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>All Race History | Nirmal Lamsal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#006973",
+                        "primary-container": "#4fbccb",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#004850",
+                        "surface": "#f6fafb",
+                        "on-surface": "#171c1d",
+                        "on-surface-variant": "#3d494b",
+                        "outline-variant": "#bdc9cb",
+                        "background": "#f6fafb",
+                        "on-background": "#171c1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "outfit": ["Outfit", "sans-serif"],
+                        "inter": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f6fafb;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(187, 57%, 55%, 0.1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(187, 57%, 85%, 0.05) 0, transparent 50%);
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 105, 115, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(0, 105, 115, 0.05);
+        }
+        .text-accent { color: #4FBCCB; }
+        .bg-accent { background-color: #4FBCCB; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pt-20">
+    <header class="header glass-header fixed top-0 left-0 w-full z-[1000] px-4 sm:px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="index.html" class="logo text-2xl font-display font-extrabold tracking-tight text-on-surface uppercase hover:text-primary transition-colors">
+                NIRMAL <span class="text-primary">LAMSAL</span>
+            </a>
+            <!-- Desktop Nav -->
+            <nav class="nav-links hidden md:flex items-center gap-1 bg-white/60 backdrop-blur-md border border-outline-variant/40 rounded-full px-5 py-2 shadow-sm">
+                <a href="index.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Home</a>
+                <a href="races.html" class="px-3 py-1 text-sm font-display font-bold text-white bg-primary rounded-full shadow-sm hover:bg-primary/90 transition-colors">Races</a>
+                <a href="training.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Training</a>
+                <a href="sponsor.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Sponsor</a>
+            </nav>
+            <!-- Mobile Hamburger -->
+            <button id="mobile-menu-btn" class="menu-toggle md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-primary/10 transition-colors" aria-label="Toggle menu">
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-4 h-0.5 bg-on-surface rounded-full"></span>
+            </button>
+        </div>
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden mt-3 border-t border-outline-variant/30 pt-3 pb-2 flex flex-col gap-1">
+            <a href="index.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Home</a>
+            <a href="races.html" class="px-4 py-2.5 text-sm font-display font-bold text-white bg-primary rounded-xl transition-colors">Races</a>
+            <a href="training.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Training</a>
+            <a href="sponsor.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Sponsor</a>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-[1280px] mx-auto px-6 py-12 w-full">
+        <div class="mb-12">
+            <h1 class="font-outfit text-4xl md:text-5xl font-extrabold text-on-surface mb-4">Complete Race History</h1>
+            <p class="text-on-surface-variant text-lg max-w-2xl">A comprehensive record of every mile conquered, from local trail runs to international marathons.</p>
+        </div>
+
+        <div class="glass-card rounded-2xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-outline-variant/30">
+                            <th class="px-8 py-6 font-outfit text-sm font-bold uppercase tracking-wider text-on-surface-variant">Race Name</th>
+                            <th class="px-8 py-6 font-outfit text-sm font-bold uppercase tracking-wider text-on-surface-variant">Type</th>
+                            <th class="px-8 py-6 font-outfit text-sm font-bold uppercase tracking-wider text-on-surface-variant">Participation</th>
+                            <th class="px-8 py-6 font-outfit text-sm font-bold uppercase tracking-wider text-on-surface-variant">Distance</th>
+                            <th class="px-8 py-6 font-outfit text-sm font-bold uppercase tracking-wider text-on-surface-variant">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/20" id="races-body">
+                        <tr>
+                            <td class="px-8 py-12 text-center text-on-surface-variant italic" colspan="5">
+                                <div class="flex flex-col items-center gap-4">
+                                    <div class="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                                    Synchronizing race data...
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0F172A] text-white mt-20">
+        <div class="max-w-[1280px] mx-auto px-6 py-12">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div>
+                    <h3 class="font-outfit text-2xl font-bold mb-2">Nirmal Lamsal</h3>
+                    <p class="text-slate-400">Running towards new horizons, one step at a time.</p>
+                </div>
+                <div class="flex gap-4">
+                    <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.linkedin.com/in/nirmallamsal/" target="_blank" title="LinkedIn">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/linkedin.svg" class="w-5 h-5 invert opacity-70" alt="LinkedIn">
+                    </a>
+                    <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.strava.com/athletes/nirmallamsal" target="_blank" title="Strava">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/strava.svg" class="w-5 h-5 invert opacity-70" alt="Strava">
+                    </a>
+                    <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.instagram.com/lamsalnirmal/" target="_blank" title="Instagram">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg" class="w-5 h-5 invert opacity-70" alt="Instagram">
+                    </a>
+                    <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.facebook.com/nirmal.lamsal.87548" target="_blank" title="Facebook">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/facebook.svg" class="w-5 h-5 invert opacity-70" alt="Facebook">
+                    </a>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-slate-800 text-center text-sm text-slate-500">
+                © 2024 Nirmal Lamsal. All Rights Reserved. Track your journey.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx83zXlV1s7xDwoUqzmXKg-xaipfahc8vaDH3BimCYX0C9ICHL3yemKDzb8Q2NKvp7P/exec';
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tbody = document.getElementById('races-body');
+            
+            function formatTime(t) {
+                if (!t || t === '-' || t === '--:--:--') return '-';
+                
+                let normalized = t;
+                let cleanStr = String(t).replace(/^[-]+/, '');
+                
+                if (cleanStr.includes('T') && cleanStr.includes('Z')) {
+                    try {
+                        const d = new Date(cleanStr);
+                        normalized = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+                    } catch(e) {}
+                } else if (/^\d{6}$/.test(cleanStr)) {
+                    normalized = `${cleanStr.substring(0, 2)}:${cleanStr.substring(2, 4)}:${cleanStr.substring(4, 6)}`;
+                }
+                
+                if (/^\d{2}:\d{2}:\d{2}$/.test(normalized)) {
+                    const parts = normalized.split(':');
+                    return `${parts[0]} hrs ${parts[1]} Mins`;
+                }
+                
+                return normalized;
+            }
+
+            function slugify(value) {
+                return String(value || '')
+                    .trim()
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-');
+            }
+
+            try {
+                const res = await fetch(`${SCRIPT_URL}?_=${Date.now()}`);
+                const data = await res.json();
+                
+                if (data.status === 'success' && data.data.length) {
+                    // Filter out upcoming races
+                    const completedRaces = data.data.filter(r => 
+                        String(r.RaceStatus || '').toLowerCase() !== 'upcoming' && 
+                        !String(r.Display_RaceTable || '').startsWith('Upcoming_')
+                    );
+
+                    // Sort by participation year latest first
+                    const sortedData = completedRaces.sort((a, b) => {
+                        const valA = parseInt(a.Participation) || 0;
+                        const valB = parseInt(b.Participation) || 0;
+                        return valB - valA;
+                    });
+
+                    tbody.innerHTML = sortedData.map(r => `
+                        <tr class="hover:bg-primary/5 transition-colors group cursor-pointer" onclick="window.location.href='race.html?race=${slugify(r.RaceName)}'">
+                            <td class="px-8 py-6">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-2 h-2 rounded-full bg-accent group-hover:scale-125 transition-transform"></span>
+                                    <span class="font-outfit font-semibold text-on-surface group-hover:text-primary transition-colors">${r.RaceName || '-'}</span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-6 text-on-surface-variant font-medium">${r.Type || '-'}</td>
+                            <td class="px-8 py-6">
+                                <span class="px-3 py-1 rounded-full bg-slate-100 text-xs font-bold text-on-surface-variant">
+                                    ${r.Participation || '-'}
+                                </span>
+                            </td>
+                            <td class="px-8 py-6 text-on-surface font-semibold text-primary-container">${r.Distance || '-'}</td>
+                            <td class="px-8 py-6 font-mono text-on-surface-variant">${formatTime(r.Time)}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="px-8 py-12 text-center text-on-surface-variant">No race data found.</td></tr>';
+                }
+            } catch(e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="5" class="px-8 py-12 text-center text-red-500">Failed to load race data. Please try again later.</td></tr>';
+            }
+        });
+    </script>
+</body>
+</html>
