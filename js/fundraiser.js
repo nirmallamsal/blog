@@ -281,7 +281,7 @@ async function fetchDynamicContributors() {
     if (!SCRIPT_URL) return;
     try {
         // Fetch settings first to get target, race name, and description
-        const settingsResponse = await fetch(`${SCRIPT_URL}?action=getSettings&_=${Date.now()}`);
+        const settingsResponse = await fetch(`${SCRIPT_URL}?action=getCampaignSettings&_=${Date.now()}`);
         const settingsResult = await settingsResponse.json();
         if (settingsResult.status === 'success' && settingsResult.data) {
             if (settingsResult.data.fundraiser_target) {
