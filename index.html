@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nirmal Lamsal | Professional & Marathoner</title>
+    <meta name="description" content="Portfolio of Nirmal Lamsal showcasing his professional journey and marathon achievements.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#006973",
+                        "primary-container": "#4fbccb",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#004850",
+                        "surface": "#f6fafb",
+                        "on-surface": "#171c1d",
+                        "on-surface-variant": "#3d494b",
+                        "outline-variant": "#bdc9cb",
+                        "background": "#f6fafb",
+                        "on-background": "#171c1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 105, 115, 0.08);
+        }
+        /* Prevent original style.css from hiding the menu between 768px and 1024px */
+        @media (min-width: 768px) {
+            .nav-links { display: flex !important; }
+        }
+        @media (max-width: 767px) {
+            .nav-links { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-background">
+    <div id="preloader" class="preloader">
+        <div class="runner-track">
+            <div class="runner">🏃‍♂️</div>
+        </div>
+        <div class="preloader-text">Preparing the race experience...</div>
+    </div>
+    <header class="header glass-header fixed top-0 left-0 w-full z-[1000] px-4 sm:px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="index.html" class="logo text-2xl font-display font-extrabold tracking-tight text-on-surface uppercase hover:text-primary transition-colors">
+                NIRMAL <span class="text-primary">LAMSAL</span>
+            </a>
+            <!-- Desktop Nav -->
+            <nav class="nav-links hidden md:flex items-center gap-1 bg-white/60 backdrop-blur-md border border-outline-variant/40 rounded-full px-5 py-2 shadow-sm">
+                <a href="#hero" class="px-3 py-1 text-xs font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Home</a>
+                <a href="#about" class="px-3 py-1 text-xs font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">About</a>
+                <a href="#marathons" class="px-3 py-1 text-xs font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Marathons</a>
+                <a href="#training-marathons" class="px-3 py-1 text-xs font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Training</a>
+                <a href="#gallery" class="px-3 py-1 text-xs font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Gallery</a>
+                <a href="#blog" class="px-3 py-1 text-xs font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Blog</a>
+                <a href="#sponsorship" class="px-3 py-1 text-xs font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Sponsorship</a>
+                <a href="fundraisers.html" class="px-3 py-1 text-xs font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Fundraiser</a>
+                <a href="#contact" class="px-3 py-1 text-xs font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Contact</a>
+            </nav>
+            <!-- Mobile Hamburger -->
+            <button id="mobile-menu-btn" class="menu-toggle md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-primary/10 transition-colors" aria-label="Toggle menu">
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-4 h-0.5 bg-on-surface rounded-full"></span>
+            </button>
+        </div>
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden mt-3 border-t border-outline-variant/30 pt-3 pb-2 flex flex-col gap-1">
+            <a href="#hero" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Home</a>
+            <a href="#about" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">About</a>
+            <a href="#marathons" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Marathons</a>
+            <a href="#training-marathons" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Training</a>
+            <a href="#gallery" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Gallery</a>
+            <a href="#blog" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Blog</a>
+            <a href="#sponsorship" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Sponsorship</a>
+            <a href="fundraisers.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Fundraiser</a>
+            <a href="#contact" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Contact</a>
+        </div>
+    </header>
+    <script>
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+    </script>
+
+    <main>
+        <!-- 2. Hero -->
+        <section id="hero" class="hero">
+            <div class="container hero-wrapper" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2rem; width: 100%;">
+                <div class="hero-content" style="max-width: 800px;">
+                    <h1 class="hero-title">Nirmal Lamsal &mdash;<br><span class="highlight">Run. Ride. Repeat.</span></h1>
+                    <p class="hero-subtitle">Passionate runner & cyclist. 10,000+ KM logged, Pangong Frozen Lake Marathon finisher, and preparing for world majors. Join the journey and power the next chapter.</p>
+                    <div class="hero-cta" style="justify-content: center;">
+                        <a href="#sponsorship" class="btn btn-primary">Join My Journey</a>
+                        <a href="#contact" class="btn btn-outline">Contact Team</a>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-bg-effect"></div>
+        </section>
+
+        <!-- 3. About -->
+        <section id="about" class="about">
+            <div class="container about-grid">
+                <div class="about-image-placeholder" style="padding:0; overflow:hidden; border:none; background:transparent;">
+                    <img src="https://excelsheet101.github.io/nirmal-lamsal/Images/cycle3.jpg" alt="Nirmal Cycling" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px;">
+                </div>
+                <div class="about-text">
+                    <h2 class="about-title">About Nirmal</h2>
+                    <h3 class="about-subtitle">Runner &middot; Cyclist &middot; Banker (15+ yrs)</h3>
+                    <p>Nirmal Lamsal loves to run and cycle. He has already run across Nepal and India. He has participated in extreme marathons such as the <em>Pangong Frozen Lake Marathon</em> &mdash; ascending from sea level to 4000 meters. He is an avid cyclist and currently training for multiple ultra-marathons while balancing a banking career spanning over 15 years.</p>
+                    <div class="about-tags">
+                        <span class="tag">100,000+ KM</span>
+                        <span class="tag">Pangong Frozen Lake Marathon</span>
+                        <span class="tag">Ultra Training</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Marathon Participations -->
+        <section id="marathons" class="marathons">
+            <div class="container">
+                <h2 class="section-title">Marathon Participations</h2>
+                <p class="section-desc">I don’t just run marathons; I test the limits of human resilience. Whether it’s a standard 42.2K or an ultra-endurance event at 14,000 feet, every stride is a commitment to consistency, discipline, and the pursuit of the extraordinary.</p>
+                
+                <div class="race-list" id="race-list">
+                    <div class="loading-spinner">Loading race data...</div>
+                    <!-- Data will be populated here via JS -->
+                </div>
+                <div style="text-align: center;">
+                    <a href="races.html" class="view-all-chip">View All Races</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.1 Upcoming Marathons / Training -->
+        <section id="training-marathons" class="marathons" style="padding-top: 0;">
+            <div class="container">
+                <h2 class="section-title">Upcoming Races</h2>
+                <p class="section-desc">Preparation is where the race is truly won. Here is a look at the upcoming challenges I am currently training for.</p>
+                
+                <div class="race-list" id="upcoming-races-container">
+                    <div class="loading-spinner">Loading training data...</div>
+                    <!-- Data will be populated here via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Gallery -->
+        <section id="gallery" class="gallery">
+            <div class="container">
+                <h2 class="section-title">Gallery</h2>
+                <div class="gallery-grid" id="main-gallery-grid">
+                    <div class="loading-spinner">Loading gallery...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Blog -->
+        <section id="blog" class="blog">
+            <div class="container">
+                <h2 class="section-title">Blog & Experiences</h2>
+                <div class="blog-grid" id="blog-grid">
+                    <div class="loading-spinner">Loading experiences...</div>
+                    <!-- Data will be populated here via JS from 'Blog' sheet -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Sponsorship -->
+        <section id="sponsorship" class="sponsorship">
+            <div class="container" style="text-align: center;">
+                <h2 class="section-title">Fuel the Dream</h2>
+                <div class="sponsor-hero-mini" style="max-width: 800px; margin: 0 auto;">
+                    <h3 style="font-size: 2rem; margin-bottom: 1.5rem; font-family: var(--font-heading);">7 Cities. 4 Continents. 1 Flag.</h3>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 2rem;">Join me on the road to the World Marathon Majors. Bring the Six Star Medal home to Nepal through a strategic partnership.</p>
+                    <div style="display: flex; gap: 1.5rem; justify-content: center;">
+                        <a href="sponsor.html" class="btn btn-primary">Join the Quest</a>
+                        <a href="sponsor.html#join-quest" class="btn btn-outline">Partner with Me</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7.5 Training Update Section -->
+        <section id="training" class="training-section">
+            <div class="container">
+                <h2 class="section-title">Training Update</h2>
+                <div id="strava-data-container" class="training-grid">
+                    <div class="loading-spinner">Syncing with Strava...</div>
+                </div>
+                <div id="strava-redirect-container"></div>
+                <div class="strava-sync-status">
+                    <span class="strava-badge">Strava Sync Active</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Contact Form -->
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2 class="section-title">Get in Touch</h2>
+                <div class="contact-form-wrapper" style="max-width: 700px; margin: 0 auto;">
+                    <form class="contact-form" id="contact-form">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" required placeholder="Your Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required placeholder="your.email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" rows="5" required placeholder="How can we collaborate?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full" style="width: 100%;">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 9. Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <h3>Nirmal Lamsal</h3>
+                <p>Runner &middot; Cyclist &middot; Ultra-Marathoner</p>
+            </div>
+            <div class="footer-social">
+                <a href="https://www.linkedin.com/in/nirmallamsal/" aria-label="LinkedIn" target="_blank">LinkedIn</a>
+                <a href="https://www.strava.com/athletes/nirmallamsal" aria-label="Strava" target="_blank">Strava</a>
+                <a href="https://www.instagram.com/lamsalnirmal/" aria-label="Instagram" target="_blank">Instagram</a>
+                <a href="https://www.facebook.com/nirmal.lamsal.87548" aria-label="Facebook" target="_blank">Facebook</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span id="current-year"></span> Nirmal Lamsal. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

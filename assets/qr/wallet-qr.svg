@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="100%" height="100%">
+  <defs>
+    <linearGradient id="qr-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#006973" />
+      <stop offset="100%" stop-color="#004850" />
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="300" height="300" rx="16" fill="#ffffff" />
+  <rect x="10" y="10" width="280" height="280" rx="12" fill="none" stroke="#f0f4f5" stroke-width="2" />
+  
+  <!-- Outer Finder Pattern Top-Left -->
+  <rect x="35" y="35" width="45" height="45" rx="6" fill="url(#qr-grad)" />
+  <rect x="43" y="43" width="29" height="29" rx="4" fill="#ffffff" />
+  <rect x="49" y="49" width="17" height="17" rx="2" fill="url(#qr-grad)" />
+
+  <!-- Outer Finder Pattern Top-Right -->
+  <rect x="220" y="35" width="45" height="45" rx="6" fill="url(#qr-grad)" />
+  <rect x="228" y="43" width="29" height="29" rx="4" fill="#ffffff" />
+  <rect x="234" y="49" width="17" height="17" rx="2" fill="url(#qr-grad)" />
+
+  <!-- Outer Finder Pattern Bottom-Left -->
+  <rect x="35" y="220" width="45" height="45" rx="6" fill="url(#qr-grad)" />
+  <rect x="43" y="228" width="29" height="29" rx="4" fill="#ffffff" />
+  <rect x="49" y="234" width="17" height="17" rx="2" fill="url(#qr-grad)" />
+
+  <!-- Alignment Pattern Bottom-Right -->
+  <rect x="225" y="225" width="20" height="20" rx="3" fill="url(#qr-grad)" />
+  <rect x="229" y="229" width="12" height="12" rx="2" fill="#ffffff" />
+  <rect x="232" y="232" width="6" height="6" rx="1" fill="url(#qr-grad)" />
+
+  <!-- QR Modules / Data blocks (Stylized representation) -->
+  <g fill="#171c1d" opacity="0.85">
+    <!-- Row 1 -->
+    <rect x="95" y="35" width="10" height="10" rx="2" />
+    <rect x="115" y="35" width="20" height="10" rx="2" />
+    <rect x="145" y="35" width="10" height="10" rx="2" />
+    <rect x="175" y="35" width="15" height="10" rx="2" />
+    
+    <!-- Row 2 -->
+    <rect x="95" y="50" width="15" height="10" rx="2" />
+    <rect x="125" y="50" width="10" height="10" rx="2" />
+    <rect x="155" y="50" width="20" height="10" rx="2" />
+    <rect x="185" y="50" width="10" height="10" rx="2" />
+
+    <!-- Row 3 -->
+    <rect x="95" y="65" width="25" height="10" rx="2" />
+    <rect x="135" y="65" width="10" height="10" rx="2" />
+    <rect x="165" y="65" width="15" height="10" rx="2" />
+    <rect x="195" y="65" width="10" height="10" rx="2" />
+
+    <!-- Row 4 -->
+    <rect x="35" y="95" width="10" height="10" rx="2" />
+    <rect x="55" y="95" width="15" height="10" rx="2" />
+    <rect x="85" y="95" width="10" height="10" rx="2" />
+    <rect x="105" y="95" width="30" height="10" rx="2" />
+    <rect x="145" y="95" width="10" height="10" rx="2" />
+    <rect x="175" y="95" width="20" height="10" rx="2" />
+    <rect x="210" y="95" width="15" height="10" rx="2" />
+    <rect x="235" y="95" width="10" height="10" rx="2" />
+    <rect x="255" y="95" width="10" height="10" rx="2" />
+
+    <!-- Row 5 -->
+    <rect x="35" y="110" width="20" height="10" rx="2" fill="url(#qr-grad)" />
+    <rect x="65" y="110" width="10" height="10" rx="2" />
+    <rect x="90" y="110" width="10" height="10" rx="2" />
+    <rect x="110" y="110" width="15" height="10" rx="2" />
+    <rect x="135" y="110" width="25" height="10" rx="2" />
+    <rect x="170" y="110" width="10" height="10" rx="2" />
+    <rect x="190" y="110" width="20" height="10" rx="2" fill="url(#qr-grad)" />
+    <rect x="220" y="110" width="10" height="10" rx="2" />
+    <rect x="245" y="110" width="20" height="10" rx="2" />
+
+    <!-- Row 6 (Middle upper) -->
+    <rect x="35" y="125" width="10" height="15" rx="2" />
+    <rect x="55" y="125" width="25" height="10" rx="2" />
+    <rect x="95" y="125" width="15" height="10" rx="2" />
+    <rect x="120" y="125" width="10" height="10" rx="2" />
+    <!-- Center buffer -->
+    <rect x="180" y="125" width="15" height="10" rx="2" />
+    <rect x="210" y="125" width="20" height="10" rx="2" />
+    <rect x="245" y="125" width="10" height="15" rx="2" />
+
+    <!-- Row 7 -->
+    <rect x="75" y="145" width="15" height="10" rx="2" />
+    <rect x="105" y="145" width="10" height="10" rx="2" fill="url(#qr-grad)" />
+    <rect x="210" y="145" width="15" height="10" rx="2" />
+    <rect x="235" y="145" width="30" height="10" rx="2" />
+
+    <!-- Row 8 (Middle lower) -->
+    <rect x="35" y="165" width="10" height="10" rx="2" />
+    <rect x="55" y="165" width="20" height="10" rx="2" />
+    <rect x="90" y="165" width="15" height="10" rx="2" />
+    <!-- Center buffer -->
+    <rect x="195" y="165" width="10" height="10" rx="2" />
+    <rect x="215" y="165" width="25" height="10" rx="2" />
+    <rect x="250" y="165" width="15" height="10" rx="2" />
+
+    <!-- Row 9 -->
+    <rect x="35" y="180" width="25" height="10" rx="2" />
+    <rect x="70" y="180" width="10" height="10" rx="2" fill="url(#qr-grad)" />
+    <rect x="90" y="180" width="20" height="10" rx="2" />
+    <rect x="120" y="180" width="15" height="10" rx="2" />
+    <rect x="145" y="180" width="10" height="10" rx="2" />
+    <rect x="165" y="180" width="20" height="10" rx="2" />
+    <rect x="195" y="180" width="10" height="10" rx="2" fill="url(#qr-grad)" />
+    <rect x="215" y="180" width="15" height="10" rx="2" />
+    <rect x="240" y="180" width="25" height="10" rx="2" />
+
+    <!-- Row 10 -->
+    <rect x="35" y="195" width="10" height="10" rx="2" />
+    <rect x="55" y="195" width="15" height="10" rx="2" />
+    <rect x="80" y="195" width="10" height="10" rx="2" />
+    <rect x="100" y="195" width="25" height="10" rx="2" fill="url(#qr-grad)" />
+    <rect x="135" y="195" width="15" height="10" rx="2" />
+    <rect x="160" y="195" width="20" height="10" rx="2" />
+    <rect x="190" y="195" width="10" height="10" rx="2" />
+    <rect x="210" y="195" width="30" height="10" rx="2" />
+    <rect x="250" y="195" width="15" height="10" rx="2" />
+
+    <!-- Row 11 -->
+    <rect x="95" y="220" width="20" height="10" rx="2" />
+    <rect x="125" y="220" width="10" height="10" rx="2" />
+    <rect x="145" y="220" width="15" height="10" rx="2" fill="url(#qr-grad)" />
+    <rect x="170" y="220" width="30" height="10" rx="2" />
+
+    <!-- Row 12 -->
+    <rect x="95" y="235" width="10" height="10" rx="2" />
+    <rect x="115" y="235" width="25" height="10" rx="2" />
+    <rect x="150" y="235" width="10" height="10" rx="2" />
+    <rect x="170" y="235" width="15" height="10" rx="2" />
+    <rect x="195" y="235" width="15" height="10" rx="2" fill="url(#qr-grad)" />
+
+    <!-- Row 13 -->
+    <rect x="95" y="250" width="15" height="10" rx="2" fill="url(#qr-grad)" />
+    <rect x="120" y="250" width="20" height="10" rx="2" />
+    <rect x="150" y="250" width="30" height="10" rx="2" />
+    <rect x="190" y="250" width="10" height="10" rx="2" />
+  </g>
+
+  <!-- Center Logo Placeholder / Icon Overlay -->
+  <rect x="120" y="120" width="60" height="60" rx="12" fill="#ffffff" stroke="#f0f4f5" stroke-width="2" />
+  <!-- A stylized wallet icon or Nepalese shield/runner symbol inside center -->
+  <g transform="translate(130, 130)">
+    <!-- eSewa green/Khalti purple style gradient logo -->
+    <rect x="3" y="3" width="34" height="34" rx="8" fill="#4fbccb" />
+    <!-- Wallet Path -->
+    <path d="M12,11 C10.9,11 10,11.9 10,13 L10,27 C10,28.1 10.9,29 12,29 L28,29 C29.1,29 30,28.1 30,27 L30,13 C30,11.9 29.1,11 28,11 L12,11 Z M25,18 C26.1,18 27,18.9 27,20 C27,21.1 26.1,22 25,22 C23.9,22 23,21.1 23,20 C23,18.9 23.9,18 25,18 Z" fill="#ffffff" />
+  </g>
+</svg>
