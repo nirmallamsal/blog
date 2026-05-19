@@ -1432,7 +1432,7 @@ function formatTimeInput(e) {
     if (e.inputType === 'deleteContentBackward') return;
     let input = e.target.value.replace(/\D/g, '');
     if (input.length > 6) input = input.substring(0, 6);
-    
+
     // Keep raw value with seconds for the backend
     e.target.dataset.rawTime = input;
 
@@ -1475,7 +1475,7 @@ function updateStatusToggleUI(status) {
     } else {
         container.classList.add('bg-surface-container-highest');
         container.classList.remove('bg-primary');
-        slider.style.transform = 'translateX(-160px)'; 
+        slider.style.transform = 'translateX(-160px)';
         icon.textContent = 'schedule';
         icon.classList.remove('text-primary');
         icon.classList.add('text-on-surface-variant');
@@ -1520,7 +1520,7 @@ function formatDisplayTime(timeStr) {
     if (!timeStr || timeStr === '-' || timeStr === '--:--:--') return '--:--:--';
     let normalized = timeStr;
     let cleanStr = String(timeStr).replace(/^[-]+/, '');
-    
+
     if (cleanStr.includes('T') && cleanStr.includes('Z')) {
         try {
             const d = new Date(cleanStr);
@@ -1530,12 +1530,12 @@ function formatDisplayTime(timeStr) {
     } else if (/^\d{6}$/.test(cleanStr)) {
         return `${cleanStr.substring(0, 2)} Hrs ${cleanStr.substring(2, 4)} Min`;
     }
-    
+
     if (/^\d{2}:\d{2}:\d{2}$/.test(normalized)) {
         const parts = normalized.split(':');
         return `${parts[0]} Hrs ${parts[1]} Min`;
     }
-    
+
     return normalized;
 }
 
@@ -1620,7 +1620,7 @@ async function loadSystemSettings() {
 async function runDatabaseMigration() {
     const btn = document.getElementById('sync-db-btn');
     const originalContent = btn.innerHTML;
-    
+
     if (!confirm('This will scan your Google Sheets and add any missing columns (like Payment URL or Race Status) without touching your existing data. Continue?')) {
         return;
     }
@@ -1660,7 +1660,7 @@ async function runStravaSync() {
     const btn = document.getElementById('strava-sync-btn');
     const status = document.getElementById('strava-status');
     const originalContent = btn.innerHTML;
-    
+
     btn.innerHTML = '<span class="animate-spin material-symbols-outlined">sync</span> Syncing Strava...';
     btn.disabled = true;
     status.textContent = 'Connecting to Strava API...';
@@ -1986,14 +1986,14 @@ async function toggleBankStatus(id, checkbox) {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ 
-                action: 'setPrimaryBank', 
-                data: { id: id } 
+            body: JSON.stringify({
+                action: 'setPrimaryBank',
+                data: { id: id }
             })
         });
         const result = await response.json();
         if (result.status !== 'success') throw new Error(result.message);
-        
+
         // Refresh local data and table
         loadBankDetails();
     } catch (error) {
@@ -2075,7 +2075,7 @@ async function addNewMajor() {
 
 async function toggleMajorStatus(id, name, currentStatus) {
     const newStatus = currentStatus === 'Completed' ? 'Pending' : 'Completed';
-    
+
     try {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
@@ -2137,11 +2137,11 @@ function animateCounter(id, target, decimals = 0) {
     function updateCounter(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        
+
         // Easing function (outQuad)
         const ease = progress * (2 - progress);
         const currentVal = ease * target;
-        
+
         el.textContent = currentVal.toLocaleString('en-US', {
             minimumFractionDigits: decimals,
             maximumFractionDigits: decimals
@@ -2408,7 +2408,7 @@ async function saveFundraiserSettings() {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify({
-                action: 'updateSettings',
+                action: 'updateCampaignSettings',
                 data: {
                     fundraiser_target: String(targetVal),
                     fundraiser_race_name: raceNameVal,
