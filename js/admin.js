@@ -2485,6 +2485,9 @@ function toggleCampaignEditMode(forceState) {
         editBtnText.textContent = "Edit Settings";
         editBtnIcon.textContent = "edit";
         
+        // Reload settings to restore original values
+        loadFundraisers();
+    }
 }
 
 let thankYouLogs = JSON.parse(localStorage.getItem('nirmal_thank_you_logs')) || [];
