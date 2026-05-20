@@ -892,11 +892,12 @@
                                                 <th class="pb-4 pr-4">Contributor</th>
                                                 <th class="pb-4 pr-4">Amount</th>
                                                 <th class="pb-4 pr-4">Visibility</th>
+                                                <th class="pb-4 pr-4">Thanks</th>
                                                 <th class="pb-4 text-right">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody id="admin-fundraiser-table-body" class="divide-y divide-outline-variant">
-                                            <tr><td colspan="4" class="py-10 text-center text-on-surface-variant">Loading contributors...</td></tr>
+                                            <tr><td colspan="5" class="py-10 text-center text-on-surface-variant">Loading contributors...</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -907,6 +908,33 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Thank You Message Log -->
+                    <div class="glass-panel p-8 rounded-xl border border-outline-variant mt-4">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-2xl font-display font-bold">Thank You Message Log</h3>
+                                <p class="text-sm text-on-surface-variant mt-1">Record of all thank you messages sent to contributors.</p>
+                            </div>
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full" id="ty-sent-count">0 sent</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="border-b border-outline-variant text-on-surface-variant text-xs uppercase tracking-wider font-bold">
+                                        <th class="pb-4 pr-4">Contributor</th>
+                                        <th class="pb-4 pr-4">Amount</th>
+                                        <th class="pb-4 pr-4">Message Preview</th>
+                                        <th class="pb-4 pr-4">Sent On</th>
+                                        <th class="pb-4 text-right">Re-Share</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="thank-you-log-body" class="divide-y divide-outline-variant">
+                                    <tr><td colspan="5" class="py-10 text-center text-on-surface-variant">No thank you messages sent yet.</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
