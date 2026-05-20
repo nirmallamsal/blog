@@ -2245,6 +2245,7 @@ function renderFundraiserTable() {
     paginated.forEach(item => {
         const tr = document.createElement('tr');
         tr.className = "group hover:bg-primary/5 transition-athletic";
+        const safeName = (item.Name || 'Anonymous').replace(/'/g, "\\'");
         tr.innerHTML = `
             <td class="py-4 pr-4">
                 <p class="font-bold text-sm text-on-background">${item.Name || 'Anonymous'}</p>
@@ -2257,6 +2258,11 @@ function renderFundraiserTable() {
                 <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase ${item.Display === 'Yes' ? 'bg-primary/10 text-primary' : 'bg-surface-container-highest text-on-surface-variant'}">
                     ${item.Display === 'Yes' ? 'Visible' : 'Hidden'}
                 </span>
+            </td>
+            <td class="py-4 pr-4">
+                <button onclick="shareThankYou('${safeName}', '${item.Amount}', '${item.Currency}')" class="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-athletic flex items-center gap-1 text-xs font-bold" title="Share Thank You">
+                    <span class="material-symbols-outlined text-[16px]">share</span> Share
+                </button>
             </td>
             <td class="py-4 text-right">
                 <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-athletic">
@@ -2479,7 +2485,89 @@ function toggleCampaignEditMode(forceState) {
         editBtnText.textContent = "Edit Settings";
         editBtnIcon.textContent = "edit";
         
-        // Reload settings to restore original values
-        loadFundraisers();
+}
+
+let thankYouLogs = JSON.parse(localStorage.getItem('nirmal_thank_you_logs')) || [];
+
+function shareThankYou(name, amount, currency) {
+    const raceCurrent = document.getElementById('fundraiser-race-name-current');
+    const raceName = raceCurrent ? raceCurrent.textContent : 'campaign';
+    const amountFormatted = parseFloat(amount || 0).toFixed(2);
+    
+    const message = `Hi ${name}! 🎉 Thank you so much for your generous contribution of ${currency} ${amountFormatted} towards my ${raceName}. Your support means the world to me and helps me get closer to my goal! 🙌🏃‍♂️💨\n\n- Nirmal Lamsal`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Thank You for Your Support!',
+            text: message
+        }).then(() => {
+            logThankYou(name, amountFormatted, currency, message);
+        }).catch(err => {
+            console.error("Share failed:", err);
+            // Fallback to clipboard if user cancelled or error
+        });
+    } else {
+        navigator.clipboard.writeText(message).then(() => {
+            alert("Thank you message copied to clipboard!\n\n" + message);
+            logThankYou(name, amountFormatted, currency, message);
+        }).catch(err => {
+            alert("Failed to copy message: " + err);
+        });
     }
 }
+
+function logThankYou(name, amount, currency, message) {
+    const logEntry = {
+        id: Date.now().toString(),
+        name: name,
+        amount: amount,
+        currency: currency,
+        message: message,
+        timestamp: new Date().toISOString()
+    };
+    thankYouLogs.unshift(logEntry);
+    localStorage.setItem('nirmal_thank_you_logs', JSON.stringify(thankYouLogs));
+    renderThankYouLog();
+}
+
+function renderThankYouLog() {
+    const tbody = document.getElementById('thank-you-log-body');
+    const countEl = document.getElementById('ty-sent-count');
+    if (!tbody) return;
+    
+    if (countEl) countEl.textContent = `${thankYouLogs.length} sent`;
+
+    if (thankYouLogs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-10 text-center text-on-surface-variant">No thank you messages sent yet.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = '';
+    thankYouLogs.forEach(log => {
+        const tr = document.createElement('tr');
+        tr.className = "group hover:bg-primary/5 transition-athletic";
+        const date = new Date(log.timestamp).toLocaleDateString() + ' ' + new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        const safeName = log.name.replace(/'/g, "\\'");
+        const preview = log.message.substring(0, 50) + '...';
+        
+        tr.innerHTML = `
+            <td class="py-4 pr-4 font-bold text-sm text-on-background">${log.name}</td>
+            <td class="py-4 pr-4 font-mono text-sm">${log.currency} ${log.amount}</td>
+            <td class="py-4 pr-4 text-xs text-on-surface-variant max-w-[200px] truncate" title="${log.message.replace(/"/g, '&quot;')}">${preview}</td>
+            <td class="py-4 pr-4 text-xs text-on-surface-variant">${date}</td>
+            <td class="py-4 text-right">
+                <button onclick="shareThankYou('${safeName}', '${log.amount}', '${log.currency}')" class="p-2 hover:bg-primary/20 text-primary rounded-lg transition-athletic" title="Re-Share">
+                    <span class="material-symbols-outlined text-lg">replay</span>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Ensure the log is rendered when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(renderThankYouLog, 500);
+});
+
