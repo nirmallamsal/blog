@@ -2516,12 +2516,40 @@ function shareThankYou(name, amount, currency) {
             // Fallback to clipboard if user cancelled or error
         });
     } else {
-        navigator.clipboard.writeText(message).then(() => {
-            alert("Thank you message copied to clipboard!\n\n" + message);
-            logThankYou(name, amountFormatted, currency, message);
-        }).catch(err => {
-            alert("Failed to copy message: " + err);
-        });
+        // Fallback to clipboard
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(message).then(() => {
+                alert("Thank you message copied to clipboard!\n\n" + message);
+                logThankYou(name, amountFormatted, currency, message);
+            }).catch(err => {
+                alert("Failed to copy message: " + err);
+            });
+        } else {
+            // Fallback for file:// protocol or non-secure contexts
+            const textArea = document.createElement("textarea");
+            textArea.value = message;
+            // Avoid scrolling to bottom
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    alert("Thank you message copied to clipboard!\n\n" + message);
+                    logThankYou(name, amountFormatted, currency, message);
+                } else {
+                    alert("Failed to copy message automatically. Please copy it manually:\n\n" + message);
+                }
+            } catch (err) {
+                alert("Failed to copy message automatically. Please copy it manually:\n\n" + message);
+            }
+            
+            document.body.removeChild(textArea);
+        }
     }
 }
 
