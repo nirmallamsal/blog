@@ -2497,7 +2497,13 @@ function shareThankYou(name, amount, currency) {
     const raceName = raceCurrent ? raceCurrent.textContent : 'campaign';
     const amountFormatted = parseFloat(amount || 0).toFixed(2);
     
-    const message = `Hi ${name}! 🎉 Thank you so much for your generous contribution of ${currency} ${amountFormatted} towards my ${raceName}. Your support means the world to me and helps me get closer to my goal! 🙌🏃‍♂️💨\n\n- Nirmal Lamsal`;
+    let pageUrl = window.location.href.split('?')[0].replace('admin.html', 'fundraisers.html');
+    if (!pageUrl.endsWith('fundraisers.html')) {
+        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        pageUrl = window.location.origin + basePath + 'fundraisers.html';
+    }
+    
+    const message = `Hi ${name}! 🎉 Thank you so much for your generous contribution towards my ${raceName}. Your support means the world to me and helps me get closer to my goal! 🙌🏃‍♂️💨\n\nSee the supporters wall here: ${pageUrl}\n\n- Nirmal Lamsal`;
     
     if (navigator.share) {
         navigator.share({
