@@ -2514,43 +2514,45 @@ function shareThankYou(encodedName, amount, currency) {
             logThankYou(name, amountFormatted, currency, message);
         }).catch(err => {
             console.error("Share failed:", err);
-            // Fallback to clipboard if user cancelled or error
+            // Fallback to clipboard if user cancelled or browser denied permission
+            copyToClipboardFallback(message, name, amountFormatted, currency);
         });
     } else {
-        // Fallback to clipboard
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(message).then(() => {
+        copyToClipboardFallback(message, name, amountFormatted, currency);
+    }
+}
+
+function copyToClipboardFallback(message, name, amountFormatted, currency) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(message).then(() => {
+            alert("Thank you message copied to clipboard!\n\n" + message);
+            logThankYou(name, amountFormatted, currency, message);
+        }).catch(err => {
+            alert("Failed to copy message: " + err);
+        });
+    } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = message;
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
                 alert("Thank you message copied to clipboard!\n\n" + message);
                 logThankYou(name, amountFormatted, currency, message);
-            }).catch(err => {
-                alert("Failed to copy message: " + err);
-            });
-        } else {
-            // Fallback for file:// protocol or non-secure contexts
-            const textArea = document.createElement("textarea");
-            textArea.value = message;
-            // Avoid scrolling to bottom
-            textArea.style.top = "0";
-            textArea.style.left = "0";
-            textArea.style.position = "fixed";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    alert("Thank you message copied to clipboard!\n\n" + message);
-                    logThankYou(name, amountFormatted, currency, message);
-                } else {
-                    alert("Failed to copy message automatically. Please copy it manually:\n\n" + message);
-                }
-            } catch (err) {
+            } else {
                 alert("Failed to copy message automatically. Please copy it manually:\n\n" + message);
             }
-            
-            document.body.removeChild(textArea);
+        } catch (err) {
+            alert("Failed to copy message automatically. Please copy it manually:\n\n" + message);
         }
+        
+        document.body.removeChild(textArea);
     }
 }
 
