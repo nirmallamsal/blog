@@ -2506,20 +2506,9 @@ function shareThankYou(encodedName, amount, currency) {
     
     const message = `Hi ${name}! 🎉 Thank you so much for your generous contribution towards my ${raceName}. Your support means the world to me and helps me get closer to my goal! 🙌🏃‍♂️💨\n\nSee the supporters wall here: ${pageUrl}\n\n- Nirmal Lamsal`;
     
-    if (navigator.share) {
-        navigator.share({
-            title: 'Thank You for Your Support!',
-            text: message
-        }).then(() => {
-            logThankYou(name, amountFormatted, currency, message);
-        }).catch(err => {
-            console.error("Share failed:", err);
-            // Fallback to clipboard if user cancelled or browser denied permission
-            copyToClipboardFallback(message, name, amountFormatted, currency);
-        });
-    } else {
-        copyToClipboardFallback(message, name, amountFormatted, currency);
-    }
+    // Always copy to clipboard directly. 
+    // navigator.share requires HTTPS and fails asynchronously on file://, which breaks the fallback.
+    copyToClipboardFallback(message, name, amountFormatted, currency);
 }
 
 function copyToClipboardFallback(message, name, amountFormatted, currency) {
