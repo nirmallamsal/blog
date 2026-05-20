@@ -2245,7 +2245,7 @@ function renderFundraiserTable() {
     paginated.forEach(item => {
         const tr = document.createElement('tr');
         tr.className = "group hover:bg-primary/5 transition-athletic";
-        const safeName = (item.Name || 'Anonymous').replace(/'/g, "\\'");
+        const encodedName = encodeURIComponent(item.Name || 'Anonymous');
         tr.innerHTML = `
             <td class="py-4 pr-4">
                 <p class="font-bold text-sm text-on-background">${item.Name || 'Anonymous'}</p>
@@ -2260,7 +2260,7 @@ function renderFundraiserTable() {
                 </span>
             </td>
             <td class="py-4 pr-4">
-                <button onclick="shareThankYou('${safeName}', '${item.Amount}', '${item.Currency}')" class="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-athletic flex items-center gap-1 text-xs font-bold" title="Share Thank You">
+                <button onclick="shareThankYou('${encodedName}', '${item.Amount}', '${item.Currency}')" class="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-athletic flex items-center gap-1 text-xs font-bold" title="Share Thank You" style="position: relative; z-index: 10;">
                     <span class="material-symbols-outlined text-[16px]">share</span> Share
                 </button>
             </td>
@@ -2492,7 +2492,8 @@ function toggleCampaignEditMode(forceState) {
 
 let thankYouLogs = JSON.parse(localStorage.getItem('nirmal_thank_you_logs')) || [];
 
-function shareThankYou(name, amount, currency) {
+function shareThankYou(encodedName, amount, currency) {
+    const name = decodeURIComponent(encodedName);
     const raceCurrent = document.getElementById('fundraiser-race-name-current');
     const raceName = raceCurrent ? raceCurrent.textContent : 'campaign';
     const amountFormatted = parseFloat(amount || 0).toFixed(2);
@@ -2585,16 +2586,16 @@ function renderThankYouLog() {
         tr.className = "group hover:bg-primary/5 transition-athletic";
         const date = new Date(log.timestamp).toLocaleDateString() + ' ' + new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         
-        const safeName = log.name.replace(/'/g, "\\'");
+        const encodedName = encodeURIComponent(log.name || 'Anonymous');
         const preview = log.message.substring(0, 50) + '...';
         
         tr.innerHTML = `
-            <td class="py-4 pr-4 font-bold text-sm text-on-background">${log.name}</td>
+            <td class="py-4 pr-4 font-bold text-sm text-on-background">${log.name || 'Anonymous'}</td>
             <td class="py-4 pr-4 font-mono text-sm">${log.currency} ${log.amount}</td>
             <td class="py-4 pr-4 text-xs text-on-surface-variant max-w-[200px] truncate" title="${log.message.replace(/"/g, '&quot;')}">${preview}</td>
             <td class="py-4 pr-4 text-xs text-on-surface-variant">${date}</td>
             <td class="py-4 text-right">
-                <button onclick="shareThankYou('${safeName}', '${log.amount}', '${log.currency}')" class="p-2 hover:bg-primary/20 text-primary rounded-lg transition-athletic" title="Re-Share">
+                <button onclick="shareThankYou('${encodedName}', '${log.amount}', '${log.currency}')" class="p-2 hover:bg-primary/20 text-primary rounded-lg transition-athletic" title="Re-Share" style="position: relative; z-index: 10;">
                     <span class="material-symbols-outlined text-lg">replay</span>
                 </button>
             </td>
