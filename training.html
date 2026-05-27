@@ -233,7 +233,7 @@
         /* --- Second Charts Row --- */
         .charts-row-2 {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             margin-bottom: 3rem;
         }
@@ -585,6 +585,27 @@
             .charts-section { grid-template-columns: 1fr; }
             .charts-row-2 { grid-template-columns: 1fr; }
         }
+        @media (max-width: 768px) {
+            .charts-row-2 {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 1.25rem;
+                padding: 0.5rem 2rem 1.5rem 2rem;
+                margin-left: -2rem;
+                margin-right: -2rem;
+                scrollbar-width: none; /* Hide scrollbar for Firefox */
+                -webkit-overflow-scrolling: touch;
+            }
+            .charts-row-2::-webkit-scrollbar {
+                display: none; /* Hide scrollbar for Safari/Chrome */
+            }
+            .charts-row-2 .chart-card {
+                flex: 0 0 85%; /* Card takes up 85% of screen width */
+                scroll-snap-align: center;
+                box-shadow: 0 8px 24px rgba(0,105,115,0.06);
+            }
+        }
         @media (max-width: 640px) {
             .hero-stats-row { grid-template-columns: 1fr; }
             .latest-spotlight { grid-template-columns: 1fr; text-align: center; }
@@ -768,7 +789,7 @@
             </div>
 
             <!-- Second Charts Row -->
-            <div class="charts-row-2 fade-in-section" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div class="charts-row-2 fade-in-section">
                 <div class="chart-card">
                     <div class="chart-header">
                         <div class="chart-title">📊 Elevation Gain</div>
