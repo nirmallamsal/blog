@@ -35,10 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.textContent = 'Sending...';
             btn.disabled = true;
 
+            const subjectEl = document.getElementById('subject');
             const formData = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
-                subject: document.getElementById('subject').value,
+                subject: subjectEl ? subjectEl.value : 'General Inquiry',
                 message: document.getElementById('message').value
             };
 
