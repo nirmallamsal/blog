@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+    <title>Race Details | Nirmal Lamsal</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃</text></svg>">
+    <meta name="description" content="Detailed race performance history for Nirmal Lamsal - times, distances, and personal notes.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#006973",
+                        "primary-container": "#4fbccb",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#004850",
+                        "surface": "#f6fafb",
+                        "on-surface": "#171c1d",
+                        "on-surface-variant": "#3d494b",
+                        "outline-variant": "#bdc9cb",
+                        "background": "#f6fafb",
+                        "on-background": "#171c1d",
+                        "surface-container-low": "#eef4f5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "outfit": ["Outfit", "sans-serif"],
+                        "inter": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        body {
+            background-color: #f6fafb;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(187,57%,55%,0.08) 0, transparent 50%), 
+                radial-gradient(at 100% 100%, hsla(187,57%,85%,0.05) 0, transparent 50%);
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-header {
+            background: rgba(246,250,251,0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0,105,115,0.08);
+        }
+        .glass-card {
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 0 4px 24px rgba(0,105,115,0.06);
+        }
+        /* Horizontally scrollable chips on mobile */
+        .chips-row {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+        }
+        .chips-row::-webkit-scrollbar { display: none; }
+        .chips-row .edition-chip { scroll-snap-align: start; flex-shrink: 0; }
+        /* Stat dividers */
+        .stat-cell { border-right: 1px solid rgba(189,201,203,0.3); }
+        .stat-cell:last-child { border-right: none; }
+        /* Touch feedback */
+        .gallery-item { transition: opacity 0.15s; }
+        .gallery-item:active { opacity: 0.75; }
+        @keyframes fadeUp {
+            from { opacity:0; transform: translateY(12px); }
+            to   { opacity:1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.45s ease forwards; }
+    </style>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="min-h-screen flex flex-col pt-16">
+    
+    <!-- ── Header ──────────────────────────────────────────── -->
+    <header class="header glass-header fixed top-0 left-0 w-full z-[1000] px-4 sm:px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="index.html" class="logo text-2xl font-display font-extrabold tracking-tight text-on-surface uppercase hover:text-primary transition-colors">
+                NIRMAL <span class="text-primary">LAMSAL</span>
+            </a>
+            <!-- Desktop Nav -->
+            <nav class="nav-links hidden md:flex items-center gap-1 bg-white/60 backdrop-blur-md border border-outline-variant/40 rounded-full px-5 py-2 shadow-sm">
+                <a href="index.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Home</a>
+                <a href="races.html" class="px-3 py-1 text-sm font-display font-bold text-white bg-primary rounded-full shadow-sm hover:bg-primary/90 transition-colors">Races</a>
+                <a href="training.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Training</a>
+                <a href="sponsor.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Sponsor</a>
+            </nav>
+            <!-- Mobile Hamburger -->
+            <button id="mobile-menu-btn" class="menu-toggle md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-primary/10 transition-colors" aria-label="Toggle menu">
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-4 h-0.5 bg-on-surface rounded-full"></span>
+            </button>
+        </div>
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden mt-3 border-t border-outline-variant/30 pt-3 pb-2 flex flex-col gap-1">
+            <a href="index.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Home</a>
+            <a href="races.html" class="px-4 py-2.5 text-sm font-display font-bold text-white bg-primary rounded-xl transition-colors">Races</a>
+            <a href="training.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Training</a>
+            <a href="sponsor.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Sponsor</a>
+        </div>
+    </header>
+<script>
+    document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+</script>
+        <div id="loading-state" class="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
+            <div class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            <p class="text-on-surface-variant font-outfit font-bold text-sm uppercase tracking-widest text-center">Building Athlete Profile…</p>
+        </div>
+
+        <!-- Main Content (hidden until data loads) -->
+        <div id="main-content" class="hidden fade-up">
+
+            <!-- ── Hero ──────────────────────────────────────── -->
+            <div class="bg-white border-b border-outline-variant/20">
+                <div class="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-end gap-5">
+                        <!-- Logo box -->
+                        <div class="w-20 h-20 sm:w-28 sm:h-28 glass-card rounded-2xl p-3 flex items-center justify-center overflow-hidden shrink-0">
+                            <img id="race-logo" src="" alt="Race Logo" class="w-full h-full object-contain">
+                        </div>
+                        <!-- Title block -->
+                        <div class="text-center sm:text-left min-w-0">
+                            <span id="race-location-tag"
+                                  class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary rounded-full text-[11px] font-black uppercase tracking-wider border border-primary/15 mb-2">
+                                <span class="material-symbols-outlined text-sm">location_on</span>
+                                <span id="race-location-text">---</span>
+                            </span>
+                            <h1 id="race-name"
+                                class="font-outfit text-2xl sm:text-4xl lg:text-6xl font-extrabold text-on-surface leading-tight break-words">
+                                ---
+                            </h1>
+                            <p id="race-type-text"
+                               class="text-primary-container font-outfit text-sm sm:text-base font-bold tracking-wider uppercase mt-1">
+                                ---
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Body ──────────────────────────────────────── -->
+            <div class="max-w-[1280px] mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-10">
+
+                <!-- About Card -->
+                <div id="race-intro-card" class="glass-card p-5 sm:p-8 rounded-2xl hidden">
+                    <h3 class="font-outfit text-base sm:text-xl font-bold mb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-xl">info</span>
+                        About the Race
+                    </h3>
+                    <p id="race-intro-text" class="text-on-surface-variant text-sm sm:text-base leading-relaxed"></p>
+                </div>
+
+                <!-- Performance History -->
+                <div>
+                    <h2 class="font-outfit text-lg sm:text-2xl font-bold text-on-surface mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">history</span>
+                        My Performance History
+                    </h2>
+
+                    <!-- Chip row — horizontal scroll on mobile -->
+                    <div id="editions-chips" class="chips-row mb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible">
+                        <!-- Chips rendered by JS -->
+                    </div>
+
+                    <!-- Stats + Notes card -->
+                    <div id="active-edition-card" class="glass-card rounded-2xl overflow-hidden">
+                        <!-- 3 stat columns -->
+                        <div class="grid grid-cols-3 border-b border-outline-variant/20">
+                            <div class="stat-cell p-4 sm:p-6">
+                                <p class="text-[9px] sm:text-[10px] font-black uppercase text-on-surface-variant tracking-widest leading-none mb-1.5">Finish Time</p>
+                                <p id="detail-time" class="font-outfit text-lg sm:text-2xl font-bold text-on-surface">--:--:--</p>
+                            </div>
+                            <div class="stat-cell p-4 sm:p-6">
+                                <p class="text-[9px] sm:text-[10px] font-black uppercase text-on-surface-variant tracking-widest leading-none mb-1.5">Distance</p>
+                                <p id="detail-distance" class="font-outfit text-lg sm:text-2xl font-bold text-on-surface">---</p>
+                            </div>
+                            <div class="stat-cell p-4 sm:p-6">
+                                <p class="text-[9px] sm:text-[10px] font-black uppercase text-on-surface-variant tracking-widest leading-none mb-1.5">Position</p>
+                                <p id="detail-position" class="font-outfit text-lg sm:text-2xl font-bold text-on-surface">---</p>
+                            </div>
+                        </div>
+                        <!-- Notes -->
+                        <div class="p-5 sm:p-8">
+                            <h3 class="font-outfit text-sm sm:text-base font-bold flex items-center gap-2 text-primary mb-3">
+                                <span class="material-symbols-outlined text-base">notes</span>
+                                Personal Notes
+                            </h3>
+                            <p id="detail-notes"
+                               class="text-on-surface-variant text-sm sm:text-base leading-relaxed italic border-l-4 border-primary/20 pl-4 py-1">
+                                No notes for this edition.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Moments Captured Gallery -->
+                <div>
+                    <h2 class="font-outfit text-lg sm:text-2xl font-bold text-on-surface mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">photo_library</span>
+                        Moments Captured
+                    </h2>
+                    <!-- 2 cols mobile → 3 sm → 4 lg -->
+                    <div id="race-gallery"
+                         class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+                        <p class="col-span-2 sm:col-span-3 lg:col-span-4 text-on-surface-variant text-sm py-4 italic">Loading photos…</p>
+                    </div>
+                </div>
+
+            </div>
+        </div><!-- /main-content -->
+    </main>
+
+    <!-- ── Footer ──────────────────────────────────────────── -->
+    <footer class="bg-[#0F172A] text-white mt-8 py-10 px-4 text-center">
+        <h3 class="font-outfit text-lg font-bold mb-1">Nirmal Lamsal</h3>
+        <p class="text-slate-500 text-sm">Every finish line is the start of a new race.</p>
+        <a href="races.html"
+           class="inline-flex items-center gap-1.5 mt-4 text-primary-container text-sm font-semibold hover:underline">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            All Races
+        </a>
+    </footer>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx83zXlV1s7xDwoUqzmXKg-xaipfahc8vaDH3BimCYX0C9ICHL3yemKDzb8Q2NKvp7P/exec';
+
+        function slugify(v) {
+            return String(v||'').trim().toLowerCase()
+                .replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-');
+        }
+
+        function formatTime(t) {
+            if (!t || t === '-' || t === '--:--:--') return '-';
+            
+            let normalized = t;
+            let cleanStr = String(t).replace(/^[-]+/, '');
+            
+            if (cleanStr.includes('T') && cleanStr.includes('Z')) {
+                try {
+                    const d = new Date(cleanStr);
+                    normalized = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+                } catch(e) {}
+            } else if (/^\d{6}$/.test(cleanStr)) {
+                normalized = `${cleanStr.substring(0, 2)}:${cleanStr.substring(2, 4)}:${cleanStr.substring(4, 6)}`;
+            }
+            
+            if (/^\d{2}:\d{2}:\d{2}$/.test(normalized)) {
+                const parts = normalized.split(':');
+                return `${parts[0]} hrs ${parts[1]} Mins`;
+            }
+            
+            return normalized;
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('race');
+
+            if (!slug) { window.location.href = 'races.html'; return; }
+
+            try {
+                const [racesRes, namesRes] = await Promise.all([
+                    fetch(`${SCRIPT_URL}?_=${Date.now()}`),
+                    fetch(`${SCRIPT_URL}?action=names&_=${Date.now()}`)
+                ]);
+                const racesData = await racesRes.json();
+                const namesData = await namesRes.json();
+
+                if (racesData.status === 'success') {
+                    const allMatching = racesData.data.filter(r => slugify(r.RaceName) === slug);
+                    if (!allMatching.length) {
+                        document.getElementById('loading-state').innerHTML = `
+                            <span class="material-symbols-outlined text-5xl text-on-surface-variant/30">search_off</span>
+                            <p class="text-on-surface-variant font-semibold mt-2">Race not found.</p>
+                            <a href="races.html" class="text-primary underline text-sm mt-1">← All races</a>`;
+                        return;
+                    }
+
+                    const base   = allMatching[0];
+                    const master = (namesData.data || [])
+                        .find(n => n.RaceName.toLowerCase() === base.RaceName.toLowerCase());
+
+                    // Page title
+                    document.title = `${base.RaceName} | Nirmal Lamsal`;
+
+                    // Hero text
+                    document.getElementById('race-name').textContent      = base.RaceName;
+                    document.getElementById('race-type-text').textContent = base.Type;
+
+                    // Location / Intro
+                    if (master) {
+                        const loc = `${master.Location||''}, ${master.Country||''}`
+                            .replace(/^,\s*/,'').replace(/,\s*$/,'');
+                        document.getElementById('race-location-text').textContent = loc || 'Global Event';
+                        if (master.Intro) {
+                            document.getElementById('race-intro-card').classList.remove('hidden');
+                            document.getElementById('race-intro-text').textContent = master.Intro;
+                        }
+                    } else {
+                        document.getElementById('race-location-tag').classList.add('hidden');
+                    }
+
+                    // Logo
+                    const logoImg = document.getElementById('race-logo');
+                    if (base.Logo) {
+                        logoImg.src = base.Logo;
+                        logoImg.onerror = () => {
+                            logoImg.parentElement.innerHTML =
+                                `<span class="material-symbols-outlined text-5xl text-primary/20">sprint</span>`;
+                        };
+                    } else {
+                        logoImg.parentElement.innerHTML =
+                            `<span class="material-symbols-outlined text-5xl text-primary/20">sprint</span>`;
+                    }
+
+                    // Edition chips
+                    const chipContainer  = document.getElementById('editions-chips');
+                    const sortedMatching = allMatching.sort((a,b) =>
+                        String(b.Participation).localeCompare(String(a.Participation)));
+
+                    function showEditionDetails(edition) {
+                        document.getElementById('detail-time').textContent     = formatTime(edition.Time);
+                        document.getElementById('detail-distance').textContent = edition.Distance || '---';
+                        document.getElementById('detail-position').textContent = edition.Position || '---';
+                        document.getElementById('detail-notes').textContent    =
+                            edition.Notes || 'No specific highlights recorded for this edition.';
+
+                        document.querySelectorAll('.edition-chip').forEach(c => {
+                            c.classList.remove('bg-primary','text-white','shadow-md','border-primary');
+                            c.classList.add('bg-white','text-on-surface','border-outline-variant/40');
+                        });
+                        const active = document.querySelector(`[data-edition-id="${edition.id}"]`);
+                        if (active) {
+                            active.classList.remove('bg-white','text-on-surface','border-outline-variant/40');
+                            active.classList.add('bg-primary','text-white','shadow-md','border-primary');
+                        }
+                    }
+
+                    sortedMatching.forEach((edition, idx) => {
+                        const chip = document.createElement('button');
+                        chip.className = [
+                            'edition-chip px-5 py-2 rounded-full font-bold text-sm border',
+                            'transition-all duration-200 active:scale-95',
+                            'bg-white text-on-surface border-outline-variant/40'
+                        ].join(' ');
+                        chip.style.minHeight = '44px';
+                        chip.setAttribute('data-edition-id', edition.id);
+                        const isPB = edition.PB === 'Yes';
+                        chip.innerHTML = `
+                            <span class="flex items-center gap-1.5">
+                                ${edition.Participation}
+                                ${isPB
+                                    ? `<span class="material-symbols-outlined text-[13px] text-amber-500"
+                                              style="font-variation-settings:'FILL' 1">grade</span>`
+                                    : ''}
+                            </span>`;
+                        chip.onclick = () => showEditionDetails(edition);
+                        chipContainer.appendChild(chip);
+                        if (idx === 0) showEditionDetails(edition);
+                    });
+
+                    // Gallery
+                    const galleryEl = document.getElementById('race-gallery');
+                    try {
+                        const galleryRes  = await fetch(`${SCRIPT_URL}?action=gallery`);
+                        const galleryData = await galleryRes.json();
+
+                        let tagged = [];
+                        if (galleryData.status === 'success') {
+                            tagged = galleryData.data
+                                .filter(i => i.Tagged_Race === base.RaceName && i.Display_Status === 'TRUE')
+                                .map(i => i.GitHub_URL);
+                        }
+                        const manual  = allMatching.flatMap(r =>
+                            (r.Gallery_Links || '').split(',').map(l => l.trim()).filter(Boolean));
+                        const gallery = [...new Set([...tagged, ...manual])];
+
+                        if (gallery.length) {
+                            galleryEl.innerHTML = gallery.map(link => `
+                                <a href="${link}" target="_blank" rel="noopener"
+                                   class="gallery-item aspect-square rounded-xl overflow-hidden
+                                          border border-outline-variant/20 block group
+                                          bg-surface-container-low">
+                                    <img src="${link}" loading="lazy" alt="Race moment"
+                                         class="w-full h-full object-cover
+                                                group-hover:scale-105 transition-transform duration-500">
+                                </a>`).join('');
+                        } else {
+                            galleryEl.innerHTML = `
+                                <div class="col-span-2 sm:col-span-3 lg:col-span-4
+                                            flex flex-col items-center gap-2 py-10 text-on-surface-variant">
+                                    <span class="material-symbols-outlined text-4xl opacity-30">photo_camera</span>
+                                    <p class="text-sm italic">No photos available yet.</p>
+                                </div>`;
+                        }
+                    } catch (gErr) {
+                        console.error('Gallery error:', gErr);
+                        galleryEl.innerHTML =
+                            `<p class="col-span-2 text-red-400 text-sm italic py-4">Failed to load photos.</p>`;
+                    }
+
+                    // Show page
+                    document.getElementById('loading-state').classList.add('hidden');
+                    document.getElementById('main-content').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loading-state').innerHTML = `
+                    <span class="material-symbols-outlined text-5xl text-red-400/40">wifi_off</span>
+                    <p class="text-red-500 font-semibold mt-2">Failed to load race data.</p>
+                    <button onclick="location.reload()"
+                            class="mt-3 px-5 py-2 bg-primary text-white rounded-full text-sm font-bold active:scale-95">
+                        Retry
+                    </button>`;
+            }
+        });
+    </script>
+</body>
+</html>
