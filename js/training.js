@@ -99,13 +99,34 @@ function animateCounter(elementId, target, decimals = 0) {
     requestAnimationFrame(update);
 }
 
+// Helper to parse date strings of format "dd-MMM-yyyy" (e.g. "27-May-2026") or fallback to standard parsing
+function parseCustomDate(dateStr) {
+    if (!dateStr) return new Date(0);
+    if (typeof dateStr === 'string' && dateStr.includes('-')) {
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            const day = parseInt(parts[0], 10);
+            const monthStr = parts[1].toLowerCase();
+            const year = parseInt(parts[2], 10);
+            
+            const shortMonths = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+            const monthIdx = shortMonths.indexOf(monthStr);
+            if (monthIdx !== -1 && !isNaN(day) && !isNaN(year)) {
+                return new Date(year, monthIdx, day);
+            }
+        }
+    }
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? new Date(0) : d;
+}
+
 // Helper to format chart x-axis labels to avoid clutter
 // Shows "Month Day" on the left (first label) and when the month changes, and just "Day" elsewhere.
 function formatChartLabels(data) {
     const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return data.map((a, idx) => {
         if (!a.date) return '';
-        const d = new Date(a.date);
+        const d = parseCustomDate(a.date);
         if (isNaN(d.getTime())) return a.date;
         
         const day = d.getDate();
@@ -117,7 +138,7 @@ function formatChartLabels(data) {
         }
         
         // Show month + day if month changed from the previous item
-        const prevD = new Date(data[idx - 1].date);
+        const prevD = parseCustomDate(data[idx - 1].date);
         if (!isNaN(prevD.getTime()) && prevD.getMonth() !== d.getMonth()) {
             return `${month} ${day}`;
         }
@@ -600,8 +621,8 @@ function sortActivities() {
         let vA, vB;
         switch (sortField) {
             case 'date':
-                vA = new Date(a.date || 0).getTime();
-                vB = new Date(b.date || 0).getTime();
+                vA = parseCustomDate(a.date).getTime();
+                vB = parseCustomDate(b.date).getTime();
                 break;
             case 'name':
                 vA = (a.name || '').toLowerCase();
