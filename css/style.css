@@ -62,7 +62,7 @@ body {
 }
 
 .runner-track {
-    width: 320px;
+    width: min(320px, 80vw);
     height: 10px;
     border-radius: 999px;
     background: rgba(255,255,255,0.15);
@@ -289,8 +289,16 @@ ul {
     color: var(--text-main);
 }
 
+.nav-links a.text-white {
+    color: #ffffff !important;
+}
+
 .nav-links a:hover {
     color: var(--primary);
+}
+
+.nav-links a.text-white:hover {
+    color: #ffffff !important;
 }
 
 .menu-toggle {
@@ -546,6 +554,17 @@ ul {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
+}
+
+@media (min-width: 769px) {
+    .race-list.upcoming-two-cards {
+        grid-template-columns: repeat(2, minmax(280px, 340px));
+        justify-content: center;
+    }
+    .race-list.upcoming-one-card {
+        grid-template-columns: minmax(280px, 340px);
+        justify-content: center;
+    }
 }
 
 .blog-grid {
