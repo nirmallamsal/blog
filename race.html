@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+    <title>Race Details | Nirmal Lamsal</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃</text></svg>">
+    <meta name="description" content="Detailed race performance history for Nirmal Lamsal - times, distances, and personal notes.">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#006973",
+                        "primary-container": "#4fbccb",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#004850",
+                        "surface": "#f6fafb",
+                        "on-surface": "#171c1d",
+                        "on-surface-variant": "#3d494b",
+                        "outline-variant": "#bdc9cb",
+                        "background": "#f6fafb",
+                        "on-background": "#171c1d",
+                        "surface-container-low": "#eef4f5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "outfit": ["Outfit", "sans-serif"],
+                        "inter": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        body {
+            background-color: #f6fafb;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(187, 57%, 55%, 0.08) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(187, 57%, 85%, 0.04) 0, transparent 50%);
+            font-family: 'Inter', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 105, 115, 0.2) transparent;
+        }
+        
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 105, 115, 0.2);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 105, 115, 0.4);
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 105, 115, 0.08);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px -5px rgba(0, 105, 115, 0.04);
+        }
+        .text-accent { color: #4FBCCB; }
+        .bg-accent { background-color: #4FBCCB; }
+        /* Horizontally scrollable chips on mobile */
+        .chips-row {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+        }
+        .chips-row::-webkit-scrollbar { display: none; }
+        .chips-row .edition-chip { scroll-snap-align: start; flex-shrink: 0; }
+        
+        /* Stat dividers */
+        .stat-cell { border-right: 1px solid rgba(189,201,203,0.3); }
+        .stat-cell:last-child { border-right: none; }
+        
+        /* Lightbox modal overlay styles */
+        .lightbox-backdrop {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 2000;
+        }
+        .lightbox-active {
+            display: flex !important;
+        }
+        
+        .font-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        @keyframes fadeUp {
+            from { opacity:0; transform: translateY(12px); }
+            to   { opacity:1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.45s ease forwards; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pt-20">
+    
+    <!-- ── Header ──────────────────────────────────────────── -->
+    <header class="header glass-header fixed top-0 left-0 w-full z-[1000] px-4 sm:px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="index.html" class="logo text-2xl font-display font-extrabold tracking-tight text-on-surface uppercase hover:text-primary transition-colors">
+                NIRMAL <span class="text-primary">LAMSAL</span>
+            </a>
+            <!-- Desktop Nav -->
+            <nav class="nav-links hidden md:flex items-center gap-1 bg-white/60 backdrop-blur-md border border-outline-variant/40 rounded-full px-5 py-2 shadow-sm">
+                <a href="index.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Home</a>
+                <a href="races.html" class="px-3 py-1 text-sm font-display font-bold text-white bg-primary rounded-full shadow-sm hover:bg-primary/90 transition-colors">Races</a>
+                <a href="training.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Training</a>
+                <a href="fundraisers.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Fundraiser</a>
+                <a href="sponsor.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Sponsor</a>
+            </nav>
+            <!-- Mobile Hamburger -->
+            <button id="mobile-menu-btn" class="menu-toggle md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-primary/10 transition-colors" aria-label="Toggle menu">
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-4 h-0.5 bg-on-surface rounded-full"></span>
+            </button>
+        </div>
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden mt-3 border-t border-outline-variant/30 pt-3 pb-2 flex flex-col gap-1 px-4">
+            <a href="index.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Home</a>
+            <a href="races.html" class="px-4 py-2.5 text-sm font-display font-bold text-white bg-primary rounded-xl transition-colors">Races</a>
+            <a href="training.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Training</a>
+            <a href="fundraisers.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Fundraiser</a>
+            <a href="sponsor.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Sponsor</a>
+        </div>
+    </header>
+    <script>
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+    </script>
+
+    <main class="flex-grow">
+        <!-- Loading Spinner -->
+        <div id="loading-state" class="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
+            <div class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            <p class="text-on-surface-variant font-outfit font-bold text-sm uppercase tracking-widest text-center">Loading Race Details…</p>
+        </div>
+
+        <!-- Main Content (hidden until data loads) -->
+        <div id="main-content" class="hidden fade-up">
+
+            <!-- Hero Block -->
+            <div class="bg-white border-b border-outline-variant/20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-end gap-5">
+                        <!-- Logo box -->
+                        <div class="w-20 h-20 sm:w-28 sm:h-28 glass-card rounded-2xl p-3 flex items-center justify-center overflow-hidden shrink-0">
+                            <img id="race-logo" src="" alt="Race Logo" class="w-full h-full object-contain">
+                        </div>
+                        <!-- Title block -->
+                        <div class="text-center sm:text-left min-w-0">
+                            <span id="race-location-tag"
+                                  class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary rounded-full text-[11px] font-black uppercase tracking-wider border border-primary/15 mb-2">
+                                <span class="material-symbols-outlined text-sm">location_on</span>
+                                <span id="race-location-text">---</span>
+                            </span>
+                            <h1 id="race-name"
+                                class="font-outfit text-2xl sm:text-4xl lg:text-5xl font-extrabold text-on-surface leading-tight break-words">
+                                ---
+                            </h1>
+                            <p id="race-type-text"
+                               class="text-primary-container font-outfit text-sm sm:text-base font-bold tracking-wider uppercase mt-1">
+                                ---
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single-Race KPI Summary Cards -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-8">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Stat 1: Editions -->
+                    <div class="glass-card p-5 rounded-2xl flex items-center gap-4 hover:shadow-md transition-all duration-300 group">
+                        <div class="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                            <span class="material-symbols-outlined text-2xl font-bold">event</span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/70 mb-0.5">Editions Run</p>
+                            <h3 id="stat-race-editions" class="font-outfit text-lg sm:text-2xl font-extrabold text-on-surface">--</h3>
+                        </div>
+                    </div>
+                    <!-- Stat 2: PB -->
+                    <div class="glass-card p-5 rounded-2xl flex items-center gap-4 hover:shadow-md transition-all duration-300 group">
+                        <div class="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                            <span class="material-symbols-outlined text-2xl font-bold font-fill" style="font-variation-settings: 'FILL' 1">grade</span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/70 mb-0.5">Event PB</p>
+                            <h3 id="stat-race-pb" class="font-outfit text-lg sm:text-2xl font-extrabold text-on-surface">--</h3>
+                        </div>
+                    </div>
+                    <!-- Stat 3: Best Rank -->
+                    <div class="glass-card p-5 rounded-2xl flex items-center gap-4 hover:shadow-md transition-all duration-300 group">
+                        <div class="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                            <span class="material-symbols-outlined text-2xl font-bold">workspace_premium</span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/70 mb-0.5">Best Rank</p>
+                            <h3 id="stat-race-rank" class="font-outfit text-lg sm:text-2xl font-extrabold text-on-surface">--</h3>
+                        </div>
+                    </div>
+                    <!-- Stat 4: Event Mileage -->
+                    <div class="glass-card p-5 rounded-2xl flex items-center gap-4 hover:shadow-md transition-all duration-300 group">
+                        <div class="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                            <span class="material-symbols-outlined text-2xl font-bold">directions_run</span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/70 mb-0.5">Total Mileage</p>
+                            <h3 id="stat-race-mileage" class="font-outfit text-lg sm:text-2xl font-extrabold text-on-surface">--</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Splitted Body Grid -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+                
+                <!-- Left: Performance & Editions (Col-span 2) -->
+                <div class="lg:col-span-2 space-y-6 sm:space-y-8">
+                    <!-- About Card -->
+                    <div id="race-intro-card" class="glass-card p-6 rounded-2xl hidden">
+                        <h3 class="font-outfit text-base sm:text-lg font-bold mb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-xl">info</span>
+                            About the Race
+                        </h3>
+                        <p id="race-intro-text" class="text-on-surface-variant text-sm sm:text-base leading-relaxed"></p>
+                    </div>
+                    
+                    <!-- Performance History -->
+                    <div class="space-y-4">
+                        <h2 class="font-outfit text-lg sm:text-xl font-bold text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">history</span>
+                            Performance Editions
+                        </h2>
+                        
+                        <!-- Chip row — horizontal scroll on mobile -->
+                        <div id="editions-chips" class="chips-row -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible">
+                            <!-- Chips rendered by JS -->
+                        </div>
+                        
+                        <!-- Stats + Notes card -->
+                        <div id="active-edition-card" class="glass-card rounded-2xl overflow-hidden">
+                            <!-- 3 statistics columns -->
+                            <div class="grid grid-cols-3 border-b border-outline-variant/20 bg-slate-50/50">
+                                <div class="stat-cell p-4 sm:p-5 flex flex-col justify-center">
+                                    <p class="text-[9px] font-bold uppercase text-on-surface-variant/60 tracking-widest leading-none mb-1.5 flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span>Time</p>
+                                    <p id="detail-time" class="font-outfit text-base sm:text-xl font-bold text-on-surface">--:--:--</p>
+                                </div>
+                                <div class="stat-cell p-4 sm:p-5 flex flex-col justify-center">
+                                    <p class="text-[9px] font-bold uppercase text-on-surface-variant/60 tracking-widest leading-none mb-1.5 flex items-center gap-1"><span class="material-symbols-outlined text-xs">straighten</span>Distance</p>
+                                    <p id="detail-distance" class="font-outfit text-base sm:text-xl font-bold text-on-surface">---</p>
+                                </div>
+                                <div class="stat-cell p-4 sm:p-5 flex flex-col justify-center">
+                                    <p class="text-[9px] font-bold uppercase text-on-surface-variant/60 tracking-widest leading-none mb-1.5 flex items-center gap-1"><span class="material-symbols-outlined text-xs">emoji_events</span>Position</p>
+                                    <p id="detail-position" class="font-outfit text-base sm:text-xl font-bold text-on-surface">---</p>
+                                </div>
+                            </div>
+                            <!-- Notes -->
+                            <div class="p-6 sm:p-8">
+                                <h3 class="font-outfit text-sm font-bold flex items-center gap-1.5 text-primary mb-2.5">
+                                    <span class="material-symbols-outlined text-base">notes</span>
+                                    Personal Notes
+                                </h3>
+                                <p id="detail-notes"
+                                   class="text-on-surface-variant text-sm sm:text-base leading-relaxed italic border-l-4 border-primary/20 pl-4 py-1">
+                                    No notes for this edition.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right: Chart & Comparison (Col-span 1) -->
+                <div class="lg:col-span-1 space-y-6 sm:space-y-8">
+                    <!-- Trend Line Chart (Hidden if only 1 edition exists) -->
+                    <div id="progression-chart-card" class="glass-card p-6 rounded-2xl hidden">
+                        <h3 class="font-outfit text-base font-bold text-on-surface mb-0.5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-xl">insights</span>
+                            Time Progression
+                        </h3>
+                        <p class="text-[11px] text-on-surface-variant mb-4">Historical progression over editions</p>
+                        <div class="w-full h-[200px] relative">
+                            <canvas id="progressionChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Distance Gauge Card (Shows how it compares to Marathons) -->
+                    <div id="distance-gauge-card" class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-outfit text-base font-bold text-on-surface mb-0.5 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-xl">donut_large</span>
+                                Race Proportions
+                            </h3>
+                            <p class="text-[11px] text-on-surface-variant mb-4">Comparison to standard running baselines</p>
+                        </div>
+                        
+                        <div class="space-y-4 my-2">
+                            <!-- Progress 1: vs Half Marathon -->
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold text-on-surface-variant mb-1">
+                                    <span>vs. Half Marathon (21.1K)</span>
+                                    <span id="gauge-percent-hm">--%</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div id="gauge-bar-hm" class="h-full bg-primary/85 transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <!-- Progress 2: vs Full Marathon -->
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold text-on-surface-variant mb-1">
+                                    <span>vs. Full Marathon (42.2K)</span>
+                                    <span id="gauge-percent-fm">--%</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div id="gauge-bar-fm" class="h-full bg-primary-container transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- moments Captured Gallery -->
+                    <div class="space-y-4">
+                        <h2 class="font-outfit text-base sm:text-lg font-bold text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">photo_library</span>
+                            Moments Captured
+                        </h2>
+                        <div id="race-gallery"
+                             class="grid grid-cols-2 gap-2">
+                            <p class="col-span-2 text-on-surface-variant text-sm py-4 italic">Loading photos…</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div><!-- /main-content -->
+    </main>
+
+    <!-- Fullscreen Image Lightbox Modal -->
+    <div id="lightbox-modal" class="lightbox-backdrop flex-col justify-between py-6">
+        <!-- Top controls bar -->
+        <div class="w-full max-w-5xl px-6 flex items-center justify-between text-white select-none mx-auto">
+            <span id="lightbox-counter" class="text-sm font-semibold tracking-wider opacity-75">Image 0 of 0</span>
+            <button id="lightbox-close" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors" aria-label="Close Lightbox">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+        
+        <!-- Image display container -->
+        <div class="relative max-w-4xl w-full px-6 flex items-center justify-center flex-grow mx-auto">
+            <!-- Prev Arrow -->
+            <button id="lightbox-prev" class="absolute left-2 sm:left-4 w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 text-white flex items-center justify-center transition-colors select-none" aria-label="Previous Image">
+                <span class="material-symbols-outlined text-3xl">chevron_left</span>
+            </button>
+            
+            <!-- Highlight Image -->
+            <img id="lightbox-img" src="" alt="Race Moment Highlight" class="max-h-[70vh] max-w-full object-contain rounded-lg shadow-2xl transition-all duration-300">
+            
+            <!-- Next Arrow -->
+            <button id="lightbox-next" class="absolute right-2 sm:right-4 w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 text-white flex items-center justify-center transition-colors select-none" aria-label="Next Image">
+                <span class="material-symbols-outlined text-3xl">chevron_right</span>
+            </button>
+        </div>
+        
+        <!-- Bottom instruction bar -->
+        <div class="w-full h-8 flex items-center justify-center select-none text-white/50 text-[10px] sm:text-xs">
+            Use Left/Right keyboard arrows to navigate, Esc to close.
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <!-- Footer -->
+    <footer class="bg-[#0F172A] text-white mt-20">
+        <div class="max-w-7xl mx-auto px-6 py-12">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div>
+                    <h3 class="font-outfit text-2xl font-bold mb-2">Nirmal Lamsal</h3>
+                    <p class="text-slate-400">Running towards new horizons, one step at a time.</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="races.html"
+                       class="inline-flex items-center gap-1.5 text-primary-container text-sm font-semibold bg-white/5 px-4 py-2 rounded-full border border-white/10 hover:bg-white/10 transition-colors">
+                        <span class="material-symbols-outlined text-sm">arrow_back</span>
+                        All Races
+                    </a>
+                    <div class="flex gap-3">
+                        <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.linkedin.com/in/nirmallamsal/" target="_blank" title="LinkedIn">
+                            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/linkedin.svg" class="w-5 h-5 invert opacity-70" alt="LinkedIn">
+                        </a>
+                        <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.strava.com/athletes/nirmallamsal" target="_blank" title="Strava">
+                            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/strava.svg" class="w-5 h-5 invert opacity-70" alt="Strava">
+                        </a>
+                        <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.instagram.com/lamsalnirmal/" target="_blank" title="Instagram">
+                            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg" class="w-5 h-5 invert opacity-70" alt="Instagram">
+                        </a>
+                        <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.facebook.com/nirmal.lamsal.87548" target="_blank" title="Facebook">
+                            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/facebook.svg" class="w-5 h-5 invert opacity-70" alt="Facebook">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-slate-800 text-center text-sm text-slate-500">
+                © 2026 Nirmal Lamsal. All Rights Reserved. Track your journey.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx83zXlV1s7xDwoUqzmXKg-xaipfahc8vaDH3BimCYX0C9ICHL3yemKDzb8Q2NKvp7P/exec';
+        let galleryImages = [];
+        let activeImgIdx = 0;
+
+        function slugify(v) {
+            return String(v||'').trim().toLowerCase()
+                .replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-');
+        }
+
+        function formatTime(t) {
+            if (!t || t === '-' || t === '--:--:--') return '-';
+            
+            let normalized = t;
+            let cleanStr = String(t).replace(/^[-]+/, '');
+            
+            if (cleanStr.includes('T') && cleanStr.includes('Z')) {
+                try {
+                    const d = new Date(cleanStr);
+                    d.setUTCMinutes(d.getUTCMinutes() + 341);
+                    d.setUTCSeconds(d.getUTCSeconds() + 16);
+                    normalized = `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}:${String(d.getUTCSeconds()).padStart(2, '0')}`;
+                } catch(e) {}
+            } else if (/^\d{6}$/.test(cleanStr)) {
+                normalized = `${cleanStr.substring(0, 2)}:${cleanStr.substring(2, 4)}:${cleanStr.substring(4, 6)}`;
+            }
+            
+            if (/^\d{2}:\d{2}:\d{2}$/.test(normalized)) {
+                const parts = normalized.split(':');
+                const hrs = parseInt(parts[0]);
+                const mins = parseInt(parts[1]);
+                return hrs > 0 ? `${hrs} hrs ${mins} Mins` : `${mins} Mins`;
+            }
+            
+            return normalized;
+        }
+
+        function timeToMinutes(t) {
+            if (!t || t === '-' || t === '--:--:--') return null;
+            let cleanStr = String(t).replace(/^[-]+/, '').trim();
+            if (cleanStr.includes('T') && cleanStr.includes('Z')) {
+                try {
+                    const d = new Date(cleanStr);
+                    d.setUTCMinutes(d.getUTCMinutes() + 341);
+                    d.setUTCSeconds(d.getUTCSeconds() + 16);
+                    return d.getUTCHours() * 60 + d.getUTCMinutes() + d.getUTCSeconds() / 60;
+                } catch(e) { return null; }
+            } else if (/^\d{6}$/.test(cleanStr)) {
+                const hrs = parseInt(cleanStr.substring(0, 2));
+                const mins = parseInt(cleanStr.substring(2, 4));
+                const secs = parseInt(cleanStr.substring(4, 6));
+                return hrs * 60 + mins + secs / 60;
+            } else if (/^\d{2}:\d{2}:\d{2}$/.test(cleanStr)) {
+                const parts = cleanStr.split(':');
+                return parseInt(parts[0]) * 60 + parseInt(parts[1]) + parseInt(parts[2]) / 60;
+            } else if (/hr|min/i.test(cleanStr)) {
+                const hrsMatch = cleanStr.match(/(\d+)\s*hr/i);
+                const minsMatch = cleanStr.match(/(\d+)\s*min/i);
+                const hrs = hrsMatch ? parseInt(hrsMatch[1]) : 0;
+                const mins = minsMatch ? parseInt(minsMatch[1]) : 0;
+                if (hrs > 0 || mins > 0) {
+                    return hrs * 60 + mins;
+                }
+            }
+            return null;
+        }
+
+        async function initializeDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('race');
+
+            if (!slug) { window.location.href = 'races.html'; return; }
+
+            try {
+                const [racesRes, namesRes] = await Promise.all([
+                    fetch(`${SCRIPT_URL}?_=${Date.now()}`),
+                    fetch(`${SCRIPT_URL}?action=names&_=${Date.now()}`)
+                ]);
+                const racesData = await racesRes.json();
+                const namesData = await namesRes.json();
+
+                if (racesData.status === 'success') {
+                    const allMatching = racesData.data.filter(r => slugify(r.RaceName) === slug);
+                    if (!allMatching.length) {
+                        document.getElementById('loading-state').innerHTML = `
+                            <span class="material-symbols-outlined text-5xl text-on-surface-variant/30">search_off</span>
+                            <p class="text-on-surface-variant font-semibold mt-2">Race not found.</p>
+                            <a href="races.html" class="text-primary underline text-sm mt-1">← All races</a>`;
+                        return;
+                    }
+
+                    const base   = allMatching[0];
+                    const master = (namesData.data || [])
+                        .find(n => n.RaceName.toLowerCase() === base.RaceName.toLowerCase());
+
+                    // Page title
+                    document.title = `${base.RaceName} | Nirmal Lamsal`;
+
+                    // Hero text
+                    document.getElementById('race-name').textContent      = base.RaceName;
+                    document.getElementById('race-type-text').textContent = base.Type;
+
+                    // Location / Intro
+                    if (master) {
+                        const loc = `${master.Location||''}, ${master.Country||''}`
+                            .replace(/^,\s*/,'').replace(/,\s*$/,'');
+                        document.getElementById('race-location-text').textContent = loc || 'Global Event';
+                        if (master.Intro) {
+                            document.getElementById('race-intro-card').classList.remove('hidden');
+                            document.getElementById('race-intro-text').textContent = master.Intro;
+                        }
+                    } else {
+                        document.getElementById('race-location-tag').classList.add('hidden');
+                    }
+
+                    // Logo
+                    const logoImg = document.getElementById('race-logo');
+                    if (base.Logo) {
+                        logoImg.src = base.Logo;
+                        logoImg.onerror = () => {
+                            logoImg.parentElement.innerHTML =
+                                `<span class="material-symbols-outlined text-5xl text-primary/20">sprint</span>`;
+                        };
+                    } else {
+                        logoImg.parentElement.innerHTML =
+                            `<span class="material-symbols-outlined text-5xl text-primary/20">sprint</span>`;
+                    }
+
+                    // --- Compute Single Race KPIs ---
+                    // 1. Editions
+                    const totalEditions = allMatching.length;
+                    document.getElementById('stat-race-editions').textContent = totalEditions;
+                    
+                    // 2. Personal Best
+                    let bestTimeStr = '--:--:--';
+                    let minMinutes = Infinity;
+                    allMatching.forEach(r => {
+                        const tStr = r.Time;
+                        const mins = timeToMinutes(tStr);
+                        if (mins !== null && mins < minMinutes) {
+                            minMinutes = mins;
+                            bestTimeStr = formatTime(tStr);
+                        }
+                    });
+                    document.getElementById('stat-race-pb').textContent = bestTimeStr;
+
+                    // 3. Best Rank
+                    let bestRankStr = 'Finisher';
+                    let minRankVal = Infinity;
+                    allMatching.forEach(r => {
+                        const pos = r.Position || '';
+                        const match = pos.match(/\d+/);
+                        if (match) {
+                            const val = parseInt(match[0]);
+                            if (val < minRankVal) {
+                                minRankVal = val;
+                                bestRankStr = pos;
+                            }
+                        } else if (pos && bestRankStr === 'Finisher') {
+                            bestRankStr = pos;
+                        }
+                    });
+                    document.getElementById('stat-race-rank').textContent = bestRankStr;
+
+                    // 4. Mileage
+                    let totalMileage = 0;
+                    allMatching.forEach(r => {
+                        totalMileage += parseFloat(r.Distance) || 0;
+                    });
+                    document.getElementById('stat-race-mileage').textContent = `${Math.round(totalMileage * 10) / 10} KM`;
+
+                    // --- Distance Gauge (Marathon Proportions) ---
+                    const currentDist = parseFloat(base.Distance) || 0;
+                    const percentHM = Math.min(100, Math.round((currentDist / 21.0975) * 100));
+                    const percentFM = Math.min(100, Math.round((currentDist / 42.195) * 100));
+                    
+                    document.getElementById('gauge-percent-hm').textContent = `${percentHM}%`;
+                    document.getElementById('gauge-bar-hm').style.width = `${percentHM}%`;
+                    document.getElementById('gauge-percent-fm').textContent = `${percentFM}%`;
+                    document.getElementById('gauge-bar-fm').style.width = `${percentFM}%`;
+
+                    // --- Progression Chart (For multi-edition races) ---
+                    if (totalEditions > 1) {
+                        document.getElementById('progression-chart-card').classList.remove('hidden');
+                        
+                        // Sort edition years ascending
+                        const sortedProgression = [...allMatching].sort((a,b) => 
+                            (parseInt(a.Participation) || 0) - (parseInt(b.Participation) || 0)
+                        );
+                        
+                        const chartYears = sortedProgression.map(r => r.Participation);
+                        const chartMinutes = sortedProgression.map(r => timeToMinutes(r.Time));
+
+                        const progCtx = document.getElementById('progressionChart').getContext('2d');
+                        Chart.defaults.font.family = "'Inter', sans-serif";
+                        Chart.defaults.color = '#3d494b';
+
+                        new Chart(progCtx, {
+                            type: 'line',
+                            data: {
+                                labels: chartYears,
+                                datasets: [{
+                                    data: chartMinutes,
+                                    borderColor: '#006973',
+                                    backgroundColor: 'rgba(0, 105, 115, 0.05)',
+                                    fill: true,
+                                    tension: 0.3,
+                                    borderWidth: 3,
+                                    pointBackgroundColor: '#006973',
+                                    pointBorderColor: '#ffffff',
+                                    pointBorderWidth: 2,
+                                    pointRadius: 5,
+                                    pointHoverRadius: 7
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                        titleFont: { family: 'Outfit', size: 12, weight: 'bold' },
+                                        bodyFont: { family: 'Inter', size: 11 },
+                                        cornerRadius: 8,
+                                        padding: 10,
+                                        callbacks: {
+                                            label: (ctx) => {
+                                                const val = ctx.raw;
+                                                if (!val) return ' Time: --';
+                                                const hrs = Math.floor(val / 60);
+                                                const mins = Math.round(val % 60);
+                                                return hrs > 0 ? ` Time: ${hrs} hrs ${mins} Mins` : ` Time: ${mins} Mins`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        grid: { display: false },
+                                        ticks: { font: { family: 'Outfit', size: 11, weight: 'bold' } }
+                                    },
+                                    y: {
+                                        grid: { color: 'rgba(0,105,115,0.06)', drawBorder: false },
+                                        ticks: {
+                                            font: { family: 'Inter', size: 10 },
+                                            callback: (val) => {
+                                                const hrs = Math.floor(val / 60);
+                                                const mins = Math.round(val % 60);
+                                                return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // --- Edition Chips rendering ---
+                    const chipContainer  = document.getElementById('editions-chips');
+                    const sortedMatching = allMatching.sort((a,b) =>
+                        String(b.Participation).localeCompare(String(a.Participation)));
+
+                    function showEditionDetails(edition) {
+                        document.getElementById('detail-time').textContent     = formatTime(edition.Time);
+                        document.getElementById('detail-distance').textContent = edition.Distance || '---';
+                        document.getElementById('detail-position').textContent = edition.Position || '---';
+                        document.getElementById('detail-notes').textContent    =
+                            edition.Notes || 'No specific highlights recorded for this edition.';
+
+                        document.querySelectorAll('.edition-chip').forEach(c => {
+                            c.classList.remove('bg-primary','text-white','shadow-sm','border-primary');
+                            c.classList.add('bg-white','text-on-surface','border-outline-variant/40');
+                        });
+                        const active = document.querySelector(`[data-edition-id="${edition.id}"]`);
+                        if (active) {
+                            active.classList.remove('bg-white','text-on-surface','border-outline-variant/40');
+                            active.classList.add('bg-primary','text-white','shadow-sm','border-primary');
+                        }
+                    }
+
+                    sortedMatching.forEach((edition, idx) => {
+                        const chip = document.createElement('button');
+                        chip.className = [
+                            'edition-chip px-5 py-2 rounded-full font-bold text-sm border',
+                            'transition-all duration-200 active:scale-95',
+                            'bg-white text-on-surface border-outline-variant/40'
+                        ].join(' ');
+                        chip.style.minHeight = '44px';
+                        chip.setAttribute('data-edition-id', edition.id);
+                        const isPB = edition.PB === 'Yes';
+                        chip.innerHTML = `
+                            <span class="flex items-center gap-1.5">
+                                ${edition.Participation}
+                                ${isPB
+                                    ? `<span class="material-symbols-outlined text-[13px] text-amber-500 font-fill"
+                                              style="font-variation-settings:'FILL' 1">grade</span>`
+                                    : ''}
+                            </span>`;
+                        chip.onclick = () => showEditionDetails(edition);
+                        chipContainer.appendChild(chip);
+                        if (idx === 0) showEditionDetails(edition);
+                    });
+
+                    // --- Photo Gallery & Lightbox Integration ---
+                    const galleryEl = document.getElementById('race-gallery');
+                    try {
+                        const galleryRes  = await fetch(`${SCRIPT_URL}?action=gallery`);
+                        const galleryData = await galleryRes.json();
+
+                        let tagged = [];
+                        if (galleryData.status === 'success') {
+                            tagged = galleryData.data
+                                .filter(i => i.Tagged_Race === base.RaceName && i.Display_Status === 'TRUE')
+                                .map(i => i.GitHub_URL);
+                        }
+                        const manual  = allMatching.flatMap(r =>
+                            (r.Gallery_Links || '').split(',').map(l => l.trim()).filter(Boolean));
+                        
+                        // Deduplicate list of images
+                        galleryImages = [...new Set([...tagged, ...manual])];
+
+                        if (galleryImages.length) {
+                            galleryEl.innerHTML = galleryImages.map((link, index) => `
+                                <div onclick="openLightbox(${index})"
+                                   class="gallery-item aspect-square rounded-xl overflow-hidden
+                                          border border-outline-variant/20 block cursor-pointer group
+                                          bg-surface-container-low">
+                                    <img src="${link}" loading="lazy" alt="Race moment"
+                                         class="w-full h-full object-cover
+                                                group-hover:scale-105 transition-transform duration-500">
+                                </div>`).join('');
+                        } else {
+                            galleryEl.innerHTML = `
+                                <div class="col-span-2 flex flex-col items-center gap-2 py-10 text-on-surface-variant">
+                                    <span class="material-symbols-outlined text-4xl opacity-30">photo_camera</span>
+                                    <p class="text-sm italic">No photos available yet.</p>
+                                </div>`;
+                        }
+                    } catch (gErr) {
+                        console.error('Gallery error:', gErr);
+                        galleryEl.innerHTML =
+                            `<p class="col-span-2 text-red-400 text-sm italic py-4">Failed to load photos.</p>`;
+                    }
+
+                    // Show page
+                    document.getElementById('loading-state').classList.add('hidden');
+                    document.getElementById('main-content').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loading-state').innerHTML = `
+                    <span class="material-symbols-outlined text-5xl text-red-400/40">wifi_off</span>
+                    <p class="text-red-500 font-semibold mt-2">Failed to load race details.</p>
+                    <button onclick="location.reload()"
+                            class="mt-3 px-5 py-2 bg-primary text-white rounded-full text-sm font-bold active:scale-95">
+                        Retry
+                    </button>`;
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeDetails);
+        } else {
+            initializeDetails();
+        }
+
+        // --- Lightbox Functions ---
+        window.openLightbox = function(index) {
+            if (galleryImages.length === 0) return;
+            activeImgIdx = index;
+            updateLightboxImage();
+            document.getElementById('lightbox-modal').classList.add('lightbox-active');
+        };
+
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').classList.remove('lightbox-active');
+        }
+
+        function updateLightboxImage() {
+            if (galleryImages.length === 0) return;
+            document.getElementById('lightbox-img').src = galleryImages[activeImgIdx];
+            document.getElementById('lightbox-counter').textContent = `Image ${activeImgIdx + 1} of ${galleryImages.length}`;
+        }
+
+        function showNextImage() {
+            activeImgIdx = (activeImgIdx + 1) % galleryImages.length;
+            updateLightboxImage();
+        }
+
+        function showPrevImage() {
+            activeImgIdx = (activeImgIdx - 1 + galleryImages.length) % galleryImages.length;
+            updateLightboxImage();
+        }
+
+        // Bind Lightbox Event Listeners
+        document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+        document.getElementById('lightbox-prev').addEventListener('click', showPrevImage);
+        document.getElementById('lightbox-next').addEventListener('click', showNextImage);
+        
+        // Close on clicking backdrop
+        document.getElementById('lightbox-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'lightbox-modal') closeLightbox();
+        });
+
+        // Keyboard arrows & escape key bindings
+        document.addEventListener('keydown', (e) => {
+            const lightbox = document.getElementById('lightbox-modal');
+            if (lightbox.classList.contains('lightbox-active')) {
+                if (e.key === 'ArrowRight') showNextImage();
+                else if (e.key === 'ArrowLeft') showPrevImage();
+                else if (e.key === 'Escape') closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>

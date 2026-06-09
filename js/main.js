@@ -1,0 +1,609 @@
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx83zXlV1s7xDwoUqzmXKg-xaipfahc8vaDH3BimCYX0C9ICHL3yemKDzb8Q2NKvp7P/exec'; 
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Set current year in footer
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+
+    // Mobile Navigation Toggle
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    
+    menuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+
+    // Close mobile menu on link click
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+        });
+    });
+
+    // Contact Form Submission (Mock)
+    const contactForm = document.getElementById('contact-form');
+    if(contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = contactForm.querySelector('button');
+            const originalText = btn.textContent;
+            
+            if (!SCRIPT_URL) {
+                alert('Database URL not configured. Please check main.js.');
+                return;
+            }
+
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+
+            const subjectEl = document.getElementById('subject');
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                subject: subjectEl ? subjectEl.value : 'General Inquiry',
+                message: document.getElementById('message').value
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'submitInquiry',
+                        data: { ...formData, type: 'contact' }
+                    })
+                });
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    btn.textContent = 'Message Sent!';
+                    contactForm.reset();
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                btn.textContent = 'Error! Try Again';
+            } finally {
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }, 4000);
+            }
+        });
+    }
+
+
+    // Fetch and render marathons
+    function formatDisplayTime(timeStr) {
+        if (!timeStr || timeStr === '-' || timeStr === '--:--:--') return '-';
+        
+        let normalized = timeStr;
+        let cleanStr = String(timeStr).replace(/^[-]+/, '');
+        
+        if (cleanStr.includes('T') && cleanStr.includes('Z')) {
+            try {
+                const d = new Date(cleanStr);
+                normalized = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+            } catch(e) {}
+        } else if (/^\d{6}$/.test(cleanStr)) {
+            normalized = `${cleanStr.substring(0, 2)}:${cleanStr.substring(2, 4)}:${cleanStr.substring(4, 6)}`;
+        }
+        
+        if (/^\d{2}:\d{2}:\d{2}$/.test(normalized)) {
+            const parts = normalized.split(':');
+            return `${parts[0]} hrs ${parts[1]} Mins`;
+        }
+        
+        return normalized;
+    }
+
+    function getCountryFlag(countryName) {
+        if (!countryName) return '';
+        const name = countryName.trim().toLowerCase();
+        const codes = {
+            'nepal': 'np',
+            'australia': 'au',
+            'united kingdom': 'gb',
+            'uk': 'gb',
+            'england': 'gb',
+            'united states': 'us',
+            'usa': 'us',
+            'us': 'us',
+            'india': 'in',
+            'china': 'cn',
+            'japan': 'jp',
+            'germany': 'de',
+            'france': 'fr',
+            'canada': 'ca',
+            'singapore': 'sg',
+            'malaysia': 'my'
+        };
+        let code = codes[name];
+        if (!code) {
+            for (const [key, val] of Object.entries(codes)) {
+                if (name.includes(key)) {
+                    code = val;
+                    break;
+                }
+            }
+        }
+        if (code) {
+            return `<img src="https://flagcdn.com/w40/${code}.png" alt="${countryName}" class="w-5 h-3.5 object-cover rounded shadow-sm inline-block mr-1.5 align-middle">`;
+        }
+        return '';
+    }
+
+    function slugify(value) {
+        return String(value || '')
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+    }
+
+    async function loadMarathons() {
+        const raceList = document.getElementById('race-list');
+        
+        if (!SCRIPT_URL) {
+            const placeholderSvg = `data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70"><rect width="70" height="70" fill="#f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui" font-weight="bold" font-size="12" fill="#94a3b8">LOGO</text></svg>')}`;
+
+            raceList.innerHTML = `
+                <div class="race-card">
+                    <img src="https://excelsheet101.github.io/nirmal-lamsal/Images/logo-pangong-frozenlake-2025.jpg" alt="Logo" class="race-logo" onerror="this.src='${placeholderSvg}'">
+                    <div class="race-info">
+                        <h3>Pangong Frozen Lake Marathon</h3>
+                        <div class="race-meta">
+                            <span>Type: High Altitude Marathon (Extreme)</span>
+                            <span style="margin-top: 4px;">Participation: 2025 (Finish)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="race-card">
+                    <img src="${placeholderSvg}" alt="Logo" class="race-logo">
+                    <div class="race-info">
+                        <h3>Pokhara Marathon</h3>
+                        <div class="race-meta">
+                            <span>Type: Road Marathon / City Marathon</span>
+                            <span style="margin-top: 4px;">Participation: 2018 &middot; 2020 &middot; 2022</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="race-card">
+                    <img src="${placeholderSvg}" alt="Logo" class="race-logo">
+                    <div class="race-info">
+                        <h3>Kathmandu International Marathon</h3>
+                        <div class="race-meta">
+                            <span>Type: Road Marathon / Charity Event</span>
+                            <span style="margin-top: 4px;">Participation: 2015 &middot; 2016 &middot; 2019</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="race-card">
+                    <img src="${placeholderSvg}" alt="Logo" class="race-logo">
+                    <div class="race-info">
+                        <h3>London Marathon</h3>
+                        <div class="race-meta">
+                            <span>Type: World Major — Road Marathon</span>
+                            <span style="margin-top: 4px;">Participation: 2024 (Finish)</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        try {
+        const response = await fetch(`${SCRIPT_URL}?_=${Date.now()}`);
+        const data = await response.json();
+
+                if (data.status === 'success' && data.data.length > 0) {
+                raceList.innerHTML = ''; // clear loading
+                
+                // Take up to 8 races assigned to slots 1-8
+                const displayRaces = data.data
+                    .filter(r => {
+                        const val = parseInt(r.Display_RaceTable);
+                        return !isNaN(val) && val >= 1 && val <= 8;
+                    })
+                    .sort((a, b) => parseInt(a.Display_RaceTable) - parseInt(b.Display_RaceTable))
+                    .slice(0, 8);
+
+                // --- Process Upcoming Races ---
+                const upcomingContainer = document.getElementById('upcoming-races-container');
+                if (upcomingContainer) {
+                    const upcomingRacesRaw = data.data
+                        .filter(r => 
+                            String(r.RaceStatus || '').toLowerCase() === 'upcoming' || 
+                            String(r.Display_RaceTable || '').startsWith('Upcoming_')
+                        )
+                        .sort((a, b) => {
+                            const slotA = String(a.Display_RaceTable || '');
+                            const slotB = String(b.Display_RaceTable || '');
+                            if (slotA.startsWith('Upcoming_') && slotB.startsWith('Upcoming_')) {
+                                return slotA.localeCompare(slotB);
+                            }
+                            if (slotA.startsWith('Upcoming_')) return -1;
+                            if (slotB.startsWith('Upcoming_')) return 1;
+                            return 0;
+                        });
+
+                    const upcomingRaces = [];
+                    const seenUpcomingNames = new Set();
+                    for (const race of upcomingRacesRaw) {
+                        const normalizedName = race.RaceName.trim().toLowerCase();
+                        if (!seenUpcomingNames.has(normalizedName)) {
+                            seenUpcomingNames.add(normalizedName);
+                            upcomingRaces.push(race);
+                        }
+                    }
+
+                    // Limit to 8 upcoming races
+                    const finalUpcomingRaces = upcomingRaces.slice(0, 8);
+
+                    if (finalUpcomingRaces.length === 0) {
+                        const trainingSection = document.getElementById('training-marathons');
+                        if (trainingSection) trainingSection.style.display = 'none';
+                        return;
+                    } else {
+                        upcomingContainer.innerHTML = '';
+                        if (finalUpcomingRaces.length === 2) {
+                            upcomingContainer.classList.add('upcoming-two-cards');
+                            upcomingContainer.classList.remove('upcoming-one-card');
+                        } else if (finalUpcomingRaces.length === 1) {
+                            upcomingContainer.classList.add('upcoming-one-card');
+                            upcomingContainer.classList.remove('upcoming-two-cards');
+                        } else {
+                            upcomingContainer.classList.remove('upcoming-two-cards', 'upcoming-one-card');
+                        }
+                        finalUpcomingRaces.forEach(race => {
+                            const card = document.createElement('div');
+                            card.className = 'race-card';
+                            const placeholderSvg = `data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70"><rect width="70" height="70" fill="#f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui" font-weight="bold" font-size="12" fill="#94a3b8">LOGO</text></svg>')}`;
+                            const logoSrc = race.Logo || placeholderSvg;
+                            
+                            const chipsHtml = `<span class="year-chip">${race.Participation || 'Upcoming'}</span>`;
+                            const raceSlug = slugify(race.RaceName);
+                            
+                            card.onclick = () => window.location.href = `race.html?race=${raceSlug}`;
+                            card.style.cursor = 'pointer';
+
+                            card.innerHTML = `
+                                <img src="${logoSrc}" alt="${race.RaceName} Logo" class="race-logo" onerror="this.src='${placeholderSvg}'">
+                                <div class="race-info">
+                                    <h3>${race.RaceName}</h3>
+                                    <div class="race-meta">
+                                        <span class="type-text">${race.Type || 'N/A'}</span>
+                                        <div class="chip-container">
+                                            ${chipsHtml}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            upcomingContainer.appendChild(card);
+                        });
+                    }
+                }
+
+                if (displayRaces.length === 0) {
+                     raceList.innerHTML = '<p>No highlighted races to display.</p>';
+                } else {
+                    displayRaces.forEach(race => {
+                        const card = document.createElement('div');
+                        card.className = 'race-card';
+                        
+                        // Default placeholder if no logo URL
+                        const placeholderSvg = `data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70"><rect width="70" height="70" fill="#f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui" font-weight="bold" font-size="12" fill="#94a3b8">LOGO</text></svg>')}`;
+                        const logoSrc = race.Logo || placeholderSvg;
+                        
+                        // Aggregate participation years from all matching races in the sheet
+                        const allInstances = data.data.filter(r => r.RaceName && race.RaceName && r.RaceName.toLowerCase() === race.RaceName.toLowerCase());
+                        let years = [];
+                        let times = [];
+                        
+                        allInstances.forEach(instance => {
+                            if (instance.Participation) {
+                                // Split by comma, dot, middle dot, or slash
+                                const splitYears = String(instance.Participation).split(/[,.\/·]/).map(y => y.trim()).filter(Boolean);
+                                years.push(...splitYears);
+                            }
+                            if (instance.Time && instance.Time !== '-' && instance.Time !== '--:--:--') {
+                                times.push(instance.Time);
+                            }
+                        });
+                        
+                        // Deduplicate and sort ascending (oldest first)
+                        years = [...new Set(years)].sort((a, b) => a.localeCompare(b));
+                        const chipsHtml = years.map(y => `<span class="year-chip">${y}</span>`).join('');
+                        
+                        // Sort times ascending to find Personal Best (shortest time)
+                        times.sort((a, b) => {
+                            const normalize = (t) => {
+                                t = String(t).replace(/\D/g, '');
+                                return t.padStart(6, '0');
+                            };
+                            return normalize(a).localeCompare(normalize(b));
+                        });
+                        
+                        const bestTimeHtml = times.length > 0 ? `<span class="time-text" style="font-size: 0.85rem; margin-bottom: 0.4rem;"><strong>Best Time:</strong> ${formatDisplayTime(times[0])}</span>` : '';
+                        
+
+                        const raceSlug = slugify(race.RaceName);
+                        card.onclick = () => window.location.href = `race.html?race=${raceSlug}`;
+                        card.style.cursor = 'pointer';
+
+                        card.innerHTML = `
+                            <img src="${logoSrc}" alt="${race.RaceName} Logo" class="race-logo" onerror="this.src='${placeholderSvg}'">
+                            <div class="race-info">
+                                <h3>${race.RaceName}</h3>
+                                <div class="race-meta">
+                                    <span class="type-text">${race.Type || 'N/A'}</span>
+                                    ${bestTimeHtml}
+                                    <div class="chip-container">
+                                        ${chipsHtml}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        raceList.appendChild(card);
+                    });
+                }
+            } else {
+                raceList.innerHTML = '<p>No race data found.</p>';
+            }
+        } catch (error) {
+            console.error('Error fetching race data:', error);
+            raceList.innerHTML = '<p>Failed to load race data. Please try again later.</p>';
+        }
+    }
+
+    // Initial load
+    loadMarathons();
+    loadBlogs();
+    loadGallery();
+    loadStravaData();
+    applyVisibilitySettings();
+});
+
+async function applyVisibilitySettings() {
+    if (!SCRIPT_URL) return;
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getSettings&_=${Date.now()}`);
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            const settings = result.data;
+            const mapping = {
+                'header': 'header',
+                'hero': '#hero',
+                'about': '#about',
+                'marathons': '#marathons',
+                'gallery': '#gallery',
+                'blog': '#blog',
+                'sponsorship': '#sponsorship',
+                'contact': '#contact',
+                'training': '.training-section',
+                'upcoming_races': '#training-marathons',
+                'footer': 'footer'
+            };
+
+            Object.entries(mapping).forEach(([settingId, selector]) => {
+                const isHidden = settings[settingId] === 'Hide';
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(el => {
+                    if (isHidden) {
+                        el.style.display = 'none';
+                        // Also hide nav link if it's a main section
+                        const navLink = document.querySelector(`.nav-links a[href="${selector}"]`);
+                        if (navLink) navLink.style.display = 'none';
+                        const mobileNavLink = document.querySelector(`#mobile-menu a[href="${selector}"]`);
+                        if (mobileNavLink) mobileNavLink.style.display = 'none';
+                    }
+                });
+            });
+        }
+    } catch (error) {
+        console.error('Error applying visibility settings:', error);
+    }
+}
+
+async function loadStravaData() {
+    const container = document.getElementById('strava-data-container');
+    if (!container || !SCRIPT_URL) return;
+
+    try {
+        // Fetch both Summary Data and Individual Activities
+        const [statsRes, actsRes] = await Promise.all([
+            fetch(`${SCRIPT_URL}?action=stravaData&_=${Date.now()}`),
+            fetch(`${SCRIPT_URL}?action=stravaActivities&_=${Date.now()}`)
+        ]);
+
+        const statsData = await statsRes.json();
+        const actsData = await actsRes.json();
+
+        let html = '';
+
+        // 1. Column 1: Latest Activity Card
+        if (actsData.status === 'success' && actsData.data && actsData.data.length > 0) {
+            const latest = actsData.data[0];
+            html += `
+                <div class="strava-card latest-activity">
+                    <div class="card-tag">Latest Session</div>
+                    <h4 class="activity-name">${latest.name}</h4>
+                    <div class="activity-date">${latest.date}</div>
+                    
+                    <div class="activity-stats-grid">
+                        <div class="mini-stat">
+                            <span class="label">Distance</span>
+                            <span class="value">${latest.distance} km</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="label">Duration</span>
+                            <span class="value">${latest.duration} mins</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="label">Elevation</span>
+                            <span class="value">${latest.elevation} m</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="label">Type</span>
+                            <span class="value">${latest.type}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 2. Column 2: Lifetime Achievement Card
+        if (statsData.status === 'success' && statsData.data && statsData.data.length > 0) {
+            const stats = statsData.data[0];
+            const dist = parseFloat(stats.TotalDistance || 0).toLocaleString('en-US');
+            
+            html += `
+                <div class="strava-card lifetime-stats">
+                    <div class="card-tag">Lifetime Achievement</div>
+                    <div class="total-km-display">
+                        <span class="label">Total Career Distance</span>
+                        <div class="large-value">${dist} <small>KM</small></div>
+                    </div>
+                    
+                    <div class="lifetime-meta">
+                        <div class="meta-item">
+                            <span class="label">Total Duration</span>
+                            <span class="value">${stats.RecentDistance || '0h 0m'}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">Activities</span>
+                            <span class="value">${stats.Activities || '0'}</span>
+                        </div>
+                    </div>
+            `;
+        }
+
+        if (html) {
+            container.innerHTML = html;
+            
+            // 3. Detailed Training Log Redirect (Centered below the grid)
+            const redirectContainer = document.getElementById('strava-redirect-container');
+            if (redirectContainer) {
+                redirectContainer.innerHTML = `
+                    <div style="text-align: center; margin-top: 2.5rem;">
+                        <a href="training.html" class="btn btn-outline" style="max-width: 400px; margin: 0 auto; border-radius: 1rem; border-style: dashed; font-weight: 800; display: block;">
+                            View Detailed Training Log & History →
+                        </a>
+                    </div>
+                `;
+            }
+        } else {
+            container.innerHTML = '<div class="loading-mini">No recent stats available.</div>';
+        }
+    } catch (error) {
+        console.error('Error loading Strava data:', error);
+        container.innerHTML = '<div class="loading-mini">Stats temporarily unavailable.</div>';
+    }
+}
+
+window.addEventListener('load', () => {
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        preloader.classList.add('hidden');
+        setTimeout(() => preloader.remove(), 500);
+    }
+});
+
+async function loadBlogs() {
+    const blogGrid = document.getElementById('blog-grid');
+    if (!blogGrid || !SCRIPT_URL) return;
+
+    // Set a timeout to prevent hanging forever
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=blogs&_=${Date.now()}`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            const displayBlogs = (data.data || []).filter(b => b.Display === 'Yes');
+            if (displayBlogs.length > 0) {
+                blogGrid.innerHTML = '';
+                displayBlogs.forEach(blog => {
+                    const article = document.createElement('article');
+                    article.className = 'blog-card';
+                    
+                    // Limit summary to 20 words
+                    let summary = blog.ShortText || '';
+                    const words = summary.split(/\s+/);
+                    if (words.length > 20) {
+                        summary = words.slice(0, 20).join(' ') + '...';
+                    }
+
+                    article.innerHTML = `
+                        <h3>${blog.Title || 'Untitled Post'}</h3>
+                        <p>${summary}</p>
+                        <div class="blog-actions">
+                            <a href="${blog.URL || '#'}" class="blog-chip" target="_blank">Read Full Story →</a>
+                        </div>
+                    `;
+                    blogGrid.appendChild(article);
+                });
+            } else {
+                blogGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No featured blog posts at the moment.</p>';
+            }
+        } else {
+            throw new Error(data.message || 'Failed to load blogs');
+        }
+    } catch (error) {
+        clearTimeout(timeoutId);
+        console.error('Error loading blogs:', error);
+        if (error.name === 'AbortError') {
+            blogGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ff4444; padding: 2rem;">Connection timeout. <br><small>Google is taking too long to respond. Please check your internet or redeploy the script.</small></p>';
+        } else {
+            blogGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #ff4444; padding: 2rem;">Unable to load experiences: ${error.message}. <br><small>Make sure you have redeployed the script and authorized access.</small></p>`;
+        }
+    }
+}
+
+async function loadGallery() {
+    const galleryGrid = document.getElementById('main-gallery-grid');
+    if (!galleryGrid || !SCRIPT_URL) return;
+
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=gallery&_=${Date.now()}`);
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            const displayItems = (data.data || [])
+                .filter(item => item.Display_Status === 'TRUE' && item.Display_Order && item.Display_Order !== '')
+                .sort((a, b) => {
+                    const orderA = parseInt(a.Display_Order) || 999;
+                    const orderB = parseInt(b.Display_Order) || 999;
+                    return orderA - orderB;
+                })
+                .slice(0, 8); // Max 8 images
+
+            if (displayItems.length > 0) {
+                galleryGrid.innerHTML = '';
+                displayItems.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'gallery-item';
+                    div.innerHTML = `
+                        <img src="${item.GitHub_URL}" alt="${item.Filename}" loading="lazy">
+                        <div class="gallery-overlay">
+                            <p>${item.Description || ''}</p>
+                        </div>
+                    `;
+                    galleryGrid.appendChild(div);
+                });
+            } else {
+                galleryGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No photos featured in the gallery yet.</p>';
+            }
+        }
+    } catch (error) {
+        console.error('Error loading gallery:', error);
+        galleryGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ff4444; padding: 2rem;">Unable to load gallery.</p>';
+    }
+}

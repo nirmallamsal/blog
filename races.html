@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>All Race History | Nirmal Lamsal</title>
+    <!-- Tailwind CSS with Forms and Container Queries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃</text></svg>">
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#006973",
+                        "primary-container": "#4fbccb",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#004850",
+                        "surface": "#f6fafb",
+                        "on-surface": "#171c1d",
+                        "on-surface-variant": "#3d494b",
+                        "outline-variant": "#bdc9cb",
+                        "background": "#f6fafb",
+                        "on-background": "#171c1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "outfit": ["Outfit", "sans-serif"],
+                        "inter": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f6fafb;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(187, 57%, 55%, 0.08) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(187, 57%, 85%, 0.04) 0, transparent 50%);
+            font-family: 'Inter', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 105, 115, 0.2) transparent;
+        }
+        
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 105, 115, 0.2);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 105, 115, 0.4);
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 105, 115, 0.08);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px -5px rgba(0, 105, 115, 0.04);
+        }
+        .text-accent { color: #4FBCCB; }
+        .bg-accent { background-color: #4FBCCB; }
+        
+        /* Fill helper for Material Symbols icons */
+        .font-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pt-20">
+    <header class="header glass-header fixed top-0 left-0 w-full z-[1000] px-4 sm:px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="index.html" class="logo text-2xl font-display font-extrabold tracking-tight text-on-surface uppercase hover:text-primary transition-colors">
+                NIRMAL <span class="text-primary">LAMSAL</span>
+            </a>
+            <!-- Desktop Nav -->
+            <nav class="nav-links hidden md:flex items-center gap-1 bg-white/60 backdrop-blur-md border border-outline-variant/40 rounded-full px-5 py-2 shadow-sm">
+                <a href="index.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Home</a>
+                <a href="races.html" class="px-3 py-1 text-sm font-display font-bold !text-white bg-primary rounded-full shadow-sm hover:bg-primary/90 transition-colors">Races</a>
+                <a href="training.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Training</a>
+                <a href="fundraisers.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Fundraiser</a>
+                <a href="sponsor.html" class="px-3 py-1 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors rounded-full">Sponsor</a>
+            </nav>
+            <!-- Mobile Hamburger -->
+            <button id="mobile-menu-btn" class="menu-toggle md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-primary/10 transition-colors" aria-label="Toggle menu">
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-6 h-0.5 bg-on-surface rounded-full"></span>
+                <span class="block w-4 h-0.5 bg-on-surface rounded-full"></span>
+            </button>
+        </div>
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden mt-3 border-t border-outline-variant/30 pt-3 pb-2 flex flex-col gap-1 px-4">
+            <a href="index.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Home</a>
+            <a href="races.html" class="px-4 py-2.5 text-sm font-display font-bold text-white bg-primary rounded-xl transition-colors">Races</a>
+            <a href="training.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Training</a>
+            <a href="fundraisers.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Fundraiser</a>
+            <a href="sponsor.html" class="px-4 py-2.5 text-sm font-display font-bold text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-xl transition-colors">Sponsor</a>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-10 w-full">
+        <!-- Dashboard Header -->
+        <div class="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+                <h1 class="font-outfit text-4xl md:text-5xl font-extrabold text-on-surface mb-3 tracking-tight">Race History & Analytics</h1>
+                <p class="text-on-surface-variant text-base md:text-lg max-w-2xl leading-relaxed">A comprehensive, real-time analytics dashboard of every mile conquered, from local trail runs to international full marathons.</p>
+            </div>
+            <!-- Sync Status Tag -->
+            <div class="inline-flex items-center gap-1.5 self-start px-3.5 py-1.5 bg-primary/5 border border-primary/15 rounded-full text-xs font-semibold text-primary">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                API Connected
+            </div>
+        </div>
+
+        <!-- 1. KPI Cards Section -->
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+            <!-- Total Runs -->
+            <div class="glass-card p-5 rounded-2xl flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
+                <div class="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
+                    <span class="material-symbols-outlined text-2xl font-bold">sprint</span>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 mb-0.5">Total Runs</p>
+                    <h3 id="stat-total-races" class="font-outfit text-xl sm:text-3xl font-extrabold text-on-surface truncate">--</h3>
+                </div>
+            </div>
+            <!-- Total Distance -->
+            <div class="glass-card p-5 rounded-2xl flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
+                <div class="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
+                    <span class="material-symbols-outlined text-2xl font-bold">map</span>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 mb-0.5">Distance (KM)</p>
+                    <h3 id="stat-total-distance" class="font-outfit text-xl sm:text-3xl font-extrabold text-on-surface truncate">--</h3>
+                </div>
+            </div>
+            <!-- Personal Bests -->
+            <div class="glass-card p-5 rounded-2xl flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
+                <div class="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
+                    <span class="material-symbols-outlined text-2xl font-bold font-fill">grade</span>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 mb-0.5">Personal Bests</p>
+                    <h3 id="stat-personal-bests" class="font-outfit text-xl sm:text-3xl font-extrabold text-on-surface truncate">--</h3>
+                </div>
+            </div>
+            <!-- Longest Run -->
+            <div class="glass-card p-5 rounded-2xl flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
+                <div class="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
+                    <span class="material-symbols-outlined text-2xl font-bold">explore</span>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 mb-0.5">Longest Run</p>
+                    <h3 id="stat-longest-run" class="font-outfit text-xl sm:text-3xl font-extrabold text-on-surface truncate">--</h3>
+                </div>
+            </div>
+            <!-- Average Pace -->
+            <div class="glass-card p-5 rounded-2xl flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
+                <div class="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
+                    <span class="material-symbols-outlined text-2xl font-bold">speed</span>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 mb-0.5">Avg Pace</p>
+                    <h3 id="stat-avg-pace" class="font-outfit text-xl sm:text-3xl font-extrabold text-on-surface truncate">--</h3>
+                </div>
+            </div>
+            <!-- Fastest Pace -->
+            <div class="glass-card p-5 rounded-2xl flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
+                <div class="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
+                    <span class="material-symbols-outlined text-2xl font-bold">bolt</span>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 mb-0.5">Fastest Pace</p>
+                    <h3 id="stat-fastest-pace" class="font-outfit text-xl sm:text-3xl font-extrabold text-on-surface truncate">--</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Chart 1: Breakdown -->
+            <div class="glass-card p-6 rounded-2xl flex flex-col justify-between h-[360px] lg:h-[380px]">
+                <div>
+                    <h3 class="font-outfit text-base sm:text-lg font-bold text-on-surface mb-0.5 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-xl">donut_large</span>
+                        Race Formats
+                    </h3>
+                    <p class="text-xs text-on-surface-variant/75 mb-4">Distribution of completed race categories</p>
+                </div>
+                <div class="relative w-full max-h-[180px] aspect-square flex items-center justify-center mx-auto">
+                    <canvas id="typeChart"></canvas>
+                </div>
+                <!-- Custom HTML Legend -->
+                <div id="type-chart-legend" class="flex flex-wrap gap-x-3 gap-y-1.5 justify-center text-[10px] sm:text-xs font-semibold text-on-surface-variant mt-4 max-h-[60px] overflow-y-auto">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+            <!-- Chart 2: Annual Mileage -->
+            <div class="glass-card p-6 rounded-2xl lg:col-span-2 flex flex-col justify-between h-[360px] lg:h-[380px]">
+                <div>
+                    <h3 class="font-outfit text-base sm:text-lg font-bold text-on-surface mb-0.5 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-xl">bar_chart</span>
+                        Annual Mileage output
+                    </h3>
+                    <p class="text-xs text-on-surface-variant/75 mb-4">Total competitive race kilometers run by year</p>
+                </div>
+                <div class="w-full flex-grow h-[220px] relative">
+                    <canvas id="mileageChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Control panel / Filter Bar -->
+        <div class="glass-card p-4 rounded-2xl mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <!-- Left: Filters -->
+            <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                <!-- Search input -->
+                <div class="relative w-full sm:w-64">
+                    <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-lg">search</span>
+                    <input type="text" id="search-input" placeholder="Search by name, type or notes..." class="w-full pl-10 pr-4 py-2 text-sm bg-white border border-outline-variant/30 rounded-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                </div>
+                <!-- Year Selector -->
+                <div class="relative w-[calc(50%-6px)] sm:w-36">
+                    <select id="year-filter" class="w-full px-4 py-2 pr-8 text-sm bg-white border border-outline-variant/30 rounded-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer text-on-surface font-medium">
+                        <option value="all">All Years</option>
+                    </select>
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/60 pointer-events-none text-base">expand_more</span>
+                </div>
+                <!-- Type Selector -->
+                <div class="relative w-[calc(50%-6px)] sm:w-44">
+                    <select id="type-filter" class="w-full px-4 py-2 pr-8 text-sm bg-white border border-outline-variant/30 rounded-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer text-on-surface font-medium">
+                        <option value="all">All Types</option>
+                    </select>
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/60 pointer-events-none text-base">expand_more</span>
+                </div>
+                <!-- PB Toggle Switch -->
+                <label class="flex items-center gap-2 cursor-pointer py-1.5 px-3.5 bg-white border border-outline-variant/30 rounded-full hover:bg-slate-50 transition-colors select-none text-xs font-bold text-on-surface-variant">
+                    <input type="checkbox" id="pb-filter" class="w-4 h-4 text-primary border-outline-variant/40 rounded focus:ring-primary focus:ring-opacity-20 cursor-pointer">
+                    <span class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-amber-500 text-base font-fill" style="font-variation-settings: 'FILL' 1">grade</span>
+                        Personal Bests Only
+                    </span>
+                </label>
+            </div>
+            <!-- Right: View Toggle Switch -->
+            <div class="flex items-center bg-slate-100/80 p-1 rounded-full border border-outline-variant/20 self-end lg:self-auto shrink-0">
+                <button id="view-table-btn" class="flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-full transition-all duration-200 bg-white text-primary shadow-sm" aria-label="Table View">
+                    <span class="material-symbols-outlined text-base">format_list_bulleted</span>
+                    List View
+                </button>
+                <button id="view-cards-btn" class="flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-full transition-all duration-200 text-on-surface-variant hover:text-primary" aria-label="Card View">
+                    <span class="material-symbols-outlined text-base">grid_view</span>
+                    Card Grid
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. Loader, Table, and Cards Containers -->
+        <div id="loading-state" class="glass-card rounded-2xl py-24 flex flex-col items-center justify-center gap-4 text-center">
+            <div class="relative flex items-center justify-center">
+                <div class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                <span class="absolute text-xl">🏃</span>
+            </div>
+            <p class="text-on-surface font-outfit font-bold uppercase tracking-wider text-sm">Synchronizing race intelligence...</p>
+        </div>
+
+        <!-- Empty Results -->
+        <div id="empty-state" class="hidden glass-card rounded-2xl py-16 flex flex-col items-center justify-center gap-3 text-center text-on-surface-variant">
+            <span class="material-symbols-outlined text-5xl text-on-surface-variant/40">search_off</span>
+            <h4 class="font-outfit text-lg font-bold text-on-surface">No races match your filters</h4>
+            <p class="text-sm max-w-sm px-4">Try clearing some filters, adjusting search queries, or unchecking Personal Bests to view full catalog.</p>
+            <button id="clear-filters-btn" class="mt-2 px-5 py-2 bg-primary text-white rounded-full text-xs font-bold hover:bg-primary/95 transition-all shadow-sm">Reset All Filters</button>
+        </div>
+
+        <!-- Table View container -->
+        <div id="table-view-container" class="hidden glass-card rounded-2xl overflow-hidden shadow-sm transition-all duration-300">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-outline-variant/30 bg-primary/5">
+                            <th class="px-8 py-5 font-outfit text-xs font-bold uppercase tracking-wider text-primary">Race Name</th>
+                            <th class="px-8 py-5 font-outfit text-xs font-bold uppercase tracking-wider text-primary">Type</th>
+                            <th class="px-8 py-5 font-outfit text-xs font-bold uppercase tracking-wider text-primary">Participation</th>
+                            <th class="px-8 py-5 font-outfit text-xs font-bold uppercase tracking-wider text-primary">Distance</th>
+                            <th class="px-8 py-5 font-outfit text-xs font-bold uppercase tracking-wider text-primary">Time</th>
+                            <th class="px-8 py-5 font-outfit text-xs font-bold uppercase tracking-wider text-primary">Pace</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/20" id="races-body">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Card Grid View container -->
+        <div id="cards-view-container" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300">
+            <!-- Populated dynamically via JS -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0F172A] text-white mt-20">
+        <div class="max-w-7xl mx-auto px-6 py-12">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div>
+                    <h3 class="font-outfit text-2xl font-bold mb-2">Nirmal Lamsal</h3>
+                    <p class="text-slate-400">Running towards new horizons, one step at a time.</p>
+                </div>
+                <div class="flex gap-4">
+                    <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.linkedin.com/in/nirmallamsal/" target="_blank" title="LinkedIn">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/linkedin.svg" class="w-5 h-5 invert opacity-70" alt="LinkedIn">
+                    </a>
+                    <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.strava.com/athletes/nirmallamsal" target="_blank" title="Strava">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/strava.svg" class="w-5 h-5 invert opacity-70" alt="Strava">
+                    </a>
+                    <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.instagram.com/lamsalnirmal/" target="_blank" title="Instagram">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg" class="w-5 h-5 invert opacity-70" alt="Instagram">
+                    </a>
+                    <a class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center hover:bg-primary transition-all duration-300" href="https://www.facebook.com/nirmal.lamsal.87548" target="_blank" title="Facebook">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/facebook.svg" class="w-5 h-5 invert opacity-70" alt="Facebook">
+                    </a>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-slate-800 text-center text-sm text-slate-500">
+                © 2026 Nirmal Lamsal. All Rights Reserved. Track your journey.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx83zXlV1s7xDwoUqzmXKg-xaipfahc8vaDH3BimCYX0C9ICHL3yemKDzb8Q2NKvp7P/exec';
+        
+        // State management
+        let allRaces = [];
+        let sortedYearsList = [];
+        let currentLayout = 'table'; // 'table' or 'cards'
+        let typeChartInstance = null;
+        let mileageChartInstance = null;
+        
+        async function initializeDashboard() {
+            // Mobile Menu Toggle
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileBtn && mobileMenu) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+            
+            // Format Time display
+            function formatTime(t) {
+                if (!t || t === '-' || t === '--:--:--') return '-';
+                
+                let normalized = t;
+                let cleanStr = String(t).replace(/^[-]+/, '');
+                
+                if (cleanStr.includes('T') && cleanStr.includes('Z')) {
+                    try {
+                        const d = new Date(cleanStr);
+                        d.setUTCMinutes(d.getUTCMinutes() + 341);
+                        d.setUTCSeconds(d.getUTCSeconds() + 16);
+                        normalized = `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}:${String(d.getUTCSeconds()).padStart(2, '0')}`;
+                    } catch(e) {}
+                } else if (/^\d{6}$/.test(cleanStr)) {
+                    normalized = `${cleanStr.substring(0, 2)}:${cleanStr.substring(2, 4)}:${cleanStr.substring(4, 6)}`;
+                }
+                
+                if (/^\d{2}:\d{2}:\d{2}$/.test(normalized)) {
+                    const parts = normalized.split(':');
+                    const hrs = parseInt(parts[0]);
+                    const mins = parseInt(parts[1]);
+                    return hrs > 0 ? `${hrs} hrs ${mins} Mins` : `${mins} Mins`;
+                }
+                
+                return normalized;
+            }
+
+            // Slugify Race Name for URL redirection
+            function slugify(value) {
+                return String(value || '')
+                    .trim()
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-');
+            }
+
+            // Type badge color selectors
+            function getTypeBadgeClass(type) {
+                const t = String(type || '').toLowerCase();
+                if (t.includes('ultra')) {
+                    return 'bg-purple-50 text-purple-700 border-purple-200/50';
+                }
+                if (t.includes('road marathon') || t.includes('full marathon') || t === 'marathon') {
+                    return 'bg-teal-50 text-teal-700 border-teal-200/50';
+                }
+                if (t.includes('half')) {
+                    return 'bg-emerald-50 text-emerald-700 border-emerald-200/50';
+                }
+                return 'bg-slate-50 text-slate-700 border-slate-200/50';
+            }
+
+            // --- Pace Analytics Helper Functions ---
+            function timeToMinutes(t) {
+                if (!t || t === '-' || t === '--:--:--') return null;
+                let cleanStr = String(t).replace(/^[-]+/, '').trim();
+                if (cleanStr.includes('T') && cleanStr.includes('Z')) {
+                    try {
+                        const d = new Date(cleanStr);
+                        d.setUTCMinutes(d.getUTCMinutes() + 341);
+                        d.setUTCSeconds(d.getUTCSeconds() + 16);
+                        return d.getUTCHours() * 60 + d.getUTCMinutes() + d.getUTCSeconds() / 60;
+                    } catch(e) { return null; }
+                } else if (/^\d{6}$/.test(cleanStr)) {
+                    const hrs = parseInt(cleanStr.substring(0, 2));
+                    const mins = parseInt(cleanStr.substring(2, 4));
+                    const secs = parseInt(cleanStr.substring(4, 6));
+                    return hrs * 60 + mins + secs / 60;
+                } else if (/^\d{2}:\d{2}:\d{2}$/.test(cleanStr)) {
+                    const parts = cleanStr.split(':');
+                    return parseInt(parts[0]) * 60 + parseInt(parts[1]) + parseInt(parts[2]) / 60;
+                } else if (/hr|min/i.test(cleanStr)) {
+                    const hrsMatch = cleanStr.match(/(\d+)\s*hr/i);
+                    const minsMatch = cleanStr.match(/(\d+)\s*min/i);
+                    const hrs = hrsMatch ? parseInt(hrsMatch[1]) : 0;
+                    const mins = minsMatch ? parseInt(minsMatch[1]) : 0;
+                    if (hrs > 0 || mins > 0) {
+                        return hrs * 60 + mins;
+                    }
+                }
+                return null;
+            }
+
+            function calculatePace(timeStr, distanceKm) {
+                const mins = timeToMinutes(timeStr);
+                if (!mins || !distanceKm || distanceKm <= 0) return null;
+                return mins / distanceKm;
+            }
+
+            function formatPace(paceMinPerKm) {
+                if (!paceMinPerKm || !isFinite(paceMinPerKm)) return '-';
+                const mins = Math.floor(paceMinPerKm);
+                const secs = Math.round((paceMinPerKm - mins) * 60);
+                return `${mins}:${String(secs).padStart(2, '0')} /km`;
+            }
+
+            function getPaceBadgeClass(pace, avgPace) {
+                if (!pace || !avgPace || !isFinite(pace) || !isFinite(avgPace)) return '';
+                const diff = ((pace - avgPace) / avgPace) * 100;
+                if (diff <= -5) return 'text-emerald-600'; // faster than avg
+                if (diff >= 5) return 'text-rose-500';     // slower than avg
+                return 'text-on-surface-variant';           // near average
+            }
+
+            function getPaceIndicator(pace, avgPace) {
+                if (!pace || !avgPace || !isFinite(pace) || !isFinite(avgPace)) return '';
+                const diff = ((pace - avgPace) / avgPace) * 100;
+                if (diff <= -5) return '<span class="material-symbols-outlined text-[13px] text-emerald-500" title="Faster than average">trending_down</span>';
+                if (diff >= 5) return '<span class="material-symbols-outlined text-[13px] text-rose-400" title="Slower than average">trending_up</span>';
+                return '<span class="material-symbols-outlined text-[13px] text-slate-400" title="Near average pace">trending_flat</span>';
+            }
+
+            // Fetch core data
+            try {
+                const res = await fetch(`${SCRIPT_URL}?_=${Date.now()}`);
+                const responseData = await res.json();
+                
+                if (responseData.status === 'success' && responseData.data.length) {
+                    // Filter completed races only
+                    allRaces = responseData.data.filter(r => 
+                        String(r.RaceStatus || '').toLowerCase() !== 'upcoming' && 
+                        !String(r.Display_RaceTable || '').startsWith('Upcoming_')
+                    );
+                    
+                    // Sort descending by Year
+                    allRaces.sort((a, b) => (parseInt(b.Participation) || 0) - (parseInt(a.Participation) || 0));
+                    
+                    // Compute overall KPI stats
+                    computeKPIs(allRaces);
+                    
+                    // Build options selectors dynamically
+                    populateFilters(allRaces);
+                    
+                    // Initialize Chart components
+                    initCharts(allRaces);
+                    
+                    // Render layout
+                    applyFilters();
+                    
+                    // Hide loader
+                    document.getElementById('loading-state').classList.add('hidden');
+                    switchLayout(currentLayout);
+                } else {
+                    document.getElementById('loading-state').innerHTML = `
+                        <div class="p-8 text-on-surface-variant flex flex-col items-center gap-3">
+                            <span class="material-symbols-outlined text-5xl">database_off</span>
+                            <p class="font-bold text-sm uppercase">No race data compiled.</p>
+                        </div>`;
+                }
+            } catch(e) {
+                console.error(e);
+                document.getElementById('loading-state').innerHTML = `
+                    <div class="p-8 text-red-500 flex flex-col items-center gap-3">
+                        <span class="material-symbols-outlined text-5xl">wifi_off</span>
+                        <p class="font-bold text-sm uppercase">Connection failure.</p>
+                        <p class="text-xs text-on-surface-variant">Failed to synchronize race metrics.</p>
+                    </div>`;
+            }
+
+            // KPI calculation
+            function computeKPIs(data) {
+                const totalRaces = data.length;
+                let totalKM = 0;
+                let pbCount = 0;
+                let maxDist = 0;
+                let totalPaceSum = 0;
+                let paceCount = 0;
+                let fastestPace = Infinity;
+                
+                data.forEach(r => {
+                    const distFloat = parseFloat(r.Distance) || 0;
+                    totalKM += distFloat;
+                    if (r.PB === 'Yes') pbCount++;
+                    if (distFloat > maxDist) maxDist = distFloat;
+                    
+                    const pace = calculatePace(r.Time, distFloat);
+                    if (pace && isFinite(pace)) {
+                        totalPaceSum += pace;
+                        paceCount++;
+                        if (pace < fastestPace) fastestPace = pace;
+                    }
+                });
+                
+                document.getElementById('stat-total-races').textContent = totalRaces;
+                document.getElementById('stat-total-distance').textContent = Math.round(totalKM * 10) / 10;
+                document.getElementById('stat-personal-bests').textContent = pbCount;
+                document.getElementById('stat-longest-run').textContent = maxDist > 0 ? `${maxDist} KM` : '--';
+                
+                const avgPace = paceCount > 0 ? totalPaceSum / paceCount : null;
+                document.getElementById('stat-avg-pace').textContent = formatPace(avgPace);
+                document.getElementById('stat-fastest-pace').textContent = fastestPace < Infinity ? formatPace(fastestPace) : '--';
+                
+                // Store avg pace globally for per-race indicators
+                window._globalAvgPace = avgPace;
+            }
+
+            // Populate Filter dropdowns
+            function populateFilters(data) {
+                const years = new Set();
+                const types = new Set();
+                
+                data.forEach(r => {
+                    if (r.Participation) years.add(parseInt(r.Participation));
+                    if (r.Type) types.add(r.Type.trim());
+                });
+                
+                sortedYearsList = Array.from(years).sort((a,b) => b - a);
+                const sortedTypes = Array.from(types).sort();
+                
+                const yearSelect = document.getElementById('year-filter');
+                const typeSelect = document.getElementById('type-filter');
+                
+                sortedYearsList.forEach(yr => {
+                    const opt = document.createElement('option');
+                    opt.value = yr;
+                    opt.textContent = yr;
+                    yearSelect.appendChild(opt);
+                });
+                
+                sortedTypes.forEach(tp => {
+                    const opt = document.createElement('option');
+                    opt.value = tp;
+                    opt.textContent = tp;
+                    typeSelect.appendChild(opt);
+                });
+            }
+
+            // Initialize sleeker charts via Chart.js
+            function initCharts(data) {
+                // Chart Font config
+                Chart.defaults.font.family = "'Inter', sans-serif";
+                Chart.defaults.color = '#3d494b';
+
+                // --- 1. Doughnut Chart (Types Breakdown) ---
+                const typeCtx = document.getElementById('typeChart').getContext('2d');
+                const typeCounts = {};
+                data.forEach(r => {
+                    const t = r.Type || 'Other';
+                    typeCounts[t] = (typeCounts[t] || 0) + 1;
+                });
+                const typeLabels = Object.keys(typeCounts);
+                const typeValues = Object.values(typeCounts);
+                const paletteColors = ['#006973', '#4fbccb', '#004850', '#93c5fd', '#c084fc', '#34d399', '#f43f5e', '#fbbf24'];
+
+                typeChartInstance = new Chart(typeCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: typeLabels,
+                        datasets: [{
+                            data: typeValues,
+                            backgroundColor: paletteColors,
+                            borderWidth: 2,
+                            borderColor: '#ffffff',
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                titleFont: { family: 'Outfit', size: 12, weight: 'bold' },
+                                bodyFont: { family: 'Inter', size: 11 },
+                                cornerRadius: 8,
+                                padding: 10
+                            }
+                        }
+                    }
+                });
+
+                // Build Custom Legend
+                renderTypeLegend(typeLabels, typeValues, paletteColors);
+
+                // --- 2. Bar Chart (Annual Mileage) ---
+                const mileageCtx = document.getElementById('mileageChart').getContext('2d');
+                const yearlyMileage = {};
+                data.forEach(r => {
+                    const yr = parseInt(r.Participation) || 0;
+                    if (yr > 0) {
+                        const dist = parseFloat(r.Distance) || 0;
+                        yearlyMileage[yr] = (yearlyMileage[yr] || 0) + dist;
+                    }
+                });
+                
+                // Keep X-axis complete for reference
+                const allYearsAvailable = [...sortedYearsList].reverse();
+                const mileageValues = allYearsAvailable.map(y => Math.round((yearlyMileage[y] || 0) * 10) / 10);
+
+                mileageChartInstance = new Chart(mileageCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: allYearsAvailable,
+                        datasets: [{
+                            label: 'Mileage',
+                            data: mileageValues,
+                            backgroundColor: '#006973',
+                            hoverBackgroundColor: '#4fbccb',
+                            borderRadius: 6,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                titleFont: { family: 'Outfit', size: 12, weight: 'bold' },
+                                bodyFont: { family: 'Inter', size: 11 },
+                                cornerRadius: 8,
+                                padding: 10,
+                                callbacks: {
+                                    label: (ctx) => ` ${ctx.raw} KM`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { family: 'Outfit', size: 12, weight: 'bold' } }
+                            },
+                            y: {
+                                grid: { color: 'rgba(0,105,115,0.06)', drawBorder: false },
+                                ticks: {
+                                    font: { family: 'Inter', size: 11 },
+                                    callback: (val) => `${val} KM`
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Render type legend helper
+            function renderTypeLegend(labels, values, colors) {
+                const legendEl = document.getElementById('type-chart-legend');
+                legendEl.innerHTML = labels.map((label, idx) => {
+                    const color = colors[idx % colors.length];
+                    return `
+                        <span class="flex items-center gap-1.5 shrink-0 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100">
+                            <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${color}"></span>
+                            <span>${label} (${values[idx]})</span>
+                        </span>
+                    `;
+                }).join('');
+            }
+
+            // Update charts dynamically on filters update
+            function updateChartValues(filteredData) {
+                if (!typeChartInstance || !mileageChartInstance) return;
+
+                // 1. Update doughnut dataset
+                const typeCounts = {};
+                filteredData.forEach(r => {
+                    const t = r.Type || 'Other';
+                    typeCounts[t] = (typeCounts[t] || 0) + 1;
+                });
+                const typeLabels = Object.keys(typeCounts);
+                const typeValues = Object.values(typeCounts);
+                const paletteColors = ['#006973', '#4fbccb', '#004850', '#93c5fd', '#c084fc', '#34d399', '#f43f5e', '#fbbf24'];
+
+                typeChartInstance.data.labels = typeLabels;
+                typeChartInstance.data.datasets[0].data = typeValues;
+                typeChartInstance.data.datasets[0].backgroundColor = paletteColors;
+                typeChartInstance.update();
+
+                // Re-render legend
+                renderTypeLegend(typeLabels, typeValues, paletteColors);
+
+                // 2. Update mileage dataset
+                const yearlyMileage = {};
+                filteredData.forEach(r => {
+                    const yr = parseInt(r.Participation) || 0;
+                    if (yr > 0) {
+                        const dist = parseFloat(r.Distance) || 0;
+                        yearlyMileage[yr] = (yearlyMileage[yr] || 0) + dist;
+                    }
+                });
+                
+                const allYearsAvailable = [...sortedYearsList].reverse();
+                const updatedValues = allYearsAvailable.map(y => Math.round((yearlyMileage[y] || 0) * 10) / 10);
+                
+                mileageChartInstance.data.datasets[0].data = updatedValues;
+                mileageChartInstance.update();
+            }
+
+            // Core filtering engine
+            function applyFilters() {
+                const searchQ = document.getElementById('search-input').value.toLowerCase().trim();
+                const yearVal = document.getElementById('year-filter').value;
+                const typeVal = document.getElementById('type-filter').value;
+                const pbOnly = document.getElementById('pb-filter').checked;
+                
+                const filtered = allRaces.filter(r => {
+                    // Search term
+                    const matchesSearch = !searchQ || 
+                        String(r.RaceName || '').toLowerCase().includes(searchQ) ||
+                        String(r.Type || '').toLowerCase().includes(searchQ) ||
+                        String(r.Notes || '').toLowerCase().includes(searchQ);
+                        
+                    // Year
+                    const matchesYear = yearVal === 'all' || String(r.Participation) === yearVal;
+                    
+                    // Type
+                    const matchesType = typeVal === 'all' || r.Type === typeVal;
+                    
+                    // PB
+                    const matchesPB = !pbOnly || r.PB === 'Yes';
+                    
+                    return matchesSearch && matchesYear && matchesType && matchesPB;
+                });
+
+                // Update dynamic KPI values based on filter
+                computeKPIs(filtered);
+
+                // Update charts data dynamically
+                updateChartValues(filtered);
+
+                // Render views
+                renderViews(filtered);
+            }
+
+            // Render Views (Table & Cards)
+            function renderViews(data) {
+                const tableBody = document.getElementById('races-body');
+                const cardsContainer = document.getElementById('cards-view-container');
+                const emptyState = document.getElementById('empty-state');
+                const tableViewContainer = document.getElementById('table-view-container');
+                
+                if (data.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    tableViewContainer.classList.add('hidden');
+                    cardsContainer.classList.add('hidden');
+                    return;
+                }
+                
+                emptyState.classList.add('hidden');
+                if (currentLayout === 'table') {
+                    tableViewContainer.classList.remove('hidden');
+                    cardsContainer.classList.add('hidden');
+                } else {
+                    tableViewContainer.classList.add('hidden');
+                    cardsContainer.classList.remove('hidden');
+                }
+
+                // Render Table content
+                tableBody.innerHTML = data.map(r => `
+                    <tr class="hover:bg-primary/5 transition-all duration-200 group cursor-pointer border-b border-outline-variant/10" onclick="window.location.href='race.html?race=${slugify(r.RaceName)}'">
+                        <td class="px-8 py-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-200/50 overflow-hidden shadow-sm">
+                                    ${r.Logo 
+                                        ? `<img src="${r.Logo}" class="w-full h-full object-contain p-1" onerror="this.src=''; this.parentElement.innerHTML='<span class=&quot;material-symbols-outlined text-lg text-primary/40&quot;>sprint</span>'">` 
+                                        : `<span class="material-symbols-outlined text-lg text-primary/40">sprint</span>`}
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-outfit font-bold text-on-surface group-hover:text-primary transition-colors duration-200 text-sm sm:text-base">${r.RaceName || '-'}</span>
+                                        ${r.PB === 'Yes' 
+                                            ? `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-50 border border-amber-200" title="Personal Best"><span class="material-symbols-outlined text-[13px] text-amber-500 font-fill" style="font-variation-settings: 'FILL' 1">grade</span></span>` 
+                                            : ''}
+                                    </div>
+                                    <div class="text-[11px] text-on-surface-variant/80 flex items-center gap-2 mt-0.5 min-w-0">
+                                        ${r.Position ? `<span class="font-bold text-primary bg-primary/5 px-1.5 py-0.2 rounded border border-primary/10">Rank: ${r.Position}</span>` : ''}
+                                        ${r.Notes ? `<span class="truncate max-w-[150px] sm:max-w-[300px] italic text-on-surface-variant/75" title="${String(r.Notes).replace(/"/g, '&quot;')}">"${r.Notes}"</span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-5">
+                            <span class="inline-flex items-center px-2.5 py-0.5 text-[11px] font-bold rounded-full border uppercase tracking-wider ${getTypeBadgeClass(r.Type)}">
+                                ${r.Type || '-'}
+                            </span>
+                        </td>
+                        <td class="px-8 py-5">
+                            <span class="px-2.5 py-1 rounded-full bg-slate-100 text-xs font-bold text-slate-600 border border-slate-200/50">
+                                ${r.Participation || '-'}
+                            </span>
+                        </td>
+                        <td class="px-8 py-5 font-outfit font-extrabold text-primary text-sm sm:text-base">${r.Distance || '-'}</td>
+                        <td class="px-8 py-5 font-mono text-xs text-on-surface-variant font-medium">${formatTime(r.Time)}</td>
+                        <td class="px-8 py-5">
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-mono text-xs font-semibold ${getPaceBadgeClass(calculatePace(r.Time, parseFloat(r.Distance)), window._globalAvgPace)}">${formatPace(calculatePace(r.Time, parseFloat(r.Distance)))}</span>
+                                ${getPaceIndicator(calculatePace(r.Time, parseFloat(r.Distance)), window._globalAvgPace)}
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Render Cards content
+                cardsContainer.innerHTML = data.map(r => `
+                    <div class="glass-card rounded-2xl border border-outline-variant/30 hover:border-primary/30 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between group cursor-pointer" onclick="window.location.href='race.html?race=${slugify(r.RaceName)}'">
+                        <div class="p-6">
+                            <!-- Card Header: Year, Logo & PB -->
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-2.5 py-1 rounded-full bg-slate-100 text-xs font-bold text-slate-600 border border-slate-200/50">
+                                    ${r.Participation}
+                                </span>
+                                <div class="flex items-center gap-1.5">
+                                    ${r.PB === 'Yes' ? `<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 text-[10px] font-bold uppercase tracking-wider"><span class="material-symbols-outlined text-[12px] text-amber-500 font-fill animate-pulse" style="font-variation-settings: 'FILL' 1">grade</span> PB</span>` : ''}
+                                    ${r.Position ? `<span class="inline-flex items-center px-2 py-0.5 rounded bg-primary/5 text-primary border border-primary/10 text-[10px] font-bold uppercase tracking-wider">Rank: ${r.Position}</span>` : ''}
+                                </div>
+                            </div>
+                            
+                            <!-- Logo & Name -->
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant/20 flex items-center justify-center p-1.5 shrink-0 overflow-hidden shadow-sm">
+                                    ${r.Logo 
+                                        ? `<img src="${r.Logo}" class="w-full h-full object-contain" alt="Logo" onerror="this.src=''; this.parentElement.innerHTML='<span class=&quot;material-symbols-outlined text-3xl text-primary/20&quot;>sprint</span>'">` 
+                                        : `<span class="material-symbols-outlined text-3xl text-primary/20">sprint</span>`}
+                                </div>
+                                <div class="min-w-0">
+                                    <h4 class="font-outfit text-base sm:text-lg font-bold text-on-surface group-hover:text-primary transition-colors duration-200 leading-snug truncate">${r.RaceName || '-'}</h4>
+                                    <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold rounded border uppercase tracking-wider ${getTypeBadgeClass(r.Type)} mt-1">
+                                        ${r.Type || '-'}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Key Stats -->
+                            <div class="grid grid-cols-3 gap-3 py-3 border-y border-outline-variant/15 mb-4">
+                                <div>
+                                    <p class="text-[9px] font-bold text-on-surface-variant/50 uppercase tracking-widest leading-none mb-1">Distance</p>
+                                    <p class="font-outfit font-extrabold text-primary text-sm sm:text-base">${r.Distance || '-'}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] font-bold text-on-surface-variant/50 uppercase tracking-widest leading-none mb-1">Time</p>
+                                    <p class="font-mono text-xs sm:text-sm font-semibold text-on-surface-variant">${formatTime(r.Time)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] font-bold text-on-surface-variant/50 uppercase tracking-widest leading-none mb-1">Pace</p>
+                                    <div class="flex items-center gap-1">
+                                        <p class="font-mono text-xs sm:text-sm font-semibold ${getPaceBadgeClass(calculatePace(r.Time, parseFloat(r.Distance)), window._globalAvgPace)}">${formatPace(calculatePace(r.Time, parseFloat(r.Distance)))}</p>
+                                        ${getPaceIndicator(calculatePace(r.Time, parseFloat(r.Distance)), window._globalAvgPace)}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Notes Quote -->
+                            ${r.Notes 
+                                ? `<p class="text-xs text-on-surface-variant/75 italic leading-relaxed pl-3 border-l-2 border-primary/20 line-clamp-3">"${r.Notes}"</p>` 
+                                : `<p class="text-xs text-on-surface-variant/35 italic">No specific highlights recorded.</p>`}
+                        </div>
+                        
+                        <!-- Card Footer -->
+                        <div class="px-6 py-4 bg-slate-50 border-t border-outline-variant/15 flex items-center justify-between text-xs text-primary font-bold group-hover:bg-primary/5 transition-colors">
+                            <span>View Performance Splits</span>
+                            <span class="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Layout switcher hook
+            function switchLayout(layout) {
+                currentLayout = layout;
+                const tblBtn = document.getElementById('view-table-btn');
+                const crdBtn = document.getElementById('view-cards-btn');
+                
+                if (layout === 'table') {
+                    tblBtn.className = "flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-full transition-all duration-200 bg-white text-primary shadow-sm";
+                    crdBtn.className = "flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-full transition-all duration-200 text-on-surface-variant hover:text-primary";
+                } else {
+                    crdBtn.className = "flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-full transition-all duration-200 bg-white text-primary shadow-sm";
+                    tblBtn.className = "flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-full transition-all duration-200 text-on-surface-variant hover:text-primary";
+                }
+                applyFilters();
+            }
+
+            // Bind triggers
+            document.getElementById('search-input').addEventListener('input', applyFilters);
+            document.getElementById('year-filter').addEventListener('change', applyFilters);
+            document.getElementById('type-filter').addEventListener('change', applyFilters);
+            document.getElementById('pb-filter').addEventListener('change', applyFilters);
+            
+            document.getElementById('view-table-btn').addEventListener('click', () => switchLayout('table'));
+            document.getElementById('view-cards-btn').addEventListener('click', () => switchLayout('cards'));
+            
+            document.getElementById('clear-filters-btn').addEventListener('click', () => {
+                document.getElementById('search-input').value = '';
+                document.getElementById('year-filter').value = 'all';
+                document.getElementById('type-filter').value = 'all';
+                document.getElementById('pb-filter').checked = false;
+                applyFilters();
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeDashboard);
+        } else {
+            initializeDashboard();
+        }
+    </script>
+</body>
+</html>
