@@ -393,9 +393,10 @@
                 
                 if (/^\d{2}:\d{2}:\d{2}$/.test(normalized)) {
                     const parts = normalized.split(':');
-                    const hrs = parseInt(parts[0]);
-                    const mins = parseInt(parts[1]);
-                    return hrs > 0 ? `${hrs} hrs ${mins} Mins` : `${mins} Mins`;
+                    const hrs = parts[0];
+                    const mins = parts[1];
+                    const secs = parts[2] || '00';
+                    return `${hrs} Hrs ${mins} Minutes ${secs} Sec`;
                 }
                 
                 return normalized;
